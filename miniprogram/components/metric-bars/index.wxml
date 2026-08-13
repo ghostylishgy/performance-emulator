@@ -1,0 +1,5 @@
+<view class="metric" wx:for="{{metrics}}" wx:key="id">
+  <view class="row"><text>{{item.label}}</text><text class="value">{{item.value}}</text></view>
+  <view class="track"><view class="fill" style="width: {{item.value}}%;"></view></view>
+</view>
+

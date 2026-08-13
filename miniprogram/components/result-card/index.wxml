@@ -1,0 +1,10 @@
+<view class="result panel">
+  <view class="label">本次绩效校准结果</view>
+  <view class="outcome">{{result.outcome}}</view>
+  <view class="subtitle">{{result.outcomeSubtitle}}</view>
+  <view class="divider"></view>
+  <view class="persona-label">你的职场人格</view>
+  <view class="persona">{{result.personaName}}</view>
+  <view class="copy">{{result.personaCopy}}</view>
+</view>
+

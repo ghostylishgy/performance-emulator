@@ -1,0 +1,7 @@
+.option { display:flex; align-items:flex-start; gap:22rpx; padding:26rpx 24rpx; border:2rpx solid #dfe5ee; border-radius:18rpx; background:#fff; transition:all .16s ease; }
+.option.selected { border-color:#2457d6; background:#eef3ff; box-shadow:0 8rpx 20rpx rgba(36,87,214,.12); }
+.option.disabled { opacity:.72; }
+.letter { flex:0 0 44rpx; width:44rpx; height:44rpx; border-radius:10rpx; background:#edf0f5; color:#4b5565; font-size:23rpx; line-height:44rpx; text-align:center; font-weight:700; }
+.selected .letter { color:#fff; background:#2457d6; }
+.text { flex:1; white-space:pre-line; color:#273247; font-size:28rpx; line-height:1.55; }
+

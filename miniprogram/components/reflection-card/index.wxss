@@ -1,0 +1,5 @@
+.card { padding:36rpx 30rpx; border:1rpx solid #dfe5ee; border-radius:20rpx; background:#fff; }
+.title { margin-bottom:30rpx; color:#172033; font-size:34rpx; font-weight:700; }
+.paragraph { margin-top:20rpx; white-space:pre-line; color:#3f4a5d; font-size:27rpx; line-height:1.75; }
+.footer { margin-top:34rpx; padding-top:24rpx; border-top:1rpx solid #e8ecf2; color:#7b8495; font-size:23rpx; line-height:1.6; }
+

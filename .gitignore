@@ -1,0 +1,13 @@
+node_modules/
+dist/
+coverage/
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.bak
+project.private.config.json
+.env
+.env.*
+!.env.example
+

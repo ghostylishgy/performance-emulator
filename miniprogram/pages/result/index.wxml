@@ -1,0 +1,35 @@
+<view wx:if="{{ready}}" class="page-shell result-page">
+  <view class="eyebrow result-eyebrow">CALIBRATION COMPLETE</view>
+  <result-card result="{{result}}" />
+
+  <view class="calibration panel">
+    <view class="section-title">本轮发生了什么</view>
+    <view class="outcome-flow">
+      <view><text class="flow-label">个人努力建议</text><text class="flow-value">{{result.baseOutcome}}</text></view>
+      <view class="arrow">↓</view>
+      <view><text class="flow-label">组织校准结果</text><text class="flow-value accent">{{result.outcome}}</text></view>
+    </view>
+    <view class="reason">{{result.calibrationReason}}</view>
+  </view>
+
+  <view class="metrics panel">
+    <view class="section-title">个人绩效五维</view>
+    <metric-bars metrics="{{result.metricBars}}" />
+  </view>
+
+  <view wx:for="{{result.hiddenResults}}" wx:key="id" class="hidden panel">
+    <view class="hidden-title">{{item.title}}</view>
+    <view class="hidden-copy">{{item.copy}}</view>
+  </view>
+
+  <view class="result-actions">
+    <button class="primary-button" open-type="share" bindtap="shareIntent">分享我的结果</button>
+    <button class="secondary-button" bindtap="restart">重新测试</button>
+  </view>
+  <ad-slot slot="{{resultAfterPrimaryAd}}" />
+
+  <reflection-card content="{{reflection}}" />
+  <view class="disclaimer">{{result.resultDisclaimer}}</view>
+  <ad-slot slot="{{resultBottomAd}}" />
+</view>
+

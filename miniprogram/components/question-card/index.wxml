@@ -1,0 +1,5 @@
+<view class="question">{{question.text}}</view>
+<view class="options">
+  <option-card wx:for="{{question.options}}" wx:key="id" option="{{item}}" selected="{{selected === item.id}}" disabled="{{disabled}}" bind:choose="choose" />
+</view>
+

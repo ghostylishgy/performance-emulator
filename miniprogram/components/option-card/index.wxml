@@ -1,0 +1,5 @@
+<view class="option {{selected ? 'selected' : ''}} {{disabled ? 'disabled' : ''}}" bindtap="choose">
+  <view class="letter">{{option.id}}</view>
+  <view class="text">{{option.text}}</view>
+</view>
+

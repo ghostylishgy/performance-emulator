@@ -1,0 +1,26 @@
+<view class="page-shell home">
+  <view class="system-row"><text class="system-dot"></text><text>ASSESSMENT LAB / INTERNAL</text></view>
+  <view class="hero">
+    <view class="eyebrow">PERFORMANCE CALIBRATION</view>
+    <view class="title">{{title}}</view>
+    <view class="subtitle">{{subtitle}}</view>
+    <view class="tag">{{description}}</view>
+  </view>
+
+  <view wx:if="{{versionNotice}}" class="notice">{{versionNotice}}</view>
+
+  <view class="actions">
+    <block wx:if="{{hasResume}}">
+      <view class="resume panel">
+        <view class="resume-label">{{resumeLabel}}</view>
+        <button class="primary-button" bindtap="resume">继续测试</button>
+        <button class="text-button" bindtap="restart">重新开始</button>
+      </view>
+    </block>
+    <button wx:else class="primary-button start" bindtap="start">开始绩效校准</button>
+  </view>
+
+  <view class="disclaimer">{{disclaimer}}</view>
+  <ad-slot slot="{{homeAdSlot}}" />
+</view>
+

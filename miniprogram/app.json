@@ -1,0 +1,17 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/quiz/index",
+    "pages/result/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "绩效校准系统",
+    "navigationBarBackgroundColor": "#f4f6f9",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f4f6f9",
+    "backgroundTextStyle": "light"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}
+

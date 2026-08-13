@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "校准结果",
+  "enableShareAppMessage": true,
+  "usingComponents": {
+    "result-card": "../../components/result-card/index",
+    "metric-bars": "../../components/metric-bars/index",
+    "reflection-card": "../../components/reflection-card/index",
+    "ad-slot": "../../components/ad-slot/index"
+  }
+}
+

@@ -1,0 +1,22 @@
+{
+  "name": "assessment-lab-miniapp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "配置驱动的微信原生娱乐测评小程序",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:unit": "vitest run tests/unit",
+    "test:golden": "vitest run tests/golden",
+    "test:archetype": "vitest run tests/archetype",
+    "validate:config": "tsx scripts/validate-config.ts",
+    "simulate": "tsx scripts/monte-carlo.ts --runs=100000 --distribution=weighted --seed=20260813 --output=reports/monte-carlo-weighted.json",
+    "simulate:uniform": "tsx scripts/monte-carlo.ts --runs=100000 --distribution=uniform --seed=20260813 --output=reports/monte-carlo-uniform.json"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  }
+}

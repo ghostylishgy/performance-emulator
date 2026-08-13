@@ -1,0 +1,29 @@
+<view class="page-shell quiz">
+  <block wx:if="{{displayMode === 'question'}}">
+    <view class="header">
+      <view class="chapter">{{chapterTitle}}</view>
+      <view wx:if="{{chapterSubtitle}}" class="chapter-subtitle">{{chapterSubtitle}}</view>
+      <quiz-progress current="{{questionNumber}}" total="{{total}}" />
+    </view>
+    <view class="question-wrap">
+      <question-card question="{{question}}" selected="{{selectedId}}" disabled="{{interactionLocked}}" bind:choose="selectOption" />
+    </view>
+    <button wx:if="{{canGoBack}}" class="back" disabled="{{interactionLocked}}" bindtap="goBack">上一题</button>
+  </block>
+
+  <chapter-transition wx:elif="{{displayMode === 'chapter-transition'}}" transition="{{transition}}" />
+
+  <personal-checkpoint wx:elif="{{displayMode === 'checkpoint'}}" checkpoint="{{checkpoint}}" outcome="{{checkpointOutcome}}" bind:back="returnFromCheckpoint" bind:confirm="confirmOrganization" />
+
+  <view wx:elif="{{displayMode === 'organization-transition'}}" class="scan panel">
+    <view class="scan-title">组织校准模块启动</view>
+    <view class="scan-list">
+      <view class="scan-line {{index === scanIndex ? 'active' : ''}} {{index < scanIndex ? 'done' : ''}}" wx:for="{{scanLines}}" wx:key="index">
+        <text class="status">{{index < scanIndex ? '✓' : (index === scanIndex ? '●' : '·')}}</text>
+        <text>{{item}}</text>
+      </view>
+    </view>
+    <view class="scan-disclaimer">{{scanDisclaimer}}</view>
+  </view>
+</view>
+

@@ -1,0 +1,6 @@
+<view class="transition panel">
+  <view class="pulse"></view>
+  <view class="title">{{transition.title}}</view>
+  <view class="line" wx:for="{{transition.lines}}" wx:key="index">{{item}}</view>
+</view>
+

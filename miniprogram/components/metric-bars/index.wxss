@@ -1,0 +1,6 @@
+.metric { margin-top:26rpx; }
+.row { display:flex; justify-content:space-between; color:#344054; font-size:27rpx; }
+.value { color:#172033; font-weight:700; font-variant-numeric:tabular-nums; }
+.track { height:13rpx; margin-top:12rpx; overflow:hidden; border-radius:10rpx; background:#e5eaf1; }
+.fill { height:100%; border-radius:10rpx; background:#2457d6; }
+

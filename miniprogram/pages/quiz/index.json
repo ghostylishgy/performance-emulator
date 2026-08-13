@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "绩效校准中",
+  "disableScroll": false,
+  "usingComponents": {
+    "quiz-progress": "../../components/progress/index",
+    "question-card": "../../components/question-card/index",
+    "chapter-transition": "../../components/chapter-transition/index",
+    "personal-checkpoint": "../../components/personal-checkpoint/index"
+  }
+}
+

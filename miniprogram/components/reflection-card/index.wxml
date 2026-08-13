@@ -1,0 +1,6 @@
+<view class="card">
+  <view class="title">{{content.title}}</view>
+  <view class="paragraph" wx:for="{{content.paragraphs}}" wx:key="index">{{item}}</view>
+  <view class="footer">{{content.footer}}</view>
+</view>
+

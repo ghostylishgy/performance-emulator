@@ -1,0 +1,16 @@
+{
+  "appid": "touristappid",
+  "projectname": "assessment-lab-miniapp",
+  "description": "热点娱乐测评母小程序",
+  "compileType": "miniprogram",
+  "miniprogramRoot": "miniprogram/",
+  "setting": {
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "useCompilerPlugins": ["typescript"]
+  },
+  "condition": {}
+}
+

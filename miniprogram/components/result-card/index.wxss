@@ -1,0 +1,8 @@
+.result { padding:42rpx 34rpx; text-align:center; }
+.label,.persona-label { color:#687386; font-size:24rpx; letter-spacing:1rpx; }
+.outcome { margin-top:6rpx; color:#172033; font-size:116rpx; font-weight:800; line-height:1.15; letter-spacing:-4rpx; }
+.subtitle { color:#2457d6; font-size:30rpx; font-weight:600; }
+.divider { height:1rpx; margin:38rpx 0; background:#e5e9f0; }
+.persona { margin-top:12rpx; color:#172033; font-size:40rpx; font-weight:700; }
+.copy { margin-top:18rpx; color:#515d70; font-size:27rpx; line-height:1.65; }
+

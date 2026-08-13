@@ -1,0 +1,18 @@
+.result-eyebrow { margin-bottom:20rpx; text-align:center; }
+.calibration,.metrics,.hidden { margin-top:28rpx; padding:34rpx 30rpx; }
+.section-title { color:#172033; font-size:31rpx; font-weight:700; }
+.outcome-flow { margin-top:30rpx; text-align:center; }
+.outcome-flow > view { display:flex; justify-content:space-between; align-items:center; }
+.flow-label { color:#677287; font-size:26rpx; }
+.flow-value { color:#172033; font-size:40rpx; font-weight:800; }
+.flow-value.accent { color:#2457d6; }
+.arrow { display:block !important; margin:8rpx 0; color:#9aa2af; }
+.reason { margin-top:28rpx; padding:22rpx 24rpx; border-radius:12rpx; color:#485469; background:#f0f3f7; font-size:25rpx; line-height:1.65; }
+.hidden { border-color:#d7c58e; background:#fffaf0; }
+.hidden-title { white-space:pre-line; color:#6e5100; font-size:34rpx; font-weight:800; line-height:1.45; }
+.hidden-copy { margin-top:16rpx; color:#7f6b34; font-size:25rpx; }
+.result-actions { display:flex; gap:18rpx; margin:36rpx 0; }
+.result-actions button { flex:1; padding:8rpx; }
+reflection-card { display:block; margin-top:46rpx; }
+.disclaimer { margin:32rpx 8rpx 0; white-space:pre-line; color:#818a99; font-size:22rpx; line-height:1.7; }
+
