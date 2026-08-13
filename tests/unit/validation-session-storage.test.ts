@@ -44,4 +44,14 @@ describe('progress freeze and storage serialization', () => {
     const old = JSON.stringify({ ...progress, testVersion: 'old' })
     expect(inspectStoredProgress(old, definition)).toEqual({ status: 'version-mismatch', storedVersion: 'old' })
   })
+
+  it('round-trips a resumable manual chapter transition', () => {
+    const progress = {
+      ...createProgress(definition, 123),
+      stage: 'chapter-transition' as const,
+      currentQuestionIndex: 4,
+      pendingTransitionChapterId: 'chapter-1',
+    }
+    expect(parseProgress(serializeProgress(progress), definition)).toEqual(progress)
+  })
 })

@@ -178,8 +178,8 @@ export const performanceSimulator: TestDefinition = {
   signalIds: ['credit_unclear', 'strategy_faded', 'quota_tight'],
   personaEvidenceIds: ['legacy_knowledge'],
   chapters: [
-    { id: 'chapter-1', section: 'personal', title: '第一幕 · 活，到底是不是你干的？', questionIds: ['Q1', 'Q2', 'Q3', 'Q4'], transition: { title: '第一轮校验完成', lines: ['活是谁干的，系统大概已经知道了。', '接下来看看老板知不知道。'], durationMs: 1000 } },
-    { id: 'chapter-2', section: 'personal', title: '第二幕 · 老板知道是你干的吗？', questionIds: ['Q5', 'Q6', 'Q7', 'Q8'], transition: { title: '可见度扫描完成', lines: ['系统已记录你的汇报痕迹。', '接下来检查你是否属于组织基础设施。'], durationMs: 1000 } },
+    { id: 'chapter-1', section: 'personal', title: '第一幕 · 活，到底是不是你干的？', questionIds: ['Q1', 'Q2', 'Q3', 'Q4'], transition: { title: '第一轮校验完成', lines: ['活是谁干的，系统大概已经知道了。', '接下来看看老板知不知道。'], continueLabel: '进入第二幕' } },
+    { id: 'chapter-2', section: 'personal', title: '第二幕 · 老板知道是你干的吗？', questionIds: ['Q5', 'Q6', 'Q7', 'Q8'], transition: { title: '可见度扫描完成', lines: ['系统已记录你的汇报痕迹。', '接下来检查你是否属于组织基础设施。'], continueLabel: '进入第三幕' } },
     { id: 'chapter-3', section: 'personal', title: '第三幕 · 如果你明天不来了呢？', questionIds: ['Q9', 'Q10', 'Q11', 'Q12'] },
     { id: 'chapter-4', section: 'organization', title: '第四幕 · 欢迎进入绩效校准会', subtitle: '组织努力部分', questionIds: ['Q13', 'Q14', 'Q15', 'Q16'] },
   ],
@@ -307,7 +307,12 @@ export const performanceSimulator: TestDefinition = {
   organizationTransition: {
     lines: ['正在确认项目战略等级……', '正在评估直属领导支持度……', '正在进行同职级横向比较……', '正在检查优秀名额……', '正在判断今年的风往哪边吹……'],
     disclaimer: '接下来发生的一切，仅代表本系统对职场玄学的有限理解。',
-    durationMs: 2000,
+    durationMs: 3200,
+  },
+  resultTransition: {
+    lines: ['正在汇总个人努力证据……', '正在应用组织校准系数……', '正在检查异常绩效区间……', '正在生成本轮组织结论……'],
+    disclaimer: '系统正在以非常严谨的方式，解释一些不太严谨的事情。',
+    durationMs: 2800,
   },
   checkpoint: {
     title: '恭喜，你已经完成了个人努力部分。',
@@ -340,4 +345,3 @@ export const performanceSimulator: TestDefinition = {
   ],
   theme: { accent: '#2457d6', background: '#f4f6f9' },
 }
-

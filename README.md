@@ -5,11 +5,12 @@
 ## 当前能力
 
 - 微信原生小程序 + TypeScript，一份动态 Quiz 页面承载全部 16 题
-- Q4/Q8 自动轻转场、Q12 个人结果 Checkpoint、组织扫描与 Q13–Q16 校准
+- Q4/Q8 用户确认式幕间转场、Q12 个人结果 Checkpoint、组织扫描与 Q13–Q16 校准
 - 个人答案快照冻结；组织阶段不能修改 P/V/I/K/F/A/O
 - effects 累加、理论区间自动归一化、个人绩效、组织校准、独立 4.0 Gate
 - signals、PersonaRule、hidden result、ResultViewModel
 - 本地断点续答、版本隔离、重新开始、微信原生分享
+- Q16 后分阶段生成结果；反思原文在用户点击分享后以弹卡呈现
 - no-op AnalyticsAdapter、关闭态 AdvertisingAdapter、配置化 AdSlot
 - unit、golden、10 组 archetype、固定 seed Monte Carlo
 
@@ -114,4 +115,3 @@ answers
 - calibration reason 优先级
 
 正式 16 题、effects、P/V/I/K/F 权重、base 阈值、两阶段机制、Q12 Checkpoint、普通校准最多 ±1、4.0 不可普通升级、答题中无广告均未改动。
-

@@ -1,7 +1,7 @@
 import type { Answers, TestDefinition } from '../config/types'
 import { evaluatePersonal } from './evaluation-pipeline'
 
-export type QuizStage = 'personal' | 'checkpoint' | 'organization-transition' | 'organization' | 'complete'
+export type QuizStage = 'personal' | 'chapter-transition' | 'checkpoint' | 'organization-transition' | 'organization' | 'complete'
 
 export interface QuizProgress {
   testId: string
@@ -11,6 +11,7 @@ export interface QuizProgress {
   stage: QuizStage
   baseOutcomeFrozen: boolean
   frozenPersonalAnswers?: Answers
+  pendingTransitionChapterId?: string
   timestamp: number
 }
 
@@ -76,12 +77,12 @@ export function parseProgress(serialized: string, definition: TestDefinition): Q
   if (!Number.isInteger(parsed.currentQuestionIndex) || Number(parsed.currentQuestionIndex) < 0 || Number(parsed.currentQuestionIndex) >= definition.questions.length) {
     throw new Error('Progress question index is invalid')
   }
-  const validStages: QuizStage[] = ['personal', 'checkpoint', 'organization-transition', 'organization', 'complete']
+  const validStages: QuizStage[] = ['personal', 'chapter-transition', 'checkpoint', 'organization-transition', 'organization', 'complete']
   if (!parsed.stage || !validStages.includes(parsed.stage)) throw new Error('Progress stage is invalid')
   if (typeof parsed.baseOutcomeFrozen !== 'boolean') throw new Error('Progress frozen flag is invalid')
+  if (parsed.stage === 'chapter-transition' && typeof parsed.pendingTransitionChapterId !== 'string') throw new Error('Pending chapter transition is missing')
   if (parsed.baseOutcomeFrozen && (!parsed.frozenPersonalAnswers || typeof parsed.frozenPersonalAnswers !== 'object')) {
     throw new Error('Frozen personal answers are missing')
   }
   return parsed as QuizProgress
 }
-

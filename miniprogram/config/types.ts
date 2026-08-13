@@ -38,7 +38,7 @@ export interface ChapterDefinition {
   transition?: {
     title: string
     lines: string[]
-    durationMs: number
+    continueLabel: string
   }
 }
 
@@ -126,6 +126,11 @@ export interface TestDefinition {
     disclaimer: string
     durationMs: number
   }
+  resultTransition: {
+    lines: string[]
+    disclaimer: string
+    durationMs: number
+  }
   checkpoint: {
     title: string
     subtitle: string
@@ -198,4 +203,3 @@ export interface ResultViewModel {
   hiddenResults: Array<{ id: string; title: string; copy: string }>
   resultDisclaimer: string
 }
-

@@ -39,6 +39,8 @@ Page({
     if (stored.status !== 'current') saveProgress(progress)
     if (progress.stage === 'complete') {
       wx.redirectTo({ url: `/pages/result/index?testId=${definition.id}` })
+    } else if (progress.stage === 'chapter-transition') {
+      this.showChapterTransition()
     } else if (progress.stage === 'checkpoint') {
       this.showCheckpoint()
     } else if (progress.stage === 'organization-transition') {
@@ -98,11 +100,15 @@ Page({
     if (!question) return
     if (index === 3 || index === 7) {
       const chapter = definition.chapters.find((item) => item.id === question.chapterId)
-      progress = { ...progress, currentQuestionIndex: index + 1, timestamp: Date.now() }
+      progress = {
+        ...progress,
+        stage: 'chapter-transition',
+        pendingTransitionChapterId: chapter?.id,
+        currentQuestionIndex: index + 1,
+        timestamp: Date.now(),
+      }
       saveProgress(progress)
-      this.setData({ displayMode: 'chapter-transition', transition: chapter?.transition ?? {}, interactionLocked: true })
-      analytics.track('chapter_transition', { testId: definition.id, questionId: question.id })
-      transitionTimer = setTimeout(() => this.renderQuestion(), chapter?.transition?.durationMs ?? 1000)
+      this.showChapterTransition()
       return
     }
     if (index === 11) {
@@ -118,6 +124,26 @@ Page({
       return
     }
     progress = { ...progress, currentQuestionIndex: index + 1, timestamp: Date.now() }
+    saveProgress(progress)
+    this.renderQuestion()
+  },
+  showChapterTransition() {
+    if (!progress) return
+    const chapter = definition.chapters.find((item) => item.id === progress?.pendingTransitionChapterId)
+    if (!chapter?.transition) {
+      progress = { ...progress, stage: 'personal', pendingTransitionChapterId: undefined, timestamp: Date.now() }
+      saveProgress(progress)
+      this.renderQuestion()
+      return
+    }
+    actionLocked = false
+    this.setData({ displayMode: 'chapter-transition', transition: chapter.transition, interactionLocked: false })
+    analytics.track('chapter_transition', { testId: definition.id, questionId: chapter.questionIds[chapter.questionIds.length - 1] })
+  },
+  continueChapter() {
+    if (!progress || actionLocked || progress.stage !== 'chapter-transition') return
+    actionLocked = true
+    progress = { ...progress, stage: 'personal', pendingTransitionChapterId: undefined, timestamp: Date.now() }
     saveProgress(progress)
     this.renderQuestion()
   },

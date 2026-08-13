@@ -52,12 +52,19 @@ export function validateTestDefinition(definition: TestDefinition): string[] {
   for (const id of duplicateValues(chapterQuestionIds)) errors.push(`question appears in multiple chapter lists: ${id}`)
 
   for (const chapter of definition.chapters) {
+    if (chapter.transition) {
+      if (!chapter.transition.lines.length) errors.push(`${chapter.id}: transition lines cannot be empty`)
+      if (!chapter.transition.continueLabel.trim()) errors.push(`${chapter.id}: transition continueLabel is required`)
+    }
     for (const questionId of chapter.questionIds) {
       const question = definition.questions.find((item) => item.id === questionId)
       if (!question) errors.push(`chapter ${chapter.id} references unknown question ${questionId}`)
       else if (question.chapterId !== chapter.id) errors.push(`question ${questionId} chapter mismatch`)
     }
   }
+
+  if (!definition.organizationTransition.lines.length || definition.organizationTransition.durationMs <= 0) errors.push('organization transition must have lines and a positive duration')
+  if (!definition.resultTransition.lines.length || definition.resultTransition.durationMs <= 0) errors.push('result transition must have lines and a positive duration')
 
   for (const question of definition.questions) {
     const chapter = definition.chapters.find((item) => item.id === question.chapterId)

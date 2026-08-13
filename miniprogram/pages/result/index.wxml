@@ -1,4 +1,18 @@
-<view wx:if="{{ready}}" class="page-shell result-page">
+<view wx:if="{{loading}}" class="page-shell result-loading-page">
+  <view class="result-loading panel">
+    <view class="loading-mark"><view class="loading-core"></view></view>
+    <view class="loading-title">正在生成绩效校准结果</view>
+    <view class="loading-list">
+      <view class="loading-line {{index === resultLineIndex ? 'active' : ''}} {{index < resultLineIndex ? 'done' : ''}}" wx:for="{{resultTransition.lines}}" wx:key="index">
+        <text class="loading-status">{{index < resultLineIndex ? '✓' : (index === resultLineIndex ? '●' : '·')}}</text>
+        <text>{{item}}</text>
+      </view>
+    </view>
+    <view class="loading-disclaimer">{{resultTransition.disclaimer}}</view>
+  </view>
+</view>
+
+<view wx:elif="{{ready}}" class="page-shell result-page">
   <view class="eyebrow result-eyebrow">CALIBRATION COMPLETE</view>
   <result-card result="{{result}}" />
 
@@ -28,8 +42,14 @@
   </view>
   <ad-slot slot="{{resultAfterPrimaryAd}}" />
 
-  <reflection-card content="{{reflection}}" />
   <view class="disclaimer">{{result.resultDisclaimer}}</view>
   <ad-slot slot="{{resultBottomAd}}" />
-</view>
 
+  <view wx:if="{{reflectionVisible}}" class="reflection-backdrop" bindtap="closeReflection" catchtouchmove="noop">
+    <view class="reflection-modal" catchtap="noop">
+      <view class="reflection-system-label">SYSTEM MESSAGE</view>
+      <reflection-card content="{{reflection}}" />
+      <button class="reflection-close" bindtap="closeReflection">我知道了</button>
+    </view>
+  </view>
+</view>

@@ -11,7 +11,7 @@
     <button wx:if="{{canGoBack}}" class="back" disabled="{{interactionLocked}}" bindtap="goBack">上一题</button>
   </block>
 
-  <chapter-transition wx:elif="{{displayMode === 'chapter-transition'}}" transition="{{transition}}" />
+  <chapter-transition wx:elif="{{displayMode === 'chapter-transition'}}" transition="{{transition}}" bind:continue="continueChapter" />
 
   <personal-checkpoint wx:elif="{{displayMode === 'checkpoint'}}" checkpoint="{{checkpoint}}" outcome="{{checkpointOutcome}}" bind:back="returnFromCheckpoint" bind:confirm="confirmOrganization" />
 
@@ -26,4 +26,3 @@
     <view class="scan-disclaimer">{{scanDisclaimer}}</view>
   </view>
 </view>
-
