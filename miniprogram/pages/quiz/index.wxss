@@ -5,7 +5,9 @@
 .chapter-subtitle { margin-top:5rpx; color:var(--color-secondary); font-size:22rpx; }
 .header quiz-progress { display:block; margin-top:22rpx; }
 .question-wrap { margin-top:36rpx; animation:question-in .24s ease-out both; }
-.back { width:190rpx; margin:12rpx auto 0 0; padding:4rpx; color:var(--color-text-secondary); background:transparent; font-size:25rpx; font-weight:400; text-align:left; }
+.back-row { display:flex; align-items:center; justify-content:flex-start; width:100%; box-sizing:border-box; margin-top:14rpx; }
+.back { display:inline-flex; align-items:center; justify-content:flex-start; width:auto; box-sizing:border-box; margin:0; padding:12rpx 18rpx; border:2rpx solid rgba(177,108,255,.20); border-radius:15rpx; color:#6f538f; background:#f7efff; font-size:23rpx; font-weight:600; line-height:1.2; text-align:left; }
+.back-pressed { border-color:rgba(177,108,255,.38); background:#efe1fb; transform:scale(.98); }
 .quiz-footnote { display:flex; align-items:center; gap:10rpx; margin:22rpx 4rpx 0; color:var(--color-text-muted); font-size:20rpx; }
 .record-dot { width:10rpx; height:10rpx; border-radius:50%; background:var(--color-secondary); box-shadow:0 0 0 6rpx rgba(177,108,255,.10); }
 .scan { margin-top:5vh; padding:38rpx 30rpx 32rpx; }

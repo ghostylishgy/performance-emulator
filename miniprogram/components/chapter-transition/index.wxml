@@ -9,6 +9,8 @@
   <view class="copy-block">
     <view class="line" wx:for="{{transition.lines}}" wx:key="index">{{item}}</view>
   </view>
-  <button class="continue" bindtap="continueNext">{{transition.continueLabel}}</button>
+  <view class="continue-wrap">
+    <button class="continue" bindtap="continueNext">{{transition.continueLabel}}</button>
+  </view>
   <view class="hand-arrow">⌁ ↗</view>
 </view>

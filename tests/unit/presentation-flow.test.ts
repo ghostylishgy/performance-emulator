@@ -9,7 +9,9 @@ describe('presentation pacing contracts', () => {
     expect(home).toContain('烛龙实验室｜绩效内测会')
     expect(home).toContain('PERFORMANCE REVIEW BETA')
     expect(home).toContain('开始打分')
-    expect(home).toContain('接着打')
+    expect(home).toContain('{{resumeActionLabel}}')
+    const homeLogic = readFileSync('miniprogram/pages/home/index.ts', 'utf8')
+    expect(homeLogic).toContain("stored.progress.stage === 'complete' ? '查看绩效' : '接着打'")
     expect(result).toContain('发给同事看看')
     expect(result).toContain('我不服，再测一次')
   })
@@ -46,7 +48,9 @@ describe('presentation pacing contracts', () => {
 
   it('preserves the locked reflection copy', () => {
     const source = readFileSync('miniprogram/config/tests/performance-simulator/index.ts', 'utf8')
-    expect(source).toContain("title: '最后，系统想认真一句'")
+    const page = readFileSync('miniprogram/pages/result/index.wxml', 'utf8')
+    expect(source).toContain("title: '最后，系统还是想说一句'")
+    expect(page).toContain('SYSTEM MESSAGE / 系统稍微认真了一下')
     expect(source).toContain('前面的分数都是假的，工作是真的。')
     expect(source).toContain('绩效只是工作的一部分。别让它变成你对自己的全部评价。')
     expect(source).toContain('如果这个测试除了让你笑了一下，还让你想了一下，那我们就算多赚到了。')

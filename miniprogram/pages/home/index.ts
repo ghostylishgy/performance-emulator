@@ -16,6 +16,7 @@ Page({
     disclaimer: definition.disclaimer,
     hasResume: false,
     resumeLabel: '',
+    resumeActionLabel: '接着打',
     versionNotice: '',
     homeAdSlot: definition.adSlots.find((slot) => slot.key === 'home_bottom'),
   },
@@ -41,6 +42,7 @@ Page({
         resumeLabel: stored.progress.stage === 'complete'
           ? '上次打分已经算完'
           : `上次打分进行到 ${answered} / ${definition.questions.length}`,
+        resumeActionLabel: stored.progress.stage === 'complete' ? '查看绩效' : '接着打',
         versionNotice: '',
       })
       return
@@ -48,6 +50,7 @@ Page({
     this.setData({
       hasResume: false,
       resumeLabel: '',
+      resumeActionLabel: '接着打',
       versionNotice: stored.status === 'version-mismatch' ? '测试版本已经更新，请重新开始。' : '',
     })
   },

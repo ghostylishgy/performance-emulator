@@ -318,7 +318,7 @@ export const performanceSimulator: TestDefinition = {
     title: '恭喜，你已经完成了个人努力部分。',
     subtitle: '个人部分已封存，组织变量即将接管。',
     backLabel: '返回修改',
-    confirmLabel: '看看组织努不努力',
+    confirmLabel: '看看组织怎么说',
     outcomeNotes: {
       '3.25': '系统初步判断：\n你确实干了活。\n只是暂未形成组织共识。',
       '3.5-': '系统检测到明显努力痕迹。\n正在寻找能被写进绩效里的那部分。',
@@ -328,7 +328,7 @@ export const performanceSimulator: TestDefinition = {
     },
   },
   reflectionConfig: {
-    title: '最后，系统想认真一句',
+    title: '最后，系统还是想说一句',
     paragraphs: [
       '前面的分数都是假的，工作是真的。',
       '这 16 道题当然不能决定你的真实绩效，更不能定义你的价值。',

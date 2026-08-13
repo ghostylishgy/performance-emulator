@@ -58,7 +58,7 @@
   <view wx:if="{{reflectionVisible}}" class="reflection-backdrop" catchtap="noop" catchtouchmove="noop">
     <view class="reflection-modal" catchtap="noop">
       <view class="reflection-accent"></view>
-      <view class="reflection-system-label">SYSTEM MESSAGE / 系统突然认真了一次</view>
+      <view class="reflection-system-label">SYSTEM MESSAGE / 系统稍微认真了一下</view>
       <reflection-card content="{{reflection}}" />
       <button class="reflection-close" bindtap="closeReflection">我知道了</button>
     </view>

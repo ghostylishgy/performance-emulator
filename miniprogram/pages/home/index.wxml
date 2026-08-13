@@ -34,12 +34,12 @@
       <view class="resume panel">
         <view class="resume-kicker">上次的组织流程还没放过你</view>
         <view class="resume-label">{{resumeLabel}}</view>
-        <button class="primary-button" bindtap="resume">接着打</button>
+        <button class="primary-button" bindtap="resume">{{resumeActionLabel}}</button>
         <button class="text-button" bindtap="restart">重新开始</button>
       </view>
     </block>
     <block wx:else>
-      <view class="cta-prompt">不信，但想试试<text class="prompt-arrow">↘</text></view>
+      <view class="cta-prompt">不信，但想试试<text class="prompt-arrow">↓</text></view>
       <button class="primary-button start" bindtap="start">开始打分<text class="button-spark">✦</text></button>
     </block>
   </view>

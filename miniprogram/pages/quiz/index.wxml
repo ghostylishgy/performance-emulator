@@ -9,7 +9,9 @@
     <view class="question-wrap">
       <question-card question="{{question}}" selected="{{selectedId}}" disabled="{{interactionLocked}}" bind:choose="selectOption" />
     </view>
-    <button wx:if="{{canGoBack}}" class="back" disabled="{{interactionLocked}}" bindtap="goBack">← 上一题</button>
+    <view wx:if="{{canGoBack}}" class="back-row">
+      <view class="back" hover-class="back-pressed" bindtap="goBack">← 上一题</view>
+    </view>
     <view class="quiz-footnote"><text class="record-dot"></text>系统记录中……答案已进入组织记忆</view>
   </block>
 
