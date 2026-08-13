@@ -1,5 +1,6 @@
 import type { TestDefinition } from './types'
-import { performanceSimulator } from './tests/performance-simulator'
+// WeChat's module loader does not resolve a directory import to index.js.
+import { performanceSimulator } from './tests/performance-simulator/index'
 
 export const testRegistry: TestDefinition[] = [performanceSimulator]
 
@@ -10,4 +11,3 @@ export function getTestDefinition(testId: string): TestDefinition {
 }
 
 export const defaultTestId = performanceSimulator.id
-
