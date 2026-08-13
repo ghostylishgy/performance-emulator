@@ -45,7 +45,7 @@
   <view class="disclaimer">{{result.resultDisclaimer}}</view>
   <ad-slot slot="{{resultBottomAd}}" />
 
-  <view wx:if="{{reflectionVisible}}" class="reflection-backdrop" bindtap="closeReflection" catchtouchmove="noop">
+  <view wx:if="{{reflectionVisible}}" class="reflection-backdrop" catchtap="noop" catchtouchmove="noop">
     <view class="reflection-modal" catchtap="noop">
       <view class="reflection-system-label">SYSTEM MESSAGE</view>
       <reflection-card content="{{reflection}}" />

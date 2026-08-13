@@ -16,4 +16,12 @@ describe('presentation pacing contracts', () => {
     expect(page).toContain('bindtap="shareIntent"')
     expect(page.indexOf('<reflection-card')).toBeGreaterThan(page.indexOf('wx:if="{{reflectionVisible}}"'))
   })
+
+  it('allows only the explicit acknowledgement button to close the reflection', () => {
+    const page = readFileSync('miniprogram/pages/result/index.wxml', 'utf8')
+    const closeBindings = page.match(/bindtap="closeReflection"/g) ?? []
+    expect(closeBindings).toHaveLength(1)
+    expect(page).toContain('<button class="reflection-close" bindtap="closeReflection">我知道了</button>')
+    expect(page).toContain('class="reflection-backdrop" catchtap="noop"')
+  })
 })
