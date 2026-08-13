@@ -1,16 +1,29 @@
-.quiz { padding-bottom:44rpx; }
-.header { position:sticky; top:0; z-index:2; padding:8rpx 0 26rpx; background:#f4f6f9; }
-.chapter { color:#263247; font-size:26rpx; font-weight:700; line-height:1.45; }
-.chapter-subtitle { margin-top:4rpx; color:#7a8495; font-size:22rpx; }
-.header quiz-progress { display:block; margin-top:20rpx; }
-.question-wrap { margin-top:30rpx; }
-.back { width:180rpx; margin:12rpx auto 0 0; padding:4rpx; color:#6a7485; background:transparent; font-size:25rpx; font-weight:400; }
-.scan { margin-top:9vh; padding:42rpx 34rpx; }
-.scan-title { color:#172033; font-size:35rpx; font-weight:700; }
-.scan-list { margin-top:38rpx; }
-.scan-line { display:flex; gap:18rpx; margin-top:26rpx; color:#9aa2af; font-size:27rpx; transition:color .2s ease; }
-.scan-line.active { color:#2457d6; font-weight:600; }
-.scan-line.done { color:#536074; }
-.status { width:28rpx; }
-.scan-disclaimer { margin-top:48rpx; padding-top:28rpx; border-top:1rpx solid #e3e8ef; color:#7a8494; font-size:23rpx; line-height:1.65; }
-
+.quiz { min-height:100vh; padding-bottom:calc(40rpx + env(safe-area-inset-bottom)); background:linear-gradient(180deg,#fff9fb 0,var(--color-page) 240rpx); }
+.header { position:sticky; top:0; z-index:2; margin:0 -4rpx; padding:6rpx 4rpx 24rpx; background:rgba(247,246,250,.96); }
+.quiz-system-label { color:var(--color-primary); font-size:18rpx; font-weight:700; letter-spacing:2rpx; }
+.chapter { margin-top:12rpx; color:var(--color-text); font-size:30rpx; font-weight:800; line-height:1.4; }
+.chapter-subtitle { margin-top:5rpx; color:var(--color-secondary); font-size:22rpx; }
+.header quiz-progress { display:block; margin-top:22rpx; }
+.question-wrap { margin-top:36rpx; animation:question-in .24s ease-out both; }
+.back { width:190rpx; margin:12rpx auto 0 0; padding:4rpx; color:var(--color-text-secondary); background:transparent; font-size:25rpx; font-weight:400; text-align:left; }
+.quiz-footnote { display:flex; align-items:center; gap:10rpx; margin:22rpx 4rpx 0; color:var(--color-text-muted); font-size:20rpx; }
+.record-dot { width:10rpx; height:10rpx; border-radius:50%; background:var(--color-secondary); box-shadow:0 0 0 6rpx rgba(177,108,255,.10); }
+.scan { margin-top:5vh; padding:38rpx 30rpx 32rpx; }
+.scan-head { display:flex; align-items:flex-start; justify-content:space-between; gap:20rpx; }
+.scan-kicker { color:var(--color-secondary); font-size:17rpx; font-weight:700; letter-spacing:2rpx; }
+.scan-title { margin-top:8rpx; color:var(--color-text); font-size:36rpx; font-weight:800; }
+.scan-percent { flex:0 0 auto; padding:9rpx 14rpx; border-radius:999rpx; color:var(--color-primary); background:#fff0f6; font-size:20rpx; font-weight:700; }
+.scan-list { margin-top:36rpx; }
+.scan-line { display:flex; align-items:flex-start; gap:16rpx; margin-top:25rpx; color:var(--color-text-muted); font-size:26rpx; line-height:1.5; transition:color .2s ease,transform .2s ease; }
+.scan-line.active { color:var(--color-secondary); font-weight:700; transform:translateX(6rpx); }
+.scan-line.done { color:var(--color-text-secondary); }
+.scan-line.done .status { color:var(--color-primary); }
+.status { flex:0 0 30rpx; width:30rpx; color:#c8c4cf; }
+.system-log { margin-top:38rpx; padding:24rpx; border-radius:20rpx; color:#ded8ef; background:var(--color-dark); font-family:monospace; font-size:21rpx; line-height:1.9; box-shadow:0 14rpx 34rpx rgba(23,24,42,.16); }
+.system-log view:last-child { color:var(--color-accent); }
+.scan-disclaimer { position:relative; margin-top:26rpx; padding:20rpx 20rpx 20rpx 54rpx; border-radius:16rpx; color:#6f571c; background:#fff5c9; font-size:22rpx; line-height:1.65; }
+.warning-mark { position:absolute; left:20rpx; top:21rpx; display:inline-flex; align-items:center; justify-content:center; width:24rpx; height:24rpx; border-radius:50%; color:#fff; background:var(--color-accent-strong); font-size:18rpx; font-weight:800; }
+@keyframes question-in { from { opacity:0; transform:translateY(12rpx); } to { opacity:1; transform:translateY(0); } }
+@media (max-height:650px) {
+  .scan { margin-top:16rpx; }
+}

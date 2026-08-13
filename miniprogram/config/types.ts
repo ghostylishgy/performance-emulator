@@ -136,6 +136,7 @@ export interface TestDefinition {
     subtitle: string
     backLabel: string
     confirmLabel: string
+    outcomeNotes: Record<NormalOutcome, string>
   }
   reflectionConfig: {
     title: string

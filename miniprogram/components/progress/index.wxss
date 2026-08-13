@@ -1,5 +1,7 @@
-.wrap { display:flex; align-items:center; gap:20rpx; }
-.track { flex:1; height:7rpx; overflow:hidden; border-radius:10rpx; background:#dfe4ec; }
-.fill { height:100%; border-radius:10rpx; background:#2457d6; transition:width .25s ease; }
-.count { color:#647084; font-size:23rpx; font-variant-numeric:tabular-nums; }
+@import "../../styles/tokens.wxss";
 
+.wrap { display:flex; align-items:center; gap:20rpx; }
+.track { flex:1; height:8rpx; overflow:hidden; border-radius:12rpx; background:#ebe8ef; }
+.fill { position:relative; height:100%; border-radius:12rpx; background:linear-gradient(90deg,var(--color-primary),var(--color-secondary)); transition:width .25s ease; }
+.glow { position:absolute; top:0; right:0; width:34rpx; height:100%; background:rgba(255,255,255,.34); }
+.count { color:var(--color-text-secondary); font-size:22rpx; font-weight:600; font-variant-numeric:tabular-nums; letter-spacing:1rpx; }

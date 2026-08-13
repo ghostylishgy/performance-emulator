@@ -24,8 +24,10 @@ Page({
     transition: {},
     checkpoint: definition.checkpoint,
     checkpointOutcome: '',
+    checkpointNote: '',
     scanLines: definition.organizationTransition.lines,
     scanIndex: 0,
+    scanPercent: 20,
     scanDisclaimer: definition.organizationTransition.disclaimer,
   },
   onLoad() {
@@ -163,6 +165,7 @@ Page({
     this.setData({
       displayMode: 'checkpoint',
       checkpointOutcome: personal.baseOutcome,
+      checkpointNote: definition.checkpoint.outcomeNotes[personal.baseOutcome],
       interactionLocked: false,
     })
     analytics.track('personal_result_view', { testId: definition.id, outcome: personal.baseOutcome })
@@ -188,10 +191,10 @@ Page({
     if (scanTimer) clearInterval(scanTimer)
     if (transitionTimer) clearTimeout(transitionTimer)
     let index = 0
-    this.setData({ displayMode: 'organization-transition', scanIndex: index, interactionLocked: true })
+    this.setData({ displayMode: 'organization-transition', scanIndex: index, scanPercent: 20, interactionLocked: true })
     scanTimer = setInterval(() => {
       index = Math.min(index + 1, definition.organizationTransition.lines.length - 1)
-      this.setData({ scanIndex: index })
+      this.setData({ scanIndex: index, scanPercent: Math.round((index + 1) / definition.organizationTransition.lines.length * 100) })
     }, Math.floor(definition.organizationTransition.durationMs / definition.organizationTransition.lines.length))
     transitionTimer = setTimeout(() => {
       if (scanTimer) clearInterval(scanTimer)

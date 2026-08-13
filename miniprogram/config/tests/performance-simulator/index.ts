@@ -169,8 +169,8 @@ export const performanceSimulator: TestDefinition = {
   version: 'v1',
   evaluationVersion: 'engine-v1',
   title: '大厂绩效模拟器',
-  subtitle: '16道题。前12道看你，后4道看组织。',
-  description: '职场娱乐测试 · 请勿当真',
+  subtitle: '16 道题。前 12 道看你，后 4 道看组织。',
+  description: '职场娱乐测试 · 但不保证完全胡说',
   disclaimer: '本测试纯属职场娱乐，不代表任何公司的真实绩效标准。\n测到3.25不必连夜改简历，测到3.75也先别找老板谈晋升。',
   resultDisclaimer: '结果仅供娱乐，请勿据此判断真实绩效、晋升、优化风险或做职业决策。\n真正的绩效，请以老板那句“下午有空吗”之后的内容为准。',
   quizLayout: 'single-card',
@@ -179,7 +179,7 @@ export const performanceSimulator: TestDefinition = {
   personaEvidenceIds: ['legacy_knowledge'],
   chapters: [
     { id: 'chapter-1', section: 'personal', title: '第一幕 · 活，到底是不是你干的？', questionIds: ['Q1', 'Q2', 'Q3', 'Q4'], transition: { title: '第一轮校验完成', lines: ['活是谁干的，系统大概已经知道了。', '接下来看看老板知不知道。'], continueLabel: '进入第二幕' } },
-    { id: 'chapter-2', section: 'personal', title: '第二幕 · 老板知道是你干的吗？', questionIds: ['Q5', 'Q6', 'Q7', 'Q8'], transition: { title: '可见度扫描完成', lines: ['系统已记录你的汇报痕迹。', '接下来检查你是否属于组织基础设施。'], continueLabel: '进入第三幕' } },
+    { id: 'chapter-2', section: 'personal', title: '第二幕 · 老板知道是你干的吗？', questionIds: ['Q5', 'Q6', 'Q7', 'Q8'], transition: { title: '第二轮校验完成', lines: ['谁干的、谁知道的，系统已经大概有数了。', '接下来看看：如果你明天不来了呢？'], continueLabel: '进入第三幕' } },
     { id: 'chapter-3', section: 'personal', title: '第三幕 · 如果你明天不来了呢？', questionIds: ['Q9', 'Q10', 'Q11', 'Q12'] },
     { id: 'chapter-4', section: 'organization', title: '第四幕 · 欢迎进入绩效校准会', subtitle: '组织努力部分', questionIds: ['Q13', 'Q14', 'Q15', 'Q16'] },
   ],
@@ -316,9 +316,16 @@ export const performanceSimulator: TestDefinition = {
   },
   checkpoint: {
     title: '恭喜，你已经完成了个人努力部分。',
-    subtitle: '接下来进入组织努力部分。',
+    subtitle: '个人部分已封存，组织变量即将接管。',
     backLabel: '返回修改',
     confirmLabel: '看看组织努不努力',
+    outcomeNotes: {
+      '3.25': '系统初步判断：\n你确实干了活。\n只是暂未形成组织共识。',
+      '3.5-': '系统检测到明显努力痕迹。\n正在寻找能被写进绩效里的那部分。',
+      '3.5': '个人努力部分运行稳定。\n暂未发现明显传奇，也暂未发现事故。',
+      '3.5+': '个人努力证据良好。\n接下来主要看组织愿不愿意配合。',
+      '3.75': '个人努力证据充分。\n接下来请把命运交给组织流程。',
+    },
   },
   reflectionConfig: {
     title: '最后，系统想认真一句',

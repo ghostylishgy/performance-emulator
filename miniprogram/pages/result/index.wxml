@@ -1,10 +1,16 @@
 <view wx:if="{{loading}}" class="page-shell result-loading-page">
   <view class="result-loading panel">
-    <view class="loading-mark"><view class="loading-core"></view></view>
+    <view class="loading-kicker">烛龙实验室 · CALIBRATION ENGINE</view>
+    <view class="loading-symbol">
+      <view class="orbit orbit-one"></view>
+      <view class="orbit orbit-two"></view>
+      <view class="symbol-core">烛</view>
+      <view class="symbol-spark">✦</view>
+    </view>
     <view class="loading-title">正在生成绩效校准结果</view>
     <view class="loading-list">
       <view class="loading-line {{index === resultLineIndex ? 'active' : ''}} {{index < resultLineIndex ? 'done' : ''}}" wx:for="{{resultTransition.lines}}" wx:key="index">
-        <text class="loading-status">{{index < resultLineIndex ? '✓' : (index === resultLineIndex ? '●' : '·')}}</text>
+        <text class="loading-status">{{index < resultLineIndex ? '✓' : (index === resultLineIndex ? '●' : '○')}}</text>
         <text>{{item}}</text>
       </view>
     </view>
@@ -13,32 +19,36 @@
 </view>
 
 <view wx:elif="{{ready}}" class="page-shell result-page">
+  <view class="result-brand"><text class="brand-dot"></text>烛龙实验室｜绩效内测会</view>
   <view class="eyebrow result-eyebrow">CALIBRATION COMPLETE</view>
   <result-card result="{{result}}" />
 
   <view class="calibration panel">
+    <view class="section-kicker">TWO-STAGE VERDICT</view>
     <view class="section-title">本轮发生了什么</view>
     <view class="outcome-flow">
-      <view><text class="flow-label">个人努力建议</text><text class="flow-value">{{result.baseOutcome}}</text></view>
-      <view class="arrow">↓</view>
-      <view><text class="flow-label">组织校准结果</text><text class="flow-value accent">{{result.outcome}}</text></view>
+      <view class="flow-row"><text class="flow-label">个人努力建议</text><text class="flow-value">{{result.baseOutcome}}</text></view>
+      <view class="organization-action"><text class="arrow">↓</text><text>组织进行了必要的工作</text></view>
+      <view class="flow-row final"><text class="flow-label">最终组织校准</text><text class="flow-value accent">{{result.outcome}}</text></view>
     </view>
-    <view class="reason">{{result.calibrationReason}}</view>
+    <view class="reason"><view class="reason-label">组织说明</view>{{result.calibrationReason}}</view>
   </view>
 
   <view class="metrics panel">
+    <view class="section-kicker">PERSONAL PERFORMANCE</view>
     <view class="section-title">个人绩效五维</view>
     <metric-bars metrics="{{result.metricBars}}" />
   </view>
 
   <view wx:for="{{result.hiddenResults}}" wx:key="id" class="hidden panel">
+    <view class="hidden-badge">异常区间</view>
     <view class="hidden-title">{{item.title}}</view>
     <view class="hidden-copy">{{item.copy}}</view>
   </view>
 
   <view class="result-actions">
-    <button class="primary-button" open-type="share" bindtap="shareIntent">分享我的结果</button>
-    <button class="secondary-button" bindtap="restart">重新测试</button>
+    <button class="primary-button" open-type="share" bindtap="shareIntent">发给同事看看</button>
+    <button class="secondary-button" bindtap="restart">我不服，再测一次</button>
   </view>
   <ad-slot slot="{{resultAfterPrimaryAd}}" />
 
@@ -47,7 +57,8 @@
 
   <view wx:if="{{reflectionVisible}}" class="reflection-backdrop" catchtap="noop" catchtouchmove="noop">
     <view class="reflection-modal" catchtap="noop">
-      <view class="reflection-system-label">SYSTEM MESSAGE</view>
+      <view class="reflection-accent"></view>
+      <view class="reflection-system-label">SYSTEM MESSAGE / 系统突然认真了一次</view>
       <reflection-card content="{{reflection}}" />
       <button class="reflection-close" bindtap="closeReflection">我知道了</button>
     </view>

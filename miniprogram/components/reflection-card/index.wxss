@@ -1,5 +1,8 @@
-.card { padding:36rpx 30rpx; border:1rpx solid #dfe5ee; border-radius:20rpx; background:#fff; }
-.title { margin-bottom:30rpx; color:#172033; font-size:34rpx; font-weight:700; }
-.paragraph { margin-top:20rpx; white-space:pre-line; color:#3f4a5d; font-size:27rpx; line-height:1.75; }
-.footer { margin-top:34rpx; padding-top:24rpx; border-top:1rpx solid #e8ecf2; color:#7b8495; font-size:23rpx; line-height:1.6; }
+@import "../../styles/tokens.wxss";
 
+.card { padding:26rpx 24rpx 30rpx; border:1rpx solid rgba(215,184,255,.16); border-radius:22rpx; background:rgba(255,255,255,.035); }
+.title { position:relative; margin-bottom:30rpx; color:#fff; font-size:38rpx; font-weight:900; line-height:1.4; }
+.title::after { content:""; display:block; width:190rpx; height:12rpx; margin-top:4rpx; border-bottom:5rpx solid var(--color-accent); border-radius:50%; transform:rotate(-2deg); }
+.paragraph { margin-top:20rpx; white-space:pre-line; color:#e7e3ef; font-size:27rpx; line-height:1.76; }
+.paragraph.lead { color:var(--color-primary-soft); font-weight:700; }
+.footer { margin-top:34rpx; padding:24rpx 22rpx 0; border-top:1rpx solid rgba(215,184,255,.16); color:var(--color-primary-soft); font-size:23rpx; font-weight:600; line-height:1.65; }

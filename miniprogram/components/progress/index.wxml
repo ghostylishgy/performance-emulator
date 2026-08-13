@@ -1,5 +1,4 @@
 <view class="wrap">
-  <view class="track"><view class="fill" style="width: {{current / total * 100}}%;"></view></view>
+  <view class="track"><view class="fill" style="width: {{current / total * 100}}%;"><view class="glow"></view></view></view>
   <text class="count">{{current}} / {{total}}</text>
 </view>
-

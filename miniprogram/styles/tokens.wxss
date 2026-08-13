@@ -1,0 +1,17 @@
+page,
+:host {
+  --color-primary: #ff4d8d;
+  --color-primary-soft: #ff8db5;
+  --color-secondary: #b16cff;
+  --color-secondary-soft: #d7b8ff;
+  --color-accent: #ffd966;
+  --color-accent-strong: #ffbf3f;
+  --color-page: #f7f6fa;
+  --color-card: #ffffff;
+  --color-text: #1f1f26;
+  --color-text-secondary: #666675;
+  --color-text-muted: #9a9aaa;
+  --color-border: #e9e7ef;
+  --color-dark: #17182a;
+  --shadow-card: 0 16rpx 44rpx rgba(49, 39, 69, 0.08);
+}

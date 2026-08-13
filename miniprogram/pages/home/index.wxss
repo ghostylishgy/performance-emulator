@@ -1,16 +1,45 @@
-.home { display:flex; flex-direction:column; }
-.system-row { display:flex; align-items:center; gap:12rpx; color:#778194; font-size:19rpx; letter-spacing:2rpx; }
-.system-dot { width:12rpx; height:12rpx; border-radius:50%; background:#30a46c; }
-.hero { margin-top:15vh; }
-.title { margin-top:24rpx; color:#172033; font-size:64rpx; font-weight:800; letter-spacing:-2rpx; }
-.subtitle { margin-top:22rpx; color:#536074; font-size:30rpx; line-height:1.6; }
-.tag { display:inline-block; margin-top:30rpx; padding:10rpx 18rpx; border:1rpx solid #d6dce6; border-radius:8rpx; color:#526076; background:#edf0f5; font-size:23rpx; }
-.notice { margin-top:34rpx; padding:20rpx 24rpx; border-radius:12rpx; color:#8a5a00; background:#fff5d8; font-size:25rpx; }
-.actions { margin-top:auto; padding-top:80rpx; }
-.start { width:100%; padding:10rpx; }
-.resume { padding:28rpx; }
-.resume-label { margin-bottom:24rpx; color:#4d596c; font-size:26rpx; }
-.resume button { width:100%; }
-.text-button { margin-top:14rpx; color:#6a7485; background:transparent; font-size:25rpx; font-weight:400; }
-.disclaimer { margin-top:36rpx; white-space:pre-line; color:#7b8493; font-size:23rpx; line-height:1.7; }
-
+.opening { position:fixed; z-index:30; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; box-sizing:border-box; padding:64rpx 54rpx calc(64rpx + env(safe-area-inset-bottom)); color:var(--color-text); background:linear-gradient(155deg,#fff 0%,#fff8fb 45%,#f6efff 100%); text-align:center; }
+.opening-mark { display:flex; align-items:center; justify-content:center; width:92rpx; height:92rpx; border-radius:28rpx; background:var(--color-dark); transform:rotate(-4deg); box-shadow:12rpx 12rpx 0 var(--color-accent); animation:opening-pop .45s ease-out both; }
+.opening-flame,.brand-fire { position:relative; width:28rpx; height:40rpx; border-radius:60% 40% 58% 42%; background:linear-gradient(145deg,var(--color-primary),var(--color-primary-soft)); transform:rotate(42deg); }
+.opening-flame::after,.brand-fire::after { content:""; position:absolute; right:5rpx; bottom:4rpx; width:13rpx; height:20rpx; border-radius:60% 40%; background:var(--color-accent); }
+.opening-brand { margin-top:34rpx; font-size:38rpx; font-weight:800; letter-spacing:2rpx; }
+.opening-product { margin-top:8rpx; color:var(--color-primary); font-size:26rpx; font-weight:700; letter-spacing:5rpx; }
+.opening-status { margin-top:48rpx; color:var(--color-text-secondary); font-size:24rpx; line-height:2; }
+.opening-status view { opacity:0; animation:opening-line .28s ease-out forwards; }
+.opening-status view:nth-child(2) { animation-delay:.18s; }
+.opening-status view:nth-child(3) { animation-delay:.36s; }
+.opening-punchline { margin-top:34rpx; padding:20rpx 26rpx; border-radius:18rpx; color:#725716; background:#fff3bd; font-size:24rpx; line-height:1.65; transform:rotate(-1deg); }
+.opening-skip { position:absolute; bottom:calc(32rpx + env(safe-area-inset-bottom)); color:var(--color-text-muted); font-size:18rpx; letter-spacing:2rpx; }
+.home { display:flex; flex-direction:column; overflow:hidden; background:radial-gradient(circle at 88% 14%,rgba(215,184,255,.34),transparent 23%),var(--color-page); animation:page-enter .3s ease-out both; }
+.brand-row { display:flex; align-items:center; gap:14rpx; color:var(--color-text); font-size:24rpx; font-weight:700; }
+.brand-fire { width:19rpx; height:28rpx; }
+.brand-fire::after { width:9rpx; height:14rpx; }
+.hero { position:relative; margin-top:86rpx; }
+.beta-label { display:inline-block; padding:8rpx 14rpx; border-radius:10rpx; background:#fff0f6; font-size:19rpx; letter-spacing:2rpx; }
+.title { position:relative; z-index:1; max-width:620rpx; margin-top:24rpx; color:var(--color-text); font-size:68rpx; font-weight:900; line-height:1.12; letter-spacing:-3rpx; }
+.title::after { content:""; position:absolute; z-index:-1; right:-8rpx; bottom:5rpx; width:180rpx; height:18rpx; border-radius:50%; background:rgba(255,217,102,.75); transform:rotate(-3deg); }
+.subtitle { margin-top:26rpx; color:var(--color-text-secondary); font-size:29rpx; line-height:1.65; }
+.hook { position:relative; margin-top:34rpx; padding:26rpx 28rpx 28rpx; border:2rpx solid rgba(255,77,141,.48); border-radius:22rpx; color:#4b4452; background:rgba(255,255,255,.72); font-size:27rpx; line-height:1.65; }
+.hook::after { content:""; position:absolute; right:34rpx; bottom:-10rpx; width:54rpx; height:18rpx; border-bottom:4rpx solid var(--color-primary); border-radius:50%; transform:rotate(-8deg); }
+.hook-emphasis { color:var(--color-primary); font-weight:700; }
+.hook-note { display:inline-block; margin-top:16rpx; padding:7rpx 12rpx; color:#73591b; background:var(--color-accent); font-size:19rpx; font-weight:600; transform:rotate(-1.5deg); }
+.notice { margin-top:30rpx; padding:20rpx 24rpx; border-radius:16rpx; color:#755910; background:#fff4c6; font-size:24rpx; }
+.actions { margin-top:auto; padding-top:62rpx; }
+.cta-prompt { margin:0 8rpx 18rpx; color:#3f3847; font-size:28rpx; font-weight:700; text-align:right; }
+.prompt-arrow { display:inline-block; margin-left:12rpx; color:var(--color-primary); font-size:34rpx; transform:rotate(8deg); }
+.start { width:100%; min-height:96rpx; padding:10rpx; }
+.button-spark { margin-left:16rpx; color:var(--color-accent); }
+.resume { padding:30rpx; }
+.resume-kicker { color:var(--color-secondary); font-size:21rpx; font-weight:700; letter-spacing:1rpx; }
+.resume-label { margin:14rpx 0 26rpx; color:var(--color-text); font-size:30rpx; font-weight:700; }
+.resume button { width:100%; min-height:88rpx; }
+.text-button { margin-top:12rpx; color:var(--color-text-secondary); background:transparent; font-size:25rpx; font-weight:400; }
+.light-tip { margin-top:30rpx; color:var(--color-text-secondary); font-size:23rpx; text-align:center; }
+.disclaimer { margin-top:18rpx; white-space:pre-line; color:var(--color-text-muted); font-size:21rpx; line-height:1.65; text-align:center; }
+@keyframes opening-pop { from { opacity:0; transform:rotate(-8deg) scale(.72); } to { opacity:1; transform:rotate(-4deg) scale(1); } }
+@keyframes opening-line { from { opacity:0; transform:translateY(8rpx); } to { opacity:1; transform:translateY(0); } }
+@keyframes page-enter { from { opacity:0; transform:translateY(12rpx); } to { opacity:1; transform:translateY(0); } }
+@media (max-height: 650px) {
+  .hero { margin-top:48rpx; }
+  .actions { padding-top:38rpx; }
+}

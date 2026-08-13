@@ -4,9 +4,12 @@ import { analytics } from '../../platform/analytics'
 import { clearProgress, loadProgress, saveProgress } from '../../platform/storage'
 
 const definition = getTestDefinition(defaultTestId)
+let openingShown = false
+let openingTimer: ReturnType<typeof setTimeout> | undefined
 
 Page({
   data: {
+    openingVisible: true,
     title: definition.title,
     subtitle: definition.subtitle,
     description: definition.description,
@@ -16,6 +19,18 @@ Page({
     versionNotice: '',
     homeAdSlot: definition.adSlots.find((slot) => slot.key === 'home_bottom'),
   },
+  onLoad() {
+    if (openingShown) {
+      this.setData({ openingVisible: false })
+      return
+    }
+    openingShown = true
+    openingTimer = setTimeout(() => this.setData({ openingVisible: false }), 1050)
+  },
+  onUnload() {
+    if (openingTimer) clearTimeout(openingTimer)
+    openingTimer = undefined
+  },
   onShow() {
     analytics.track('test_view', { testId: definition.id, testVersion: definition.version })
     const stored = loadProgress(definition)
@@ -24,8 +39,8 @@ Page({
       this.setData({
         hasResume: true,
         resumeLabel: stored.progress.stage === 'complete'
-          ? '上次绩效校准已完成'
-          : `上次绩效校准进行到 ${answered} / ${definition.questions.length}`,
+          ? '上次打分已经算完'
+          : `上次打分进行到 ${answered} / ${definition.questions.length}`,
         versionNotice: '',
       })
       return
@@ -35,6 +50,11 @@ Page({
       resumeLabel: '',
       versionNotice: stored.status === 'version-mismatch' ? '测试版本已经更新，请重新开始。' : '',
     })
+  },
+  skipOpening() {
+    if (openingTimer) clearTimeout(openingTimer)
+    openingTimer = undefined
+    this.setData({ openingVisible: false })
   },
   start() {
     clearProgress(definition.id)
@@ -56,4 +76,3 @@ Page({
     this.start()
   },
 })
-

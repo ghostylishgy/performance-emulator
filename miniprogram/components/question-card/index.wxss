@@ -1,3 +1,4 @@
-.question { white-space:pre-line; color:#172033; font-size:36rpx; font-weight:700; line-height:1.48; }
-.options { display:flex; flex-direction:column; gap:20rpx; margin-top:44rpx; padding-bottom:24rpx; }
+@import "../../styles/tokens.wxss";
 
+.question { max-width:660rpx; white-space:pre-line; color:var(--color-text); font-size:39rpx; font-weight:800; line-height:1.5; text-align:left; letter-spacing:-.5rpx; }
+.options { display:flex; flex-direction:column; gap:22rpx; margin-top:50rpx; padding-bottom:24rpx; }
