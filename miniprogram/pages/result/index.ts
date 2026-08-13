@@ -11,6 +11,16 @@ let personaName = ''
 let resultTimer: ReturnType<typeof setTimeout> | undefined
 let resultScanTimer: ReturnType<typeof setInterval> | undefined
 
+function recoverInvalidProgress(): void {
+  clearProgress(definition.id)
+  wx.showModal({
+    title: '进度异常',
+    content: '上次答题记录无法恢复，请重新开始。',
+    showCancel: false,
+    complete: () => wx.reLaunch({ url: '/pages/home/index' }),
+  })
+}
+
 Page({
   data: {
     ready: false,
@@ -25,8 +35,16 @@ Page({
   },
   onLoad() {
     const stored = loadProgress(definition)
-    if (stored.status !== 'current' || !stored.progress.baseOutcomeFrozen || !stored.progress.frozenPersonalAnswers) {
+    if (stored.status === 'corrupt') {
+      recoverInvalidProgress()
+      return
+    }
+    if (stored.status !== 'current' || stored.progress.stage !== 'complete') {
       wx.reLaunch({ url: '/pages/home/index' })
+      return
+    }
+    if (!stored.progress.baseOutcomeFrozen || !stored.progress.frozenPersonalAnswers) {
+      recoverInvalidProgress()
       return
     }
     try {
@@ -35,8 +53,7 @@ Page({
       personaName = viewModel.personaName
       this.playResultTransition(viewModel)
     } catch {
-      wx.showToast({ title: '结果计算失败，请返回检查答题进度', icon: 'none' })
-      wx.redirectTo({ url: `/pages/quiz/index?testId=${definition.id}` })
+      recoverInvalidProgress()
     }
   },
   onUnload() {

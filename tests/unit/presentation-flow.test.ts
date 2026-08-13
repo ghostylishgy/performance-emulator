@@ -24,4 +24,12 @@ describe('presentation pacing contracts', () => {
     expect(page).toContain('<button class="reflection-close" bindtap="closeReflection">我知道了</button>')
     expect(page).toContain('class="reflection-backdrop" catchtap="noop"')
   })
+
+  it('recovers invalid result progress without redirecting back to the quiz', () => {
+    const page = readFileSync('miniprogram/pages/result/index.ts', 'utf8')
+    expect(page).toContain("title: '进度异常'")
+    expect(page).toContain('clearProgress(definition.id)')
+    expect(page).toContain("wx.reLaunch({ url: '/pages/home/index' })")
+    expect(page).not.toContain('wx.redirectTo')
+  })
 })
