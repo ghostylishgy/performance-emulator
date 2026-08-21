@@ -1,43 +1,14 @@
 <view class="page-shell quiz">
-  <block wx:if="{{displayMode === 'question'}}">
-    <view class="header">
-      <view class="quiz-system-label">烛龙实验室 · 绩效内测进行中</view>
-      <view class="chapter">{{chapterTitle}}</view>
-      <view wx:if="{{chapterSubtitle}}" class="chapter-subtitle">{{chapterSubtitle}}</view>
-      <quiz-progress current="{{questionNumber}}" total="{{total}}" />
-    </view>
-    <view class="question-wrap">
-      <question-card question="{{question}}" selected="{{selectedId}}" disabled="{{interactionLocked}}" bind:choose="selectOption" />
-    </view>
-    <view wx:if="{{canGoBack}}" class="back-row">
-      <view class="back" hover-class="back-pressed" bindtap="goBack">← 上一题</view>
-    </view>
-    <view class="quiz-footnote"><text class="record-dot"></text>系统记录中……答案已进入组织记忆</view>
-  </block>
-
-  <chapter-transition wx:elif="{{displayMode === 'chapter-transition'}}" transition="{{transition}}" bind:continue="continueChapter" />
-
-  <personal-checkpoint wx:elif="{{displayMode === 'checkpoint'}}" checkpoint="{{checkpoint}}" outcome="{{checkpointOutcome}}" note="{{checkpointNote}}" bind:back="returnFromCheckpoint" bind:confirm="confirmOrganization" />
-
-  <view wx:elif="{{displayMode === 'organization-transition'}}" class="scan panel">
-    <view class="scan-head">
-      <view>
-        <view class="scan-kicker">ORGANIZATION CALIBRATION</view>
-        <view class="scan-title">组织校准模块启动中</view>
-      </view>
-      <view class="scan-percent">扫描中 {{scanPercent}}%</view>
-    </view>
-    <view class="scan-list">
-      <view class="scan-line {{index === scanIndex ? 'active' : ''}} {{index < scanIndex ? 'done' : ''}}" wx:for="{{scanLines}}" wx:key="index">
-        <text class="status">{{index < scanIndex ? '✓' : (index === scanIndex ? '●' : '○')}}</text>
-        <text>{{item}}</text>
-      </view>
-    </view>
-    <view class="system-log">
-      <view>&gt; 正在整合组织变量……</view>
-      <view>&gt; 权重模型加载中……</view>
-      <view>&gt; 请勿认真，系统概不负责。</view>
-    </view>
-    <view class="scan-disclaimer"><text class="warning-mark">!</text>{{scanDisclaimer}}</view>
+  <view class="header">
+    <view class="quiz-system-label">烛龙实验室 · 绩效内测进行中</view>
+    <view class="chapter">凭第一反应，想太久也没什么用</view>
+    <quiz-progress current="{{questionNumber}}" total="{{total}}" />
   </view>
+  <view class="question-wrap">
+    <question-card question="{{question}}" selected="{{selectedId}}" disabled="{{interactionLocked}}" bind:choose="selectOption" />
+  </view>
+  <view wx:if="{{canGoBack}}" class="back-row">
+    <view class="back" hover-class="back-pressed" bindtap="goBack">← 上一题</view>
+  </view>
+  <view class="quiz-footnote"><text class="record-dot"></text>系统记录中……目前没有上传你的答案</view>
 </view>

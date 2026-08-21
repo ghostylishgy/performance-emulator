@@ -1,144 +1,87 @@
-import type { RuleCondition, TestDefinition } from '../config/types'
+import type { PersonaCriterion, PersonaId, V3TestDefinition } from '../config/v3-types'
+import { pairKey } from './v3-pairing'
+import { theoreticalMaximum } from './v3-persona'
 
-const allowedAdSlots = new Set(['home_bottom', 'result_after_primary', 'result_bottom', 'test_hub_inline', 'future_recommendation'])
-const allowedLayouts = new Set(['single-card', 'scroll', 'swipe'])
-const resultFields = new Set(['baseOutcome', 'performanceIndex', 'organizationScore', 'calibrationDelta', 'genericOutcome', 'finalOutcome'])
+const duplicateValues = (values: string[]): string[] => values.filter((value, index) => values.indexOf(value) !== index)
 
-function duplicateValues(values: string[]): string[] {
-  const counts = new Map<string, number>()
-  for (const value of values) counts.set(value, (counts.get(value) ?? 0) + 1)
-  return [...counts.entries()].filter(([, count]) => count > 1).map(([value]) => value)
+function validateCriterion(criterion: PersonaCriterion, axes: Set<string>, answerKeys: Set<string>, path: string, errors: string[]): void {
+  if (criterion.kind === 'axisMin' && !axes.has(criterion.axis) && criterion.axis !== '__fallback_only__') errors.push(`${path}: unknown axis ${criterion.axis}`)
+  if (criterion.kind === 'maxAxisMin' || criterion.kind === 'axisSumMin') {
+    for (const axis of criterion.axes) if (!axes.has(axis)) errors.push(`${path}: unknown axis ${axis}`)
+  }
+  if (criterion.kind === 'axisDifferenceMin') {
+    for (const axis of [...criterion.leftAxes, ...criterion.rightAxes]) if (!axes.has(axis)) errors.push(`${path}: unknown axis ${axis}`)
+  }
+  if (criterion.kind === 'selectedCountMin') {
+    for (const answer of criterion.answers) if (!answerKeys.has(answer)) errors.push(`${path}: unknown answer ${answer}`)
+  }
+  if (criterion.kind === 'anyOf') {
+    if (!criterion.criteria.length) errors.push(`${path}: anyOf cannot be empty`)
+    criterion.criteria.forEach((item, index) => validateCriterion(item, axes, answerKeys, `${path}.anyOf[${index}]`, errors))
+  }
 }
 
-function validateCondition(condition: RuleCondition, definition: TestDefinition, path: string, errors: string[]): void {
-  if ('all' in condition) {
-    if (condition.all.length === 0) errors.push(`${path}: all cannot be empty`)
-    condition.all.forEach((item, index) => validateCondition(item, definition, `${path}.all[${index}]`, errors))
-    return
-  }
-  if ('any' in condition) {
-    if (condition.any.length === 0) errors.push(`${path}: any cannot be empty`)
-    condition.any.forEach((item, index) => validateCondition(item, definition, `${path}.any[${index}]`, errors))
-    return
-  }
-  if ('not' in condition) {
-    validateCondition(condition.not, definition, `${path}.not`, errors)
-    return
-  }
-  const { namespace, key } = condition.fact
-  if ((namespace === 'normalizedMetric' || namespace === 'rawMetric') && !definition.metrics.some((metric) => metric.id === key)) {
-    errors.push(`${path}: unknown metric ${key}`)
-  }
-  if (namespace === 'signal' && !definition.signalIds.includes(key)) errors.push(`${path}: unknown signal ${key}`)
-  if (namespace === 'personaEvidence' && !definition.personaEvidenceIds.includes(key)) errors.push(`${path}: unknown persona evidence ${key}`)
-  if (namespace === 'result' && !resultFields.has(key)) errors.push(`${path}: unknown result field ${key}`)
-}
-
-export function validateTestDefinition(definition: TestDefinition): string[] {
+export function validateTestDefinition(definition: V3TestDefinition): string[] {
   const errors: string[] = []
-  if (!definition.id.trim()) errors.push('test id is required')
-  if (!definition.version.trim()) errors.push('test version is required')
-  if (!definition.evaluationVersion.trim()) errors.push('evaluation version is required')
-  if (!allowedLayouts.has(definition.quizLayout)) errors.push(`unsupported quizLayout: ${definition.quizLayout}`)
-
-  const chapterIds = definition.chapters.map((chapter) => chapter.id)
-  for (const id of duplicateValues(chapterIds)) errors.push(`duplicate chapter id: ${id}`)
+  if (!definition.id || !definition.version || !definition.evaluationVersion) errors.push('identity fields are required')
+  if (definition.questions.length !== 25) errors.push(`expected 25 questions, got ${definition.questions.length}`)
   const questionIds = definition.questions.map((question) => question.id)
   for (const id of duplicateValues(questionIds)) errors.push(`duplicate question id: ${id}`)
-  const metricIds = definition.metrics.map((metric) => metric.id)
-  for (const id of duplicateValues(metricIds)) errors.push(`duplicate metric id: ${id}`)
-  const metricMap = new Map(definition.metrics.map((metric) => [metric.id, metric]))
-  const chapterQuestionIds = definition.chapters.flatMap((chapter) => chapter.questionIds)
-  for (const id of duplicateValues(chapterQuestionIds)) errors.push(`question appears in multiple chapter lists: ${id}`)
-
-  for (const chapter of definition.chapters) {
-    if (chapter.transition) {
-      if (!chapter.transition.lines.length) errors.push(`${chapter.id}: transition lines cannot be empty`)
-      if (!chapter.transition.continueLabel.trim()) errors.push(`${chapter.id}: transition continueLabel is required`)
-    }
-    for (const questionId of chapter.questionIds) {
-      const question = definition.questions.find((item) => item.id === questionId)
-      if (!question) errors.push(`chapter ${chapter.id} references unknown question ${questionId}`)
-      else if (question.chapterId !== chapter.id) errors.push(`question ${questionId} chapter mismatch`)
-    }
-  }
-
-  if (!definition.organizationTransition.lines.length || definition.organizationTransition.durationMs <= 0) errors.push('organization transition must have lines and a positive duration')
-  if (!definition.resultTransition.lines.length || definition.resultTransition.durationMs <= 0) errors.push('result transition must have lines and a positive duration')
-
-  for (const question of definition.questions) {
-    const chapter = definition.chapters.find((item) => item.id === question.chapterId)
-    if (!chapter) errors.push(`${question.id}: unknown chapter ${question.chapterId}`)
-    else {
-      if (chapter.section !== question.section) errors.push(`${question.id}: section does not match chapter`)
-      if (!chapter.questionIds.includes(question.id)) errors.push(`${question.id}: missing from chapter ${chapter.id} questionIds`)
-    }
-    if (question.options.length !== 4) errors.push(`${question.id}: expected exactly 4 options`)
-    for (const id of duplicateValues(question.options.map((option) => option.id))) errors.push(`${question.id}: duplicate option id ${id}`)
+  const answerKeys = new Set<string>()
+  for (const [index, question] of definition.questions.entries()) {
+    if (question.id !== `Q${index + 1}`) errors.push(`unexpected question order at ${question.id}`)
+    if (question.options.length !== 4) errors.push(`${question.id}: expected 4 options`)
     for (const option of question.options) {
-      for (const [metricId, value] of Object.entries(option.effects)) {
-        const metric = metricMap.get(metricId)
-        if (!metric) errors.push(`${question.id}.${option.id}: unknown metric ${metricId}`)
-        else if (!metric.collectFrom.includes(question.section)) errors.push(`${question.id}.${option.id}: ${metricId} cannot collect from ${question.section}`)
-        if (!Number.isFinite(value)) errors.push(`${question.id}.${option.id}: non-finite effect for ${metricId}`)
-      }
-      for (const signal of option.signals ?? []) {
-        if (!definition.signalIds.includes(signal)) errors.push(`${question.id}.${option.id}: unknown signal ${signal}`)
-      }
-      for (const evidence of Object.keys(option.personaEvidence ?? {})) {
-        if (!definition.personaEvidenceIds.includes(evidence)) errors.push(`${question.id}.${option.id}: unknown persona evidence ${evidence}`)
-      }
+      const answerKey = `${question.id}${option.id}`
+      answerKeys.add(answerKey)
+      if (!Number.isFinite(option.coefficient) || option.coefficient < 0 || option.coefficient > 1) errors.push(`${answerKey}: invalid coefficient`)
+      if (!option.evidence.text.trim()) errors.push(`${answerKey}: evidence text is required`)
+      if (!Number.isFinite(option.evidence.priority)) errors.push(`${answerKey}: evidence priority is invalid`)
     }
   }
-
-  const performanceWeightTotal = Object.values(definition.performanceWeights).reduce((sum, value) => sum + value, 0)
-  if (Math.abs(performanceWeightTotal - 1) > 1e-9) errors.push('performanceWeights must sum to 1')
-  for (const metric of Object.keys(definition.performanceWeights)) {
-    if (metricMap.get(metric)?.role !== 'performance') errors.push(`performanceWeights references non-performance metric ${metric}`)
+  const totalWeight = definition.questions.reduce((sum, question) => sum + question.weight, 0)
+  if (totalWeight !== 100) errors.push(`question weights must sum to 100, got ${totalWeight}`)
+  const thresholdMins = definition.outcomeThresholds.map((threshold) => threshold.min)
+  if (thresholdMins.some((value, index) => index > 0 && value <= thresholdMins[index - 1]!)) errors.push('outcome thresholds must be strictly increasing')
+  const orgWeight = Object.values(definition.organization.weights).reduce((sum, weight) => sum + weight, 0)
+  if (Math.abs(orgWeight - 1) > 1e-9) errors.push('organization weights must sum to 1')
+  for (const [metric, values] of Object.entries(definition.organization.values)) {
+    for (const key of Object.keys(values)) if (!answerKeys.has(key)) errors.push(`organization ${metric}: unknown answer ${key}`)
   }
-  const organizationWeightTotal = Object.values(definition.calibrationConfig.weights).reduce((sum, value) => sum + value, 0)
-  if (Math.abs(organizationWeightTotal - 1) > 1e-9) errors.push('calibration weights must sum to 1')
-  for (const metric of Object.keys(definition.calibrationConfig.weights)) {
-    if (!metricMap.has(metric)) errors.push(`calibration weights references unknown metric ${metric}`)
-  }
-  if (definition.calibrationConfig.downThreshold >= definition.calibrationConfig.upThreshold) errors.push('calibration thresholds must be ordered')
-
-  if (definition.outcomeConfig.scale.includes('4.0' as never)) errors.push('normal outcome scale must not contain 4.0')
-  const thresholdMins = definition.outcomeConfig.thresholds.map((band) => band.min)
-  for (let index = 1; index < thresholdMins.length; index += 1) {
-    if ((thresholdMins[index] ?? 0) <= (thresholdMins[index - 1] ?? 0)) errors.push('outcome thresholds must be strictly increasing')
-  }
-  for (const band of definition.outcomeConfig.thresholds) {
-    if (!definition.outcomeConfig.scale.includes(band.outcome)) errors.push(`threshold outcome ${band.outcome} is not in scale`)
-  }
-
   const personaIds = definition.personas.map((persona) => persona.id)
   for (const id of duplicateValues(personaIds)) errors.push(`duplicate persona id: ${id}`)
-  if (!personaIds.includes(definition.fallbackPersonaId)) errors.push('fallback persona does not exist')
-  for (const rule of definition.personaRules) {
-    if (!personaIds.includes(rule.personaId)) errors.push(`${rule.id}: unknown persona ${rule.personaId}`)
-    validateCondition(rule.conditions, definition, `personaRules.${rule.id}`, errors)
+  if (!personaIds.includes(definition.fallbackPersonaId)) errors.push('fallback persona is missing')
+  const specialPersonaIds = personaIds.filter((id) => id !== definition.fallbackPersonaId)
+  if (specialPersonaIds.length !== 7) errors.push(`expected 7 special personas, got ${specialPersonaIds.length}`)
+  for (const persona of definition.personas) {
+    const axes = new Set(Object.keys(persona.signals))
+    for (const [axis, signals] of Object.entries(persona.signals)) {
+      for (const [answer, points] of Object.entries(signals)) {
+        if (!answerKeys.has(answer)) errors.push(`${persona.id}.${axis}: unknown answer ${answer}`)
+        if (!Number.isFinite(points)) errors.push(`${persona.id}.${axis}.${answer}: invalid points`)
+      }
+    }
+    persona.criteria.forEach((criterion, index) => validateCriterion(criterion, axes, answerKeys, `${persona.id}.criteria[${index}]`, errors))
+    for (const answer of persona.coreEvidenceAnswers) if (!answerKeys.has(answer)) errors.push(`${persona.id}: unknown core answer ${answer}`)
+    if (persona.id !== definition.fallbackPersonaId && theoreticalMaximum(persona) <= 0) errors.push(`${persona.id}: theoretical maximum must be positive`)
   }
-  for (const priority of duplicateValues(definition.personaRules.map((rule) => String(rule.priority)))) errors.push(`duplicate persona priority: ${priority}`)
-
-  validateCondition(definition.specialOutcomeConfig.condition, definition, 'specialOutcomeConfig.condition', errors)
-  if (definition.specialOutcomeConfig.outcome !== '4.0') errors.push('special outcome must be 4.0')
-  if (!definition.hiddenResults.some((item) => item.id === definition.specialOutcomeConfig.hiddenResultId)) errors.push('special hidden result does not exist')
-
-  for (const slot of definition.adSlots) {
-    if (!allowedAdSlots.has(slot.key)) errors.push(`unknown ad slot key: ${slot.key}`)
-    if (slot.enabled && !slot.unitId) errors.push(`enabled ad slot ${slot.key} requires unitId`)
+  if (definition.personaTieBreak.length !== 7 || new Set(definition.personaTieBreak).size !== 7) errors.push('persona tie-break must list seven unique special personas')
+  const expectedPairKeys = new Set<string>()
+  const allPersonaIds = personaIds as PersonaId[]
+  for (let left = 0; left < allPersonaIds.length; left += 1) {
+    for (let right = left; right < allPersonaIds.length; right += 1) expectedPairKeys.add(pairKey(allPersonaIds[left]!, allPersonaIds[right]!))
   }
-  for (const key of duplicateValues(definition.adSlots.map((slot) => slot.key))) errors.push(`duplicate ad slot key: ${key}`)
-
+  const relationshipKeys = definition.pairRelationships.map((relationship) => relationship.key)
+  if (relationshipKeys.length !== 36) errors.push(`expected 36 pair relationships, got ${relationshipKeys.length}`)
+  for (const key of duplicateValues(relationshipKeys)) errors.push(`duplicate pair relationship: ${key}`)
+  for (const key of expectedPairKeys) if (!relationshipKeys.includes(key)) errors.push(`missing pair relationship: ${key}`)
+  for (const key of relationshipKeys) if (!expectedPairKeys.has(key)) errors.push(`unknown pair relationship: ${key}`)
+  if (definition.calculation.durationMs < 2000 || definition.calculation.durationMs > 3000) errors.push('calculation duration must be 2-3 seconds')
+  if (definition.pairing.codeLength !== 6 || definition.pairing.expiresInMs <= 0) errors.push('pairing policy is invalid')
   return errors
 }
 
-export function validateTestRegistry(definitions: TestDefinition[]): void {
-  const errors: string[] = []
-  for (const id of duplicateValues(definitions.map((definition) => definition.id))) errors.push(`duplicate test id: ${id}`)
-  for (const definition of definitions) {
-    errors.push(...validateTestDefinition(definition).map((error) => `${definition.id}: ${error}`))
-  }
+export function validateTestRegistry(definitions: V3TestDefinition[]): void {
+  const errors = definitions.flatMap((definition) => validateTestDefinition(definition).map((error) => `${definition.id}: ${error}`))
   if (errors.length) throw new Error(`Invalid test configuration:\n${errors.map((error) => `- ${error}`).join('\n')}`)
 }

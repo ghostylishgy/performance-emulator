@@ -23,6 +23,30 @@
 .result-brand { display:flex; align-items:center; gap:10rpx; color:var(--color-text-secondary); font-size:20rpx; font-weight:700; }
 .brand-dot { width:13rpx; height:13rpx; border-radius:50%; background:var(--color-primary); box-shadow:0 0 0 6rpx rgba(255,77,141,.10); }
 .result-eyebrow { margin:28rpx 0 14rpx; text-align:center; }
+.reveal-card { margin-top:28rpx; padding:34rpx 30rpx; animation:reveal-in .28s ease-out both; }
+.persona-reveal { margin-top:34rpx; background:linear-gradient(145deg,#fff 0,#fff2f7 100%); }
+.persona-name { margin-top:18rpx; color:var(--color-text); font-size:54rpx; font-weight:900; line-height:1.2; }
+.persona-copy { margin-top:20rpx; color:var(--color-text-secondary); font-size:27rpx; line-height:1.75; }
+.reveal-button { width:100%; min-height:88rpx; margin-top:24rpx; }
+.death-reveal { border-color:rgba(255,191,63,.46); background:linear-gradient(145deg,#fffdf5,#fff8d8); }
+.death-label { display:inline-block; margin-top:18rpx; padding:11rpx 17rpx; color:#6d5110; background:var(--color-accent); font-size:40rpx; font-weight:900; transform:rotate(-1deg); }
+.death-note { margin-top:20rpx; color:#81703e; font-size:24rpx; }
+.evidence-item { display:flex; align-items:flex-start; gap:18rpx; margin-top:24rpx; }
+.evidence-index { flex:0 0 44rpx; display:flex; align-items:center; justify-content:center; width:44rpx; height:44rpx; border-radius:50%; color:#fff; background:var(--color-secondary); font-size:21rpx; font-weight:800; }
+.evidence-text { color:var(--color-text); font-size:27rpx; line-height:1.65; }
+.score-reveal { text-align:center; background:radial-gradient(circle at 80% 10%,rgba(215,184,255,.38),transparent 30%),#fff; }
+.final-score { margin-top:14rpx; color:var(--color-primary); font-size:112rpx; font-weight:900; line-height:1.05; letter-spacing:-5rpx; }
+.score-subtitle { color:var(--color-text); font-size:30rpx; font-weight:800; }
+.score-meta { margin-top:20rpx; color:var(--color-text-muted); font-size:22rpx; }
+.pairing { margin-top:28rpx; padding:32rpx 28rpx; }
+.pair-button { width:100%; min-height:86rpx; margin-top:24rpx; }
+.pair-code { margin:24rpx auto 0; padding:18rpx; border:3rpx dashed var(--color-secondary); border-radius:18rpx; color:var(--color-text); background:#f8f1ff; font-family:monospace; font-size:48rpx; font-weight:900; letter-spacing:10rpx; text-align:center; }
+.pair-or { margin-top:28rpx; color:var(--color-text-muted); font-size:22rpx; text-align:center; }
+.pair-input { box-sizing:border-box; width:100%; height:88rpx; margin-top:16rpx; padding:0 22rpx; border:2rpx solid var(--color-border); border-radius:18rpx; color:var(--color-text); background:#faf9fc; font-family:monospace; font-size:32rpx; letter-spacing:6rpx; text-align:center; }
+.pair-message { margin-top:16rpx; color:var(--color-text-secondary); font-size:23rpx; text-align:center; }
+.relationship { margin-top:24rpx; padding:26rpx; border-radius:20rpx; background:linear-gradient(135deg,#fff0f6,#f5ecff); }
+.relationship-title { color:var(--color-text); font-size:38rpx; font-weight:900; }
+.relationship-copy { margin-top:13rpx; color:var(--color-text-secondary); font-size:25rpx; line-height:1.7; }
 .calibration,.metrics,.hidden { margin-top:28rpx; padding:32rpx 28rpx; }
 .section-kicker { color:var(--color-secondary); font-size:17rpx; font-weight:700; letter-spacing:2rpx; }
 .section-title { margin-top:7rpx; color:var(--color-text); font-size:34rpx; font-weight:900; }
@@ -52,6 +76,7 @@
 .reflection-close { position:sticky; bottom:0; display:flex; align-items:center; justify-content:center; width:100%; min-height:86rpx; box-sizing:border-box; margin:20rpx 0 0; color:#fff; background:linear-gradient(120deg,var(--color-primary),#ff659e); box-shadow:0 12rpx 30rpx rgba(255,77,141,.22); text-align:center; }
 @keyframes reflection-fade { from { opacity:0; } to { opacity:1; } }
 @keyframes reflection-rise { from { opacity:0; transform:translateY(40rpx); } to { opacity:1; transform:translateY(0); } }
+@keyframes reveal-in { from { opacity:0; transform:translateY(18rpx); } to { opacity:1; transform:translateY(0); } }
 @media (max-height:650px) {
   .result-loading { padding-top:28rpx; }
   .loading-symbol { width:150rpx; height:150rpx; margin-top:16rpx; }

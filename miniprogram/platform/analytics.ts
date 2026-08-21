@@ -3,6 +3,7 @@ export type AnalyticsEvent =
   | 'answer_select' | 'answer_change' | 'back' | 'chapter_transition'
   | 'personal_result_view' | 'organization_enter' | 'final_result_view'
   | 'share_tap' | 'reflection_view' | 'restart'
+  | 'pair_create' | 'pair_resolve'
   | 'ad_request' | 'ad_impression' | 'ad_error' | 'ad_close'
 
 export type AnalyticsProperties = Record<string, string | number | boolean | undefined>
@@ -13,7 +14,7 @@ export interface AnalyticsAdapter {
 
 export class NoopAnalyticsAdapter implements AnalyticsAdapter {
   track(_event: AnalyticsEvent, _properties: AnalyticsProperties = {}): void {
-    // V1 deliberately keeps analytics local and side-effect free.
+    // V3 deliberately keeps analytics local and side-effect free.
   }
 }
 

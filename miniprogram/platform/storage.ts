@@ -1,7 +1,8 @@
-import type { TestDefinition } from '../config/types'
+import type { V3TestDefinition } from '../config/v3-types'
 import { parseProgress, serializeProgress, type QuizProgress } from '../domain/session'
 
 const keyFor = (testId: string) => `assessment-lab:progress:${testId}`
+const pendingPairKey = 'assessment-lab:pending-pair-code'
 
 export type ProgressLoadResult =
   | { status: 'none' }
@@ -9,7 +10,7 @@ export type ProgressLoadResult =
   | { status: 'version-mismatch'; storedVersion?: string }
   | { status: 'corrupt' }
 
-export function inspectStoredProgress(raw: unknown, definition: TestDefinition): ProgressLoadResult {
+export function inspectStoredProgress(raw: unknown, definition: V3TestDefinition): ProgressLoadResult {
   if (raw === undefined || raw === null || raw === '') return { status: 'none' }
   try {
     const serialized = typeof raw === 'string' ? raw : JSON.stringify(raw)
@@ -21,29 +22,26 @@ export function inspectStoredProgress(raw: unknown, definition: TestDefinition):
   }
 }
 
-export function loadProgress(definition: TestDefinition): ProgressLoadResult {
-  try {
-    return inspectStoredProgress(wx.getStorageSync(keyFor(definition.id)), definition)
-  } catch {
-    return { status: 'corrupt' }
-  }
+export function loadProgress(definition: V3TestDefinition): ProgressLoadResult {
+  try { return inspectStoredProgress(wx.getStorageSync(keyFor(definition.id)), definition) } catch { return { status: 'corrupt' } }
 }
 
 export function saveProgress(progress: QuizProgress): boolean {
-  try {
-    wx.setStorageSync(keyFor(progress.testId), serializeProgress(progress))
-    return true
-  } catch {
-    return false
-  }
+  try { wx.setStorageSync(keyFor(progress.testId), serializeProgress(progress)); return true } catch { return false }
 }
 
 export function clearProgress(testId: string): boolean {
-  try {
-    wx.removeStorageSync(keyFor(testId))
-    return true
-  } catch {
-    return false
-  }
+  try { wx.removeStorageSync(keyFor(testId)); return true } catch { return false }
 }
 
+export function savePendingPairCode(code: string): void {
+  try { wx.setStorageSync(pendingPairKey, code) } catch { /* Pairing remains optional. */ }
+}
+
+export function loadPendingPairCode(): string {
+  try { return String(wx.getStorageSync(pendingPairKey) || '') } catch { return '' }
+}
+
+export function clearPendingPairCode(): void {
+  try { wx.removeStorageSync(pendingPairKey) } catch { /* Pairing remains optional. */ }
+}

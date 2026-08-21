@@ -1,11 +1,12 @@
-import type { EvaluationResult, TestDefinition } from '../config/types'
+import type { EvaluationResult, V3TestDefinition } from '../config/v3-types'
 
-export function createShareMessage(definition: TestDefinition, result: EvaluationResult, personaName: string): { title: string; path: string } {
+export function createShareMessage(definition: V3TestDefinition, result: EvaluationResult): { title: string; path: string } {
+  const personaName = definition.personas.find((item) => item.id === result.primaryPersona)?.name ?? '稳定牛马型'
   return {
-    title: definition.shareConfig.titleTemplate
+    title: definition.share.titleTemplate
       .replace('{outcome}', result.finalOutcome)
       .replace('{persona}', personaName),
-    path: definition.shareConfig.path,
+    path: definition.share.path,
   }
 }
 

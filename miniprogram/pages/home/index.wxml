@@ -46,5 +46,16 @@
 
   <view class="light-tip">{{description}}</view>
   <view class="disclaimer">{{disclaimer}}</view>
-  <ad-slot slot="{{homeAdSlot}}" />
+  <view wx:if="{{introVisible}}" class="intro-backdrop" catchtap="closeIntro">
+    <view class="intro-card panel" catchtap="noop">
+      <view class="intro-kicker">BEFORE WE START</view>
+      <view class="intro-title">先说好，这不是考试。</view>
+      <view class="intro-copy">过去大半年里，你干过的那些活，经过项目、汇报、领导、同事、名额，以及一些自然现象以后——到了绩效季，最后会被系统算成什么样。</view>
+      <view class="intro-emphasis">25题，凭第一反应。</view>
+      <view class="intro-copy">哪个像你就点哪个。</view>
+      <view class="intro-copy">想太久也没什么用。真到绩效会的时候，一般也没人给你这么久。</view>
+      <button class="primary-button intro-button" bindtap="beginTest">来吧，算算看</button>
+      <view class="intro-footer">职场娱乐测试。系统也没有参加过你们公司的绩效会，至少目前没有证据。</view>
+    </view>
+  </view>
 </view>
