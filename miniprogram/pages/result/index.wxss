@@ -41,6 +41,7 @@
 .pairing { margin-top:28rpx; padding:32rpx 28rpx; }
 .pair-button { width:100%; min-height:86rpx; margin-top:24rpx; }
 .pair-code { margin:24rpx auto 0; padding:18rpx; border:3rpx dashed var(--color-secondary); border-radius:18rpx; color:var(--color-text); background:#f8f1ff; font-family:monospace; font-size:48rpx; font-weight:900; letter-spacing:10rpx; text-align:center; }
+.pair-copy { width:100%; margin-top:8rpx; }
 .pair-or { margin-top:28rpx; color:var(--color-text-muted); font-size:22rpx; text-align:center; }
 .pair-input { box-sizing:border-box; width:100%; height:88rpx; margin-top:16rpx; padding:0 22rpx; border:2rpx solid var(--color-border); border-radius:18rpx; color:var(--color-text); background:#faf9fc; font-family:monospace; font-size:32rpx; letter-spacing:6rpx; text-align:center; }
 .pair-message { margin-top:16rpx; color:var(--color-text-secondary); font-size:23rpx; text-align:center; }

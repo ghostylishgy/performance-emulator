@@ -4,6 +4,19 @@
 
 > V3 是破坏性流程升级：旧版 16 题、章节转场、Q12 Checkpoint 和中途成绩已退出运行路径。旧进度会因版本不匹配而提示重新开始。
 
+## Architecture
+
+- Native WeChat Mini Program
+- Local-first
+- Zero Backend
+- Zero CloudBase
+- Zero Login
+- Server fixed cost: RMB 0/month
+
+评分、人格、死因、证据选择和双人关系鉴定全部在客户端运行。对口径码是包含算法版本、人格、绩效和死因的 5 位自包含编码；不依赖 `resultId`、短码数据库、TTL、云函数或网络查询。答题进度和待处理对口径码只保存在 `wx.Storage`，不上传完整答案，也没有账户系统。
+
+Analytics 抽象层可以保留，但当前不向自建或第三方服务发送事件。需要统计时只允许接入微信平台官方统计/分析能力；零后端条件下无法取得的细粒度事件暂不支持。结果海报能力如启用，必须由客户端 Canvas 本地生成，不上传图片，也不增加对象存储或海报服务。
+
 ## 本地验证
 
 需要 Node.js 22+ 和 npm 11+。在 Windows PowerShell 中如执行策略阻止 `npm.ps1`，直接使用 `npm.cmd`：
@@ -31,18 +44,11 @@ npm.cmd run simulate:uniform
 3. Q25 后播放约 2.8 秒计算动画，再依次揭示人格、主要死因、三条抓包证据和绩效分数。
 4. 返回首页可恢复未完成答题；V3 以前的本地进度不会被复用。
 
-## 启用匿名对口径码
+## 匿名对口径码
 
-跨设备短码依赖 CloudBase。配对失败不会影响单人测评和本地结果。
+结果页在本机通过 `encodePairCode()` 生成 5 位 Base31 编码，字符表排除了 `0/O/1/I/L`。编码包含 algorithmVersion、persona、performanceScore、deathCause、未来兼容保留位和 CRC-5 校验位。解码可识别格式、字符、checksum、版本和枚举错误；不提供密码学安全，也不阻止玩家主动伪造娱乐结果。
 
-1. 在当前小程序 AppID 下开通云开发环境。
-2. 创建集合 `pair_results`，禁止小程序端直接读写；数据只通过云函数访问。
-3. 在微信开发者工具中上传并部署 `cloudfunctions/pairing`，选择“云端安装依赖”。
-4. 编译小程序并用两台设备验证创建、大小写不敏感查询、错误码和过期码。
-
-短码为 6 位无歧义大写字母数字组合，逻辑有效期 7 天。云端只保存匿名 `resultId`、人格、绩效、死因、评估版本和时间字段，不保存 25 题答案、昵称、账户或好友关系。
-
-当前固定的官方 `wx-server-sdk@4.0.2` 依赖审计仍报告 6 个上游传递依赖告警（1 moderate、5 high）；没有发现由本项目直接调用这些易受影响接口的路径，但正式部署前仍应复核官方 SDK 更新并重新审计。不要按 npm 的 `--force` 建议降级到带 critical 旧依赖的 `2.5.3`。
+分享路径直接携带 `pairCode`。好友打开后由客户端校验并暂存到 `wx.Storage`，完成自己的 25 题后，本地解码对方人格并查询 36 组无序关系配置。手动输入和复制编码作为备用入口保留，整个过程不访问服务器。
 
 ## V3 结果是怎样算出的
 
@@ -77,18 +83,19 @@ miniprogram/domain/
   v3-persona.ts            candidate、confidence 和人格决胜
   v3-death-cause.ts        独立绩效死因
   v3-evidence.ts           实际答案抓包与类别去重
-  v3-pairing.ts            无序关系键和短码记录校验
+  v3-pairing.ts            自包含 pair code 编解码与无序关系键
   session.ts               answering → complete 连续状态机
 miniprogram/platform/
-  pairing.ts               CloudBase 客户端适配器
-cloudfunctions/pairing/    匿名短码创建与查询
+  storage.ts               本地进度与 pendingPairCode
+  sharing.ts               微信原生带参分享消息
+  analytics.ts             零远程副作用的统计抽象
 ```
 
 页面代码只负责状态和展示，不包含题目专用评分分支。配置在启动和 `validate:config` 中进行结构、引用、门槛和 36 关系完整性校验。
 
 ## 当前验证边界
 
-- 自动验证覆盖 25 题流程、BaseScore/OrgScore、全部绩效档边界、4.0、7 人格正反例、fallback、多人格决胜、36 关系、短码记录、抓包证据和 Reflection 节点。
+- 自动验证覆盖 25 题流程、BaseScore/OrgScore、全部绩效档边界、4.0、7 人格正反例、fallback、多人格决胜、36 关系、pair code 全枚举 round trip、错误校验、本地 pendingPairCode、零后端架构约束、抓包证据和 Reflection 节点。
 - 固定 seed weighted/uniform 模拟报告位于 `reports/`。
 - 旧版流程曾由用户确认在小米 15 Ultra、iPhone 8 Plus、iPhone 16 Pro Max 完成真机验证。
-- V3 页面、计算 Reveal 和 CloudBase 对口径码仍需重新进行微信开发者工具及多机真机验收；自动测试不能替代这部分证据。
+- V3 页面、计算 Reveal、本地对口径码复制/分享/手输流程仍需重新进行微信开发者工具及多机真机验收；自动测试不能替代这部分证据。

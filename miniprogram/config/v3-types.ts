@@ -98,7 +98,7 @@ export interface V3TestDefinition {
   calculation: { lines: string[]; durationMs: number; pauseAfterLine: number }
   reflection: { title: string; paragraphs: string[]; footer: string; button: string }
   share: { titleTemplate: string; path: string }
-  pairing: { codeLength: number; expiresInMs: number }
+  pairing: { codeLength: number; algorithmVersion: number }
   theme: { accent: string; background: string }
 }
 
@@ -154,10 +154,9 @@ export interface ResultViewModel {
   resultDisclaimer: string
 }
 
-export interface PairResultSnapshot {
-  resultId?: string
+export interface PairCodeResult {
+  algorithmVersion: number
   persona: PersonaId
-  score: Outcome
+  performanceScore: Outcome
   deathCause: DeathCauseId
-  evaluationVersion: string
 }

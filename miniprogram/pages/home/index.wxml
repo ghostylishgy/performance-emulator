@@ -28,6 +28,7 @@
   </view>
 
   <view wx:if="{{versionNotice}}" class="notice">{{versionNotice}}</view>
+  <view wx:if="{{pairInviteVisible}}" class="notice panel">有人等你对口径。完成 25 题后，关系鉴定会在本机直接揭晓。</view>
 
   <view class="actions">
     <block wx:if="{{hasResume}}">

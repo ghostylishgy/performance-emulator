@@ -60,6 +60,6 @@ export const performanceSimulator: V3TestDefinition = {
     footer: '如果这个测试除了让你笑了一下，还让你想了一下，那我们就算多赚到了。', button: '我知道了',
   },
   share: { titleTemplate: '我的绩效结果是 {outcome} · {persona}', path: '/pages/home/index' },
-  pairing: { codeLength: 6, expiresInMs: 7 * 24 * 60 * 60 * 1000 },
+  pairing: { codeLength: 5, algorithmVersion: 3 },
   theme: { accent: '#ff4d8d', background: '#f7f6fa' },
 }

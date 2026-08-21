@@ -1,15 +1,24 @@
 import { defaultTestId, getTestDefinition } from '../../config/test-registry'
-import type { EvaluationResult, PairResultSnapshot } from '../../config/v3-types'
+import type { EvaluationResult, PairCodeResult } from '../../config/v3-types'
 import { createResultViewModel, evaluateComplete } from '../../domain/v3-evaluation'
-import { getPairRelationship, normalizePairCode } from '../../domain/v3-pairing'
+import { decodePairCode, encodePairCode, getPairRelationship, normalizePairCode, pairCodeErrorMessage } from '../../domain/v3-pairing'
 import { analytics } from '../../platform/analytics'
-import { createPairCode, resolvePairCode } from '../../platform/pairing'
 import { createShareMessage } from '../../platform/sharing'
 import { clearPendingPairCode, clearProgress, loadPendingPairCode, loadProgress } from '../../platform/storage'
 
 const definition = getTestDefinition(defaultTestId)
 let evaluation: EvaluationResult | null = null
 let resultTimer: ReturnType<typeof setTimeout> | undefined
+
+function currentPairResult(): PairCodeResult {
+  if (!evaluation) throw new Error('Result is not ready')
+  return {
+    algorithmVersion: definition.pairing.algorithmVersion,
+    persona: evaluation.primaryPersona,
+    performanceScore: evaluation.finalOutcome,
+    deathCause: evaluation.deathCause,
+  }
+}
 
 function recoverInvalidProgress(): void {
   clearProgress(definition.id)
@@ -21,7 +30,7 @@ Page({
     ready: false, loading: true, result: {}, revealStage: 1,
     resultTransition: definition.calculation, resultLineIndex: 0,
     reflection: definition.reflection, reflectionVisible: false,
-    pairCode: '', pairInput: '', pairLoading: false, pairMessage: '', pairRelationship: null,
+    pairCode: '', pairInput: '', pairMessage: '', pairRelationship: null,
   },
   onLoad() {
     const stored = loadProgress(definition)
@@ -33,7 +42,10 @@ Page({
     try {
       evaluation = evaluateComplete(definition, stored.progress.answers)
       const viewModel = createResultViewModel(definition, evaluation)
-      this.setData({ result: viewModel, pairInput: loadPendingPairCode() })
+      const pendingPairCode = loadPendingPairCode()
+      const validPendingPairCode = pendingPairCode && decodePairCode(pendingPairCode).ok ? pendingPairCode : ''
+      if (pendingPairCode && !validPendingPairCode) clearPendingPairCode()
+      this.setData({ result: viewModel, pairInput: validPendingPairCode })
       this.playCalculation()
     } catch {
       recoverInvalidProgress()
@@ -81,43 +93,40 @@ Page({
   onPairInput(event: any) {
     this.setData({ pairInput: normalizePairCode(String(event.detail.value ?? '')), pairMessage: '', pairRelationship: null })
   },
-  async generatePairCode() {
-    if (!evaluation || this.data.pairLoading) return
-    this.setData({ pairLoading: true, pairMessage: '' })
-    const snapshot: PairResultSnapshot = {
-      persona: evaluation.primaryPersona, score: evaluation.finalOutcome,
-      deathCause: evaluation.deathCause, evaluationVersion: evaluation.evaluationVersion,
-    }
+  generatePairCode() {
+    if (!evaluation) return
     try {
-      const created = await createPairCode(snapshot)
-      this.setData({ pairCode: created.code, pairLoading: false, pairMessage: '对口径码已生成，7天内有效。' })
+      const pairCode = encodePairCode(currentPairResult())
+      this.setData({ pairCode, pairMessage: '对口径码已在本机生成，不会上传任何结果。' })
       analytics.track('pair_create', { testId: definition.id })
     } catch (error) {
-      this.setData({ pairLoading: false, pairMessage: error instanceof Error ? error.message : '生成失败，请稍后再试。' })
+      this.setData({ pairMessage: error instanceof Error ? error.message : '生成失败，请稍后再试。' })
     }
   },
-  async resolvePair() {
-    if (!evaluation || this.data.pairLoading) return
+  copyPairCode() {
+    const code = String(this.data.pairCode || '')
+    if (!code) return
+    wx.setClipboardData({ data: code })
+  },
+  resolvePair() {
+    if (!evaluation) return
     const code = normalizePairCode(String(this.data.pairInput ?? ''))
-    if (code.length !== definition.pairing.codeLength) {
-      this.setData({ pairMessage: '请输入6位对口径码。', pairRelationship: null })
+    const decoded = decodePairCode(code)
+    if (!decoded.ok) {
+      this.setData({ pairRelationship: null, pairMessage: pairCodeErrorMessage(decoded.error) })
       return
     }
-    this.setData({ pairLoading: true, pairMessage: '' })
-    try {
-      const peer = await resolvePairCode(code)
-      const relationship = getPairRelationship(definition, evaluation.primaryPersona, peer.persona)
-      clearPendingPairCode()
-      this.setData({ pairLoading: false, pairRelationship: relationship, pairMessage: '' })
-      analytics.track('pair_resolve', { testId: definition.id, relation: relationship.key })
-    } catch (error) {
-      this.setData({ pairLoading: false, pairRelationship: null, pairMessage: error instanceof Error ? error.message : '查询失败，请稍后再试。' })
-    }
+    const relationship = getPairRelationship(definition, evaluation.primaryPersona, decoded.result.persona)
+    clearPendingPairCode()
+    this.setData({ pairRelationship: relationship, pairMessage: '' })
+    analytics.track('pair_resolve', { testId: definition.id, relation: relationship.key })
   },
   onShareAppMessage() {
     this.revealReflection()
     if (!evaluation) return { title: definition.title, path: definition.share.path }
     const message = createShareMessage(definition, evaluation)
-    return this.data.pairCode ? { ...message, path: `${message.path}?pairCode=${this.data.pairCode}` } : message
+    const pairCode = String(this.data.pairCode || encodePairCode(currentPairResult()))
+    if (!this.data.pairCode) this.setData({ pairCode })
+    return { ...message, path: `${message.path}?pairCode=${pairCode}` }
   },
 })

@@ -77,7 +77,9 @@ export function validateTestDefinition(definition: V3TestDefinition): string[] {
   for (const key of expectedPairKeys) if (!relationshipKeys.includes(key)) errors.push(`missing pair relationship: ${key}`)
   for (const key of relationshipKeys) if (!expectedPairKeys.has(key)) errors.push(`unknown pair relationship: ${key}`)
   if (definition.calculation.durationMs < 2000 || definition.calculation.durationMs > 3000) errors.push('calculation duration must be 2-3 seconds')
-  if (definition.pairing.codeLength !== 6 || definition.pairing.expiresInMs <= 0) errors.push('pairing policy is invalid')
+  if (definition.pairing.codeLength !== 5
+    || !Number.isInteger(definition.pairing.algorithmVersion)
+    || definition.pairing.algorithmVersion !== 3) errors.push('pairing policy is invalid')
   return errors
 }
 

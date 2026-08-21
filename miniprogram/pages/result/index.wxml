@@ -49,11 +49,12 @@
 
     <view class="pairing panel">
       <view class="section-kicker">COLLEAGUE PROTOCOL</view><view class="section-title">和同事对个口径</view>
-      <button class="secondary-button pair-button" loading="{{pairLoading}}" bindtap="generatePairCode">生成匿名对口径码</button>
+      <button class="secondary-button pair-button" bindtap="generatePairCode">生成匿名对口径码</button>
       <view wx:if="{{pairCode}}" class="pair-code">{{pairCode}}</view>
+      <button wx:if="{{pairCode}}" class="text-button pair-copy" bindtap="copyPairCode">复制对口径码</button>
       <view class="pair-or">或者输入同事的码</view>
-      <input class="pair-input" maxlength="6" value="{{pairInput}}" placeholder="6位字母数字" bindinput="onPairInput" />
-      <button class="primary-button pair-button" loading="{{pairLoading}}" bindtap="resolvePair">查看职场关系鉴定</button>
+      <input class="pair-input" maxlength="5" value="{{pairInput}}" placeholder="5位字母数字" bindinput="onPairInput" />
+      <button class="primary-button pair-button" bindtap="resolvePair">查看职场关系鉴定</button>
       <view wx:if="{{pairMessage}}" class="pair-message">{{pairMessage}}</view>
       <view wx:if="{{pairRelationship}}" class="relationship">
         <view class="relationship-title">{{pairRelationship.title}}</view><view class="relationship-copy">{{pairRelationship.copy}}</view>

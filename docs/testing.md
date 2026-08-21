@@ -1,28 +1,35 @@
-# 测试策略
+# V3 测试策略
 
-## 自动测试
+## 自动验证
 
-- unit：effects、signals、理论区间、归一化、档位边界、scale clamp、4.0 Gate、配置校验、Storage、个人冻结和固定 seed。
-- golden：低存在感与 4.0 固定答案，锁定 metrics、base/final、Persona 和 hidden result。
-- archetype：技术大神但低可见、PPT 高潜、组织高手、独立单兵、历史包袱、稳定老黄牛、战略项目幸运儿、名额受害者、背锅型核心骨干、低存在感。
-- story regression：`3.75 → -1 → 3.5+` 与 `3.5 → +1 → 3.5+` 终点相同、原因不同。
+```powershell
+npm.cmd run typecheck
+npm.cmd run validate:config
+npm.cmd test
+git diff --check
+```
 
-## Monte Carlo
+当前自动测试覆盖：
 
-固定 seed `20260813`，各运行 100,000 次：
+- 连续 25 题 session、版本隔离和异常进度；
+- BaseScore、OrgScore、普通校准、4.0 gate、Persona、死因和证据；
+- 8 persona × 6 performance score × 7 deathCause 的 pair code round trip；
+- checksum、非法字符、截断、不支持版本和非法枚举；
+- 大小写、分享参数解析和 pendingPairCode 本地 Storage；
+- 36 个无序关系唯一性与 A+B/B+A 对称；
+- 运行时代码不存在 `wx.cloud`、网络请求、云函数目录或云端运行依赖。
 
-- weighted：A/B/C/D = 0.35/0.32/0.20/0.13，模拟较积极的真实答题倾向；
-- uniform：每个选项 25%，作为内容结构压力对照。
+固定 seed Monte Carlo 仅用于检查分布和不可达门槛，不代表真实玩家分布。
 
-输出包括 11 个指标的 mean/std/min/max/P10/P25/P50/P75/P90、相关矩阵、绩效档位、calibration、Persona、A/O quadrant、signals 与 4.0 命中率。
+## 手工验收
 
-## 手工验收清单
+1. 连续完成 Q1-Q25，返回修改、自动前进和恢复不跳题。
+2. 结果页按人格、死因、证据、绩效顺序揭示。
+3. 生成的 5 位对口径码可以复制，清缓存前可重复使用。
+4. 分享卡片 query 自动携带 pairCode；好友首页显示“有人等你对口径”。
+5. 好友完成答题后无需联网即可解码并显示关系结果。
+6. 小写手输可用，`0/O/1/I/L`、截断和 checksum 错误均给出明确提示。
+7. 飞行模式下单人测试、pair code 生成、手动输入和关系鉴定仍能工作。
+8. 在不同尺寸真机复核 Reveal、输入框、复制按钮和分享返回。
 
-1. Q1 点击后立即选中且只前进一题；Q4/Q8 停留在幕间转场，点击按钮后才进入下一幕。
-2. Q12 显示个人建议；返回修改后结果重算。
-3. 确认组织阶段后不能返回 Q12，退出再进仍保持冻结。
-4. Q13–Q16 可在组织阶段内部返回修改。
-5. Q16 后先显示约 2.8 秒分阶段处理动画，再展示个人建议、组织结果和原因。
-6. 结果页初始不显示反思卡；点击分享后弹出反思卡，取消分享也不影响弹卡。
-7. 清空/异常 Storage 不阻塞重新开始；旧 version 不复用。
-8. 首页和结果广告位关闭时不占位；答题页没有 AdSlot。
+`test:golden` 与 `test:archetype` 仍是历史脚本漂移项；对应目录当前不存在。本次架构纠偏不把它们作为完成门槛，后续应删除脚本或恢复为 V3 测试集。

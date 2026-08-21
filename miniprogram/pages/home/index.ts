@@ -1,7 +1,7 @@
 import { defaultTestId, getTestDefinition } from '../../config/test-registry'
 import { createProgress } from '../../domain/session'
 import { analytics } from '../../platform/analytics'
-import { normalizePairCode } from '../../domain/v3-pairing'
+import { pairCodeFromShareOptions } from '../../domain/v3-pairing'
 import { clearProgress, loadProgress, savePendingPairCode, saveProgress } from '../../platform/storage'
 
 const definition = getTestDefinition(defaultTestId)
@@ -20,10 +20,14 @@ Page({
     resumeLabel: '',
     resumeActionLabel: '接着打',
     versionNotice: '',
+    pairInviteVisible: false,
   },
   onLoad(options: { pairCode?: string }) {
-    const pairCode = normalizePairCode(options?.pairCode ?? '')
-    if (pairCode) savePendingPairCode(pairCode)
+    const pairCode = pairCodeFromShareOptions(options)
+    if (pairCode) {
+      savePendingPairCode(pairCode)
+      this.setData({ pairInviteVisible: true })
+    }
     if (openingShown) {
       this.setData({ openingVisible: false })
       return
