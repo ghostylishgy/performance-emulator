@@ -6,9 +6,9 @@
   ],
   "window": {
     "navigationBarTitleText": "绩效校准系统",
-    "navigationBarBackgroundColor": "#F7F6FA",
+    "navigationBarBackgroundColor": "#F6F1EA",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#F7F6FA",
+    "backgroundColor": "#F6F1EA",
     "backgroundTextStyle": "light"
   },
   "style": "v2",

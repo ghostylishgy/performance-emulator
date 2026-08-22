@@ -1,12 +1,12 @@
 @import "../../styles/tokens.wxss";
 
-.option { position:relative; display:flex; align-items:flex-start; gap:22rpx; min-height:96rpx; box-sizing:border-box; padding:27rpx 56rpx 27rpx 24rpx; border:2rpx solid var(--color-border); border-radius:24rpx; background:var(--color-card); box-shadow:0 8rpx 24rpx rgba(49,39,69,.055); transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease; }
+.option { position:relative; display:flex; align-items:flex-start; gap:22rpx; min-height:96rpx; box-sizing:border-box; padding:27rpx 56rpx 27rpx 24rpx; border:2rpx solid var(--color-border); border-radius:var(--radius-card); background:var(--color-card); box-shadow:0 7rpx 20rpx rgba(72,51,39,.045); transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease; }
 .option:active { transform:scale(.985); }
-.option.selected { border-color:var(--color-primary); background:#fff2f7; box-shadow:0 12rpx 28rpx rgba(255,77,141,.14); transform:translateY(-3rpx); }
+.option.selected { border-color:var(--color-primary); background:var(--color-primary-pale); box-shadow:0 10rpx 25rpx rgba(201,54,111,.12); transform:translateY(-3rpx); }
 .option.disabled { pointer-events:none; }
 .option.disabled .text { opacity:.68; }
 .option.selected.disabled .text { opacity:1; }
-.letter { flex:0 0 46rpx; width:46rpx; height:46rpx; border-radius:11rpx; color:#756d80; background:#f0edf4; font-size:23rpx; line-height:46rpx; text-align:center; font-weight:800; }
+.letter { flex:0 0 46rpx; width:46rpx; height:46rpx; border-radius:10rpx; color:var(--color-text-secondary); background:var(--color-surface-subtle); font-size:23rpx; line-height:46rpx; text-align:center; font-weight:800; }
 .selected .letter { color:#fff; background:var(--color-primary); }
-.text { flex:1; white-space:pre-line; color:#3d3843; font-size:29rpx; line-height:1.58; text-align:left; }
+.text { flex:1; white-space:pre-line; color:var(--color-text); font-size:29rpx; line-height:1.58; text-align:left; }
 .check { position:absolute; top:50%; right:22rpx; width:30rpx; height:30rpx; margin-top:-15rpx; border-radius:50%; color:#fff; background:var(--color-primary); font-size:20rpx; font-weight:800; line-height:30rpx; text-align:center; }

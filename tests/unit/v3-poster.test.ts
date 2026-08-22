@@ -1,4 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { performanceSimulator as definition } from '../../miniprogram/config/tests/performance-simulator'
+import { createResultViewModel, evaluateComplete } from '../../miniprogram/domain/v3-evaluation'
 import {
   createPosterImage,
   createRelationshipPosterModel,
@@ -7,6 +9,7 @@ import {
   savePosterToAlbum,
   wrapCanvasText,
 } from '../../miniprogram/platform/poster'
+import { allA, allB, allC, allD } from '../fixtures'
 
 function fakeContext() {
   return {
@@ -54,6 +57,8 @@ describe('local Canvas result cards', () => {
     expect(canvas.width).toBe(1125)
     expect(canvas.height).toBe(1800)
     expect(context.scale).toHaveBeenCalledWith(3, 3)
+    const drawnText = context.fillText.mock.calls.map((call) => call[0])
+    expect(drawnText.indexOf('单点故障型')).toBeLessThan(drawnText.indexOf('—'))
   })
 
   it('creates a local PNG through the 2D canvas node', async () => {
@@ -76,6 +81,25 @@ describe('local Canvas result cards', () => {
     }
     await expect(createPosterImage({}, createSinglePosterModel({ outcome: '4.0' }))).resolves.toBe('local-result.png')
     expect(exportSizes).toEqual([[1500, 2400]])
+  })
+
+  it('keeps all configured single and relationship copy inside the poster canvas', () => {
+    const models = [allA, allB, allC, allD].map((answers) =>
+      createSinglePosterModel(createResultViewModel(definition, evaluateComplete(definition, answers))))
+    for (const relationship of definition.pairRelationships) {
+      models.push(createRelationshipPosterModel({
+        relationship, ownPersonaName: '工位防火墙', peerPersonaName: '隐形苦劳型',
+      }))
+    }
+    for (const model of models) {
+      const context = fakeContext()
+      const canvas = { width: 0, height: 0, getContext: () => context }
+      expect(() => drawPoster(canvas, model, 2)).not.toThrow()
+      for (const call of context.fillText.mock.calls) {
+        expect(Number(call[2])).toBeGreaterThanOrEqual(0)
+        expect(Number(call[2])).toBeLessThan(590)
+      }
+    }
   })
 
   it('recovers from album denial through settings and reports a refused retry', async () => {

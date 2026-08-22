@@ -1,4 +1,5 @@
 <view wx:if="{{openingVisible}}" class="opening" bindtap="skipOpening">
+  <view class="opening-file-id">INTERNAL ONLY · PERFORMANCE RECORD</view>
   <view class="opening-mark"><view class="opening-flame"></view></view>
   <view class="opening-brand">烛龙实验室</view>
   <view class="opening-product">绩效内测会</view>
@@ -27,8 +28,8 @@
     </view>
   </view>
 
-  <view wx:if="{{versionNotice}}" class="notice">{{versionNotice}}</view>
-  <view wx:if="{{pairInviteVisible}}" class="notice panel">
+  <view wx:if="{{versionNotice}}" class="notice status-strip">{{versionNotice}}</view>
+  <view wx:if="{{pairInviteVisible}}" class="notice status-strip">
     <view class="notice-title">有人等你对口径</view>
     <view>先做完 25 题，看看你们凑一起是什么东西。</view>
   </view>

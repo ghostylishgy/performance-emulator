@@ -82,6 +82,7 @@ describe('self-contained local pair code', () => {
     )
     const message = createRelationshipShareMessage(definition, resolved.relationship)
     expect(message.title).toContain(`「${resolved.relationship.title}」`)
+    expect(message.imageUrl).toBe('/assets/share-relationship.png')
     expect(appendPairCode(message.path, code)).toContain(`pairCode=${code}`)
   })
 

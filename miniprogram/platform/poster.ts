@@ -82,6 +82,99 @@ function drawLines(context: any, lines: string[], x: number, startY: number, lin
   return startY + lines.length * lineHeight
 }
 
+export const POSTER_COLORS = {
+  page: '#f6f1ea', card: '#fffdf9', ink: '#2b2628', inkSecondary: '#6b6266', muted: '#9a9095',
+  primary: '#e94f87', primaryStrong: '#c9366f', primaryPale: '#fbe4ed',
+  secondary: '#89658e', secondaryStrong: '#704f75', secondaryPale: '#f0e7f1',
+  accent: '#f0ca6a', accentSoft: '#fff3ca', border: '#e4dad4',
+} as const
+
+function fillRoundedRect(context: any, x: number, y: number, width: number, height: number, radius: number, color: string): void {
+  roundedRect(context, x, y, width, height, radius)
+  context.fillStyle = color
+  context.fill()
+}
+
+function drawPosterHeader(context: any, model: PosterModel, spineColor: string): void {
+  context.fillStyle = spineColor
+  context.fillRect(0, 0, 9, 600)
+  context.fillStyle = POSTER_COLORS.inkSecondary
+  context.font = '700 12px sans-serif'
+  context.fillText(model.brand, 28, 25)
+  context.fillStyle = POSTER_COLORS.secondaryStrong
+  context.font = '800 10px sans-serif'
+  context.fillText(model.kind === 'single' ? 'PERFORMANCE RECORD · V3' : 'RELATIONSHIP REVIEW · V3', 28, 54)
+  fillRoundedRect(context, 296, 23, 52, 24, 5, model.kind === 'single' ? POSTER_COLORS.primaryPale : POSTER_COLORS.secondaryPale)
+  context.fillStyle = model.kind === 'single' ? POSTER_COLORS.primaryStrong : POSTER_COLORS.secondaryStrong
+  context.font = '900 9px sans-serif'
+  context.fillText('INTERNAL', 304, 30)
+}
+
+function drawSinglePoster(context: any, model: PosterModel): void {
+  context.fillStyle = POSTER_COLORS.primaryStrong
+  context.font = '900 38px sans-serif'
+  let y = drawLines(context, wrapCanvasText(context, model.title, 319, 2), 28, 84, 45) + 8
+
+  const quoteY = Math.max(158, y)
+  fillRoundedRect(context, 24, quoteY, 327, 112, 17, POSTER_COLORS.primaryPale)
+  context.fillStyle = POSTER_COLORS.ink
+  context.font = '700 15px sans-serif'
+  drawLines(context, wrapCanvasText(context, `“${model.quote}”`, 283, 3), 46, quoteY + 20, 23)
+
+  const factY = quoteY + 130
+  context.fillStyle = POSTER_COLORS.muted
+  context.font = '800 10px sans-serif'
+  context.fillText('FINAL RESULT', 28, factY)
+  context.fillText('PRIMARY CAUSE', 142, factY)
+  context.fillStyle = POSTER_COLORS.primary
+  context.font = '900 36px sans-serif'
+  context.fillText(model.score ?? '—', 28, factY + 16)
+  fillRoundedRect(context, 138, factY + 14, 213, 48, 10, POSTER_COLORS.accentSoft)
+  context.fillStyle = '#725819'
+  context.font = '800 13px sans-serif'
+  drawLines(context, wrapCanvasText(context, model.subtitle.replace(/^主要死因：/, ''), 185, 2), 152, factY + 25, 18)
+
+  const evidenceY = factY + 82
+  context.fillStyle = POSTER_COLORS.secondaryStrong
+  context.font = '800 10px sans-serif'
+  context.fillText('SYSTEM CAPTURE / 系统抓包', 28, evidenceY)
+  let itemY = evidenceY + 23
+  for (const [index, item] of model.evidence.slice(0, 2).entries()) {
+    fillRoundedRect(context, 28, itemY + 1, 19, 19, 5, POSTER_COLORS.secondaryPale)
+    context.fillStyle = POSTER_COLORS.secondaryStrong
+    context.font = '900 9px sans-serif'
+    context.fillText(String(index + 1).padStart(2, '0'), 32, itemY + 5)
+    context.fillStyle = POSTER_COLORS.inkSecondary
+    context.font = '600 12px sans-serif'
+    const lines = wrapCanvasText(context, item, 285, 2)
+    itemY = drawLines(context, lines, 58, itemY + 1, 18) + 8
+  }
+}
+
+function drawRelationshipPoster(context: any, model: PosterModel): void {
+  context.fillStyle = POSTER_COLORS.secondaryStrong
+  context.font = '900 38px sans-serif'
+  const titleEnd = drawLines(context, wrapCanvasText(context, model.title, 319, 2), 28, 86, 45)
+  const quoteY = Math.max(182, titleEnd + 14)
+  fillRoundedRect(context, 24, quoteY, 327, 166, 18, POSTER_COLORS.secondaryPale)
+  context.fillStyle = POSTER_COLORS.ink
+  context.font = '700 16px sans-serif'
+  drawLines(context, wrapCanvasText(context, `“${model.quote}”`, 283, 5), 46, quoteY + 24, 25)
+
+  const participantsY = quoteY + 188
+  const participants = model.participants ?? ['对方人格', '我的人格']
+  for (const [index, name] of participants.slice(0, 2).entries()) {
+    const x = index === 0 ? 28 : 193
+    fillRoundedRect(context, x, participantsY, 154, 66, 13, POSTER_COLORS.card)
+    context.fillStyle = POSTER_COLORS.secondary
+    context.font = '900 10px sans-serif'
+    context.fillText(index === 0 ? 'A / 对方' : 'B / 我', x + 14, participantsY + 12)
+    context.fillStyle = POSTER_COLORS.ink
+    context.font = '800 14px sans-serif'
+    drawLines(context, wrapCanvasText(context, name, 126, 2), x + 14, participantsY + 31, 18)
+  }
+}
+
 export function drawPoster(canvas: any, model: PosterModel, pixelRatio: number): { width: number; height: number } {
   const width = 375
   const height = 600
@@ -90,55 +183,16 @@ export function drawPoster(canvas: any, model: PosterModel, pixelRatio: number):
   canvas.height = height * dpr
   const context = canvas.getContext('2d')
   context.scale(dpr, dpr)
-  context.fillStyle = '#f8f3f8'
+  context.fillStyle = POSTER_COLORS.page
   context.fillRect(0, 0, width, height)
-  context.fillStyle = '#ff4d8d'
-  context.fillRect(0, 0, width, 9)
   context.textBaseline = 'top'
-  context.fillStyle = '#6e5d73'
-  context.font = '600 12px sans-serif'
-  context.fillText(model.brand, 28, 28)
-  context.fillStyle = '#9a55b7'
+  drawPosterHeader(context, model, model.kind === 'single' ? POSTER_COLORS.primary : POSTER_COLORS.secondary)
+  if (model.kind === 'single') drawSinglePoster(context, model)
+  else drawRelationshipPoster(context, model)
+
+  context.fillStyle = POSTER_COLORS.inkSecondary
   context.font = '700 11px sans-serif'
-  context.fillText(model.eyebrow, 28, 61)
-
-  let y = 92
-  if (model.score) {
-    context.fillStyle = '#ff4d8d'
-    context.font = '900 66px sans-serif'
-    context.fillText(model.score, 28, y)
-    y += 79
-  }
-  context.fillStyle = '#2f2733'
-  context.font = '900 30px sans-serif'
-  y = drawLines(context, wrapCanvasText(context, model.title, 319, 2), 28, y, 38) + 12
-  if (model.subtitle) {
-    context.fillStyle = '#7a5d16'
-    context.font = '700 16px sans-serif'
-    y = drawLines(context, wrapCanvasText(context, model.subtitle, 319, 1), 28, y, 24) + 18
-  }
-
-  roundedRect(context, 24, y, 327, model.kind === 'single' ? 236 : 210, 18)
-  context.fillStyle = '#ffffff'
-  context.fill()
-  context.fillStyle = '#403746'
-  context.font = '600 16px sans-serif'
-  let cardY = drawLines(context, wrapCanvasText(context, `“${model.quote}”`, 283, model.kind === 'single' ? 3 : 4), 46, y + 24, 25) + 14
-  if (model.participants?.length) {
-    context.fillStyle = '#8b6a93'
-    context.font = '600 13px sans-serif'
-    cardY = drawLines(context, model.participants.map((name, index) => `${index === 0 ? 'A' : 'B'}：${name}`), 46, cardY, 23)
-  } else {
-    context.fillStyle = '#77657d'
-    context.font = '500 13px sans-serif'
-    for (const item of model.evidence.slice(0, 2)) {
-      cardY = drawLines(context, wrapCanvasText(context, `· ${item}`, 283, 2), 46, cardY, 21) + 6
-    }
-  }
-
-  context.fillStyle = '#756a79'
-  context.font = '600 12px sans-serif'
-  drawLines(context, String(model.footer).split('\n'), 28, 548, 19)
+  drawLines(context, String(model.footer).split('\n'), 28, 554, 17)
   return { width, height }
 }
 

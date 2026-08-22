@@ -64,5 +64,5 @@ export const performanceSimulator: V3TestDefinition = {
   },
   share: { titleTemplate: '我的绩效结果是 {outcome} · {persona}', path: '/pages/home/index' },
   pairing: { codeLength: 5, algorithmVersion: 3 },
-  theme: { accent: '#ff4d8d', background: '#f7f6fa' },
+  theme: { accent: '#e94f87', background: '#f6f1ea' },
 }

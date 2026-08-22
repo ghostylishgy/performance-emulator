@@ -17,6 +17,8 @@
 
 Analytics 抽象层可以保留，但当前不向自建或第三方服务发送事件。需要统计时只允许接入微信平台官方统计/分析能力；零后端条件下无法取得的细粒度事件暂不支持。单人结果卡和双人关系卡均由客户端 Canvas 本地生成，不上传图片，也不使用对象存储或海报服务。
 
+V3 视觉采用 `Warm Internal Memo`：莓粉负责品牌与人格，柔紫负责系统和关系，暖黄负责批注与死因，页面以奶灰纸张色为主。完整规范见 [`docs/visual-system.md`](docs/visual-system.md)。
+
 ## 本地验证
 
 需要 Node.js 22+ 和 npm 11+。在 Windows PowerShell 中如执行策略阻止 `npm.ps1`，直接使用 `npm.cmd`：

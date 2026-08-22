@@ -245,7 +245,7 @@ Page({
   },
   onShareAppMessage() {
     this.revealReflection()
-    if (!evaluation) return { title: definition.title, path: definition.share.path }
+    if (!evaluation) return { title: definition.title, path: definition.share.path, imageUrl: '/assets/share-single.png' }
     const relationship = this.data.pairRelationship as RelationshipView | null
     const message = relationship
       ? createRelationshipShareMessage(definition, relationship)

@@ -1,17 +1,51 @@
 page,
 :host {
-  --color-primary: #ff4d8d;
-  --color-primary-soft: #ff8db5;
-  --color-secondary: #b16cff;
-  --color-secondary-soft: #d7b8ff;
-  --color-accent: #ffd966;
-  --color-accent-strong: #ffbf3f;
-  --color-page: #f7f6fa;
-  --color-card: #ffffff;
-  --color-text: #1f1f26;
-  --color-text-secondary: #666675;
-  --color-text-muted: #9a9aaa;
-  --color-border: #e9e7ef;
-  --color-dark: #17182a;
-  --shadow-card: 0 16rpx 44rpx rgba(49, 39, 69, 0.08);
+  /* Warm paper surfaces */
+  --color-page: #f6f1ea;
+  --color-card: #fffdf9;
+  --color-surface-subtle: #f1ebe4;
+  --color-surface-raised: #ffffff;
+
+  /* Ink */
+  --color-text: #2b2628;
+  --color-text-secondary: #6b6266;
+  --color-text-muted: #9a9095;
+  --color-text-inverse: #fffdfb;
+  --color-dark: #302a2d;
+
+  /* Brand: berry pink */
+  --color-primary: #e94f87;
+  --color-primary-strong: #c9366f;
+  --color-primary-soft: #f5a0bd;
+  --color-primary-pale: #fbe4ed;
+
+  /* System and relationship: soft violet */
+  --color-secondary: #89658e;
+  --color-secondary-strong: #704f75;
+  --color-secondary-soft: #d7c2da;
+  --color-secondary-pale: #f0e7f1;
+
+  /* Notes and review marks: warm yellow */
+  --color-accent: #f0ca6a;
+  --color-accent-strong: #dcae37;
+  --color-accent-soft: #fff3ca;
+
+  /* Semantic colors are reserved for real states */
+  --color-success: #4f7d68;
+  --color-success-soft: #e2efe8;
+  --color-warning: #a66e29;
+  --color-warning-soft: #fae9cf;
+  --color-risk: #b84a57;
+  --color-risk-soft: #f8dfe2;
+
+  /* Structure */
+  --color-border: #e4dad4;
+  --color-divider: #ede5df;
+  --color-disabled: #ddd6d1;
+  --color-disabled-text: #aaa19e;
+  --radius-card: 24rpx;
+  --radius-control: 18rpx;
+  --radius-tag: 8rpx;
+  --shadow-card: 0 12rpx 32rpx rgba(72, 51, 39, 0.08);
+  --shadow-action: 0 12rpx 28rpx rgba(201, 54, 111, 0.20);
 }
