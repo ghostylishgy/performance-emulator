@@ -1,31 +1,41 @@
 import { defaultTestId, getTestDefinition } from '../../config/test-registry'
 import { advanceProgress, createProgress, moveBack, setAnswer, type QuizProgress } from '../../domain/session'
 import { analytics } from '../../platform/analytics'
+import { recoverCorruptProgress, showProgressSaveWarning } from '../../platform/progress-recovery'
 import { loadProgress, saveProgress } from '../../platform/storage'
 
 const definition = getTestDefinition(defaultTestId)
 let progress: QuizProgress | null = null
 let transitionTimer: ReturnType<typeof setTimeout> | undefined
 let actionLocked = false
+let storageWarningShown = false
+
+function persistProgress(value: QuizProgress): void {
+  if (saveProgress(value) || storageWarningShown) return
+  storageWarningShown = true
+  showProgressSaveWarning()
+}
 
 Page({
   data: { question: {}, questionNumber: 1, total: definition.questions.length, selectedId: '', interactionLocked: false, canGoBack: false },
   onLoad() {
     const stored = loadProgress(definition)
+    if (stored.status === 'corrupt') return recoverCorruptProgress(definition)
     if (stored.status === 'version-mismatch') {
       wx.showToast({ title: '测试版本已经更新，请重新开始', icon: 'none' })
       wx.reLaunch({ url: '/pages/home/index' })
       return
     }
     progress = stored.status === 'current' ? stored.progress : createProgress(definition)
-    if (stored.status !== 'current') saveProgress(progress)
-    if (progress.stage === 'complete') wx.redirectTo({ url: `/pages/result/index?testId=${definition.id}` })
+    if (stored.status !== 'current') persistProgress(progress)
+    if (progress.stage === 'complete') wx.redirectTo({ url: '/pages/result/index' })
     else this.renderQuestion()
   },
   onUnload() {
     if (transitionTimer) clearTimeout(transitionTimer)
     transitionTimer = undefined
     actionLocked = false
+    storageWarningShown = false
   },
   renderQuestion() {
     if (!progress) return
@@ -43,21 +53,21 @@ Page({
     const previous = progress.answers[question.id]
     actionLocked = true
     progress = setAnswer(progress, definition, question.id, optionId)
-    saveProgress(progress)
+    persistProgress(progress)
     this.setData({ selectedId: optionId, interactionLocked: true })
     analytics.track(previous ? 'answer_change' : 'answer_select', { testId: definition.id, questionId: question.id, optionId, stage: 'continuous' })
     transitionTimer = setTimeout(() => {
       if (!progress) return
       progress = advanceProgress(progress, definition)
-      saveProgress(progress)
-      if (progress.stage === 'complete') wx.redirectTo({ url: `/pages/result/index?testId=${definition.id}` })
+      persistProgress(progress)
+      if (progress.stage === 'complete') wx.redirectTo({ url: '/pages/result/index' })
       else this.renderQuestion()
     }, 260)
   },
   goBack() {
     if (!progress || actionLocked) return
     progress = moveBack(progress)
-    saveProgress(progress)
+    persistProgress(progress)
     analytics.track('back', { testId: definition.id, stage: 'continuous' })
     this.renderQuestion()
   },

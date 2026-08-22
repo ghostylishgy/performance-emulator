@@ -1,4 +1,5 @@
 import type { PairRelationship, PersonaId } from '../../v3-types'
+import { pairKey } from '../../../domain/v3-pairing'
 
 const rows: Array<[PersonaId, PersonaId, string, string]> = [
   ['single_point_failure','single_point_failure','双核单点故障','两个人都很重要。坏消息是，你们都指着对方有备份。'],
@@ -38,10 +39,6 @@ const rows: Array<[PersonaId, PersonaId, string, string]> = [
   ['org_weather_station','stable_worker','气象值班组','一个负责看天，一个负责照常上班。除非真下雨。'],
   ['stable_worker','stable_worker','默认配置双排','两个人都没有特别离谱的属性。胜在稳定、耐用，出厂基本兼容。'],
 ]
-
-export function pairKey(left: PersonaId, right: PersonaId): string {
-  return [left, right].sort().join('+')
-}
 
 export const pairRelationships: PairRelationship[] = rows.map(([left, right, title, copy]) => ({
   key: pairKey(left, right), title, copy,

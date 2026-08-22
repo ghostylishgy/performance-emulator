@@ -137,8 +137,8 @@
   },
   "deathCauseDistribution": {
     "visibility_lag": {
-      "count": 21473,
-      "percent": 21.473
+      "count": 21446,
+      "percent": 21.446
     },
     "quota_tight": {
       "count": 19397,
@@ -161,10 +161,9 @@
       "percent": 1.045
     },
     "none": {
-      "count": 7477,
-      "percent": 7.477
+      "count": 7504,
+      "percent": 7.504
     }
   },
-  "fourPointZeroHitRate": 0.181,
-  "focusCorrelations": {}
+  "fourPointZeroHitRate": 0.181
 }

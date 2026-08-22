@@ -1,10 +1,12 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import type { PairCodeResult } from '../../miniprogram/config/v3-types'
+import { performanceSimulator as definition } from '../../miniprogram/config/tests/performance-simulator'
 import {
   decodePairCode, encodePairCode, PAIR_CODE_ALPHABET, PAIR_CODE_DEATH_CAUSES,
   PAIR_CODE_PERSONAS, PAIR_CODE_SCORES, pairCodeFromShareOptions,
-  SUPPORTED_PAIR_ALGORITHM_VERSION,
+  resolvePairRelationship, SUPPORTED_PAIR_ALGORITHM_VERSION,
 } from '../../miniprogram/domain/v3-pairing'
+import { appendPairCode, createRelationshipShareMessage } from '../../miniprogram/platform/sharing'
 import { clearPendingPairCode, loadPendingPairCode, savePendingPairCode } from '../../miniprogram/platform/storage'
 
 function checksumFor(payload: number): number {
@@ -68,6 +70,25 @@ describe('self-contained local pair code', () => {
     expect(decodePairCode(rawCode(3, 0, 6, 0))).toEqual({ ok: false, error: 'invalid_score' })
     expect(decodePairCode(rawCode(3, 0, 0, 7))).toEqual({ ok: false, error: 'invalid_death_cause' })
   })
+
+  it('resolves a completed invite locally and keeps the sharer code in the next share', () => {
+    const code = encodePairCode(sample)
+    const resolved = resolvePairRelationship(definition, 'desk_firewall', code)
+    expect(resolved.ok).toBe(true)
+    if (!resolved.ok) return
+    expect(resolved.peer).toEqual(sample)
+    expect(resolved.relationship).toEqual(
+      definition.pairRelationships.find((item) => item.key === ['desk_firewall', sample.persona].sort().join('+')),
+    )
+    const message = createRelationshipShareMessage(definition, resolved.relationship)
+    expect(message.title).toContain(`「${resolved.relationship.title}」`)
+    expect(appendPairCode(message.path, code)).toContain(`pairCode=${code}`)
+  })
+
+  it('leaves an ordinary entry without a pending invitation', () => {
+    expect(pairCodeFromShareOptions(undefined)).toBeNull()
+    expect(pairCodeFromShareOptions({})).toBeNull()
+  })
 })
 
 describe('pending pair code local storage', () => {
@@ -85,9 +106,16 @@ describe('pending pair code local storage', () => {
       removeStorageSync: (key: string) => memory.delete(key),
     }
     const code = encodePairCode(sample)
-    savePendingPairCode(code)
+    expect(savePendingPairCode(code)).toBe(true)
     expect(loadPendingPairCode()).toBe(code)
     clearPendingPairCode()
     expect(loadPendingPairCode()).toBe('')
+  })
+
+  it('reports local-storage write failure without throwing', () => {
+    ;(globalThis as typeof globalThis & { wx: unknown }).wx = {
+      setStorageSync: () => { throw new Error('quota exceeded') },
+    }
+    expect(savePendingPairCode(encodePairCode(sample))).toBe(false)
   })
 })

@@ -18,8 +18,8 @@ describe('V3 presentation flow', () => {
   it('reveals persona, death cause, evidence and score in order', () => {
     const result = read('miniprogram/pages/result/index.wxml')
     expect(result.indexOf('01 / 职场本体')).toBeLessThan(result.indexOf('02 / 主要绩效死因'))
-    expect(result.indexOf('02 / 主要绩效死因')).toBeLessThan(result.indexOf('03 / 抓包证据'))
-    expect(result.indexOf('03 / 抓包证据')).toBeLessThan(result.indexOf('04 / 最终绩效'))
+    expect(result.indexOf('02 / 主要绩效死因')).toBeLessThan(result.indexOf('03 / 系统抓包'))
+    expect(result.indexOf('03 / 系统抓包')).toBeLessThan(result.indexOf('04 / 最终绩效'))
   })
 
   it('shows Reflection only behind explicit state and keeps the locked acknowledgement button', () => {
@@ -32,8 +32,34 @@ describe('V3 presentation flow', () => {
     expect(logic).toContain('this.revealReflection()')
   })
 
-  it('keeps the requested 2-3 second calculation window', () => {
-    expect(definition.calculation.durationMs).toBeGreaterThanOrEqual(2000)
-    expect(definition.calculation.durationMs).toBeLessThanOrEqual(3000)
+  it('keeps the requested 3-4 second readable calculation window', () => {
+    expect(definition.calculation.durationMs).toBeGreaterThanOrEqual(3000)
+    expect(definition.calculation.durationMs).toBeLessThanOrEqual(4000)
+    const lineCount = definition.calculation.materialLineCount + definition.calculation.endingLines.length
+    expect(lineCount).toBeGreaterThanOrEqual(4)
+    expect(lineCount).toBeLessThanOrEqual(5)
+    expect(definition.calculation.materialPool).toHaveLength(6)
+  })
+
+  it('requires at most one click to reveal the final score and clears all timers', () => {
+    const result = read('miniprogram/pages/result/index.wxml')
+    const logic = read('miniprogram/pages/result/index.ts')
+    expect(result.match(/bindtap="revealScore"/g)).toHaveLength(1)
+    expect(result).not.toContain('revealNext')
+    expect(logic).toContain('clearResultTimers()')
+    expect(logic).toContain('onHide()')
+    expect(logic).toContain('onUnload()')
+    expect(logic).toContain('activeCalculationLine')
+  })
+
+  it('automatically consumes a pending pair code and exposes both local poster actions', () => {
+    const result = read('miniprogram/pages/result/index.wxml')
+    const logic = read('miniprogram/pages/result/index.ts')
+    expect(logic).toContain('const pendingPairCode = loadPendingPairCode()')
+    expect(logic).toContain('resolvePairRelationship(definition, evaluation.primaryPersona, pendingPairCode)')
+    expect(logic).toContain('clearPendingPairCode()')
+    expect(result).toContain('bindtap="saveSinglePoster"')
+    expect(result).toContain('bindtap="saveRelationshipPoster"')
+    expect(result).toContain('把这段关系发出去')
   })
 })

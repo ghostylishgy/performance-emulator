@@ -47,9 +47,15 @@ describe('V3 performance and organization scoring', () => {
     expect(calculateBaseScore(definition, maximum)).toBe(99.6)
   })
 
-  it('is deterministic and keeps five dimensions outside BaseScore weighting', () => {
+  it('is deterministic without a user-facing dimension report', () => {
     const first = evaluateComplete(definition, allB)
     expect(first).toEqual(evaluateComplete(definition, allB))
-    expect(Object.keys(first.dimensions)).toEqual(['P', 'V', 'I', 'J', 'A'])
+    expect(first).not.toHaveProperty('dimensions')
+  })
+
+  it('forces the special 4.0 ending to have no death cause', () => {
+    const result = evaluateComplete(definition, allA)
+    expect(result.finalOutcome).toBe('4.0')
+    expect(result.deathCause).toBe('none')
   })
 })

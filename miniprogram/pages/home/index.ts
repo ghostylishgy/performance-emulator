@@ -2,6 +2,7 @@ import { defaultTestId, getTestDefinition } from '../../config/test-registry'
 import { createProgress } from '../../domain/session'
 import { analytics } from '../../platform/analytics'
 import { pairCodeFromShareOptions } from '../../domain/v3-pairing'
+import { showProgressSaveWarning } from '../../platform/progress-recovery'
 import { clearProgress, loadProgress, savePendingPairCode, saveProgress } from '../../platform/storage'
 
 const definition = getTestDefinition(defaultTestId)
@@ -25,8 +26,8 @@ Page({
   onLoad(options: { pairCode?: string }) {
     const pairCode = pairCodeFromShareOptions(options)
     if (pairCode) {
-      savePendingPairCode(pairCode)
-      this.setData({ pairInviteVisible: true })
+      if (savePendingPairCode(pairCode)) this.setData({ pairInviteVisible: true })
+      else wx.showToast({ title: '对口径邀请暂存失败，可稍后手动输码', icon: 'none' })
     }
     if (openingShown) {
       this.setData({ openingVisible: false })
@@ -77,17 +78,17 @@ Page({
   },
   beginTest() {
     clearProgress(definition.id)
-    saveProgress(createProgress(definition))
+    if (!saveProgress(createProgress(definition))) showProgressSaveWarning()
     analytics.track('test_start', { testId: definition.id, testVersion: definition.version })
-    wx.navigateTo({ url: `/pages/quiz/index?testId=${definition.id}` })
+    wx.navigateTo({ url: '/pages/quiz/index' })
   },
   resume() {
     const stored = loadProgress(definition)
     if (stored.status !== 'current') return this.start()
     analytics.track('resume_test', { testId: definition.id, stage: stored.progress.stage })
     const url = stored.progress.stage === 'complete'
-      ? `/pages/result/index?testId=${definition.id}`
-      : `/pages/quiz/index?testId=${definition.id}`
+      ? '/pages/result/index'
+      : '/pages/quiz/index'
     wx.navigateTo({ url })
   },
   restart() {

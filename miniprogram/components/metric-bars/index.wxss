@@ -1,7 +1,0 @@
-@import "../../styles/tokens.wxss";
-
-.metric { margin-top:30rpx; }
-.row { display:flex; justify-content:space-between; color:#46404d; font-size:27rpx; }
-.value { color:var(--color-primary); font-size:29rpx; font-weight:900; font-variant-numeric:tabular-nums; }
-.track { height:16rpx; margin-top:13rpx; overflow:hidden; border-radius:12rpx; background:#edeaf1; }
-.fill { height:100%; border-radius:12rpx; background:linear-gradient(90deg,var(--color-primary),var(--color-secondary)); box-shadow:inset 0 2rpx 0 rgba(255,255,255,.34); }

@@ -1,14 +1,37 @@
 import { defaultTestId, getTestDefinition } from '../../config/test-registry'
-import type { EvaluationResult, PairCodeResult } from '../../config/v3-types'
+import type { EvaluationResult, PairCodeResult, PairRelationship, PersonaId, ResultViewModel } from '../../config/v3-types'
 import { createResultViewModel, evaluateComplete } from '../../domain/v3-evaluation'
-import { decodePairCode, encodePairCode, getPairRelationship, normalizePairCode, pairCodeErrorMessage } from '../../domain/v3-pairing'
+import { encodePairCode, normalizePairCode, pairCodeErrorMessage, resolvePairRelationship } from '../../domain/v3-pairing'
 import { analytics } from '../../platform/analytics'
-import { createShareMessage } from '../../platform/sharing'
+import {
+  createPosterImage,
+  createRelationshipPosterModel,
+  createSinglePosterModel,
+  savePosterToAlbum,
+} from '../../platform/poster'
+import type { PosterModel } from '../../platform/poster'
+import { recoverCorruptProgress } from '../../platform/progress-recovery'
+import { appendPairCode, createRelationshipShareMessage, createShareMessage } from '../../platform/sharing'
 import { clearPendingPairCode, clearProgress, loadPendingPairCode, loadProgress } from '../../platform/storage'
 
 const definition = getTestDefinition(defaultTestId)
 let evaluation: EvaluationResult | null = null
-let resultTimer: ReturnType<typeof setTimeout> | undefined
+let viewModel: ResultViewModel | null = null
+let resultTimers: Array<ReturnType<typeof setTimeout>> = []
+let currentCalculationLines: string[] = []
+let hasShownOnce = false
+
+interface RelationshipView extends PairRelationship {
+  ownPersonaName: string
+  peerPersonaName: string
+}
+
+function personaName(personaId: PersonaId): string {
+  const configured = definition.personas.find((item) => item.id === personaId)?.name
+    ?? definition.personas.find((item) => item.id === definition.fallbackPersonaId)?.name
+  if (!configured) throw new Error('Fallback persona display name is missing')
+  return configured
+}
 
 function currentPairResult(): PairCodeResult {
   if (!evaluation) throw new Error('Result is not ready')
@@ -20,59 +43,128 @@ function currentPairResult(): PairCodeResult {
   }
 }
 
-function recoverInvalidProgress(): void {
-  clearProgress(definition.id)
-  wx.showModal({ title: '进度异常', content: '上次答题记录无法恢复，请重新开始。', showCancel: false, complete: () => wx.reLaunch({ url: '/pages/home/index' }) })
+function clearResultTimers(): void {
+  resultTimers.forEach((timer) => clearTimeout(timer))
+  resultTimers = []
+}
+
+function schedule(callback: () => void, delay: number): void {
+  resultTimers.push(setTimeout(callback, delay))
+}
+
+function calculationLines(result: EvaluationResult): string[] {
+  const pool = definition.calculation.materialPool
+  const start = Math.round(result.baseScore) % pool.length
+  const materials = Array.from({ length: definition.calculation.materialLineCount }, (_, offset) => pool[(start + offset) % pool.length]!)
+  return [...materials, ...definition.calculation.endingLines]
+}
+
+function relationshipView(relationship: PairRelationship, peerPersona: PersonaId): RelationshipView {
+  if (!evaluation) throw new Error('Result is not ready')
+  return {
+    ...relationship,
+    ownPersonaName: personaName(evaluation.primaryPersona),
+    peerPersonaName: personaName(peerPersona),
+  }
 }
 
 Page({
   data: {
-    ready: false, loading: true, result: {}, revealStage: 1,
-    resultTransition: definition.calculation, resultLineIndex: 0,
-    reflection: definition.reflection, reflectionVisible: false,
-    pairCode: '', pairInput: '', pairMessage: '', pairRelationship: null,
+    ready: false,
+    loading: true,
+    result: {},
+    revealStage: 0,
+    resultTransition: { lines: [] },
+    activeCalculationLine: '',
+    resultLineIndex: 0,
+    reflection: definition.reflection,
+    reflectionVisible: false,
+    pairCode: '',
+    pairInput: '',
+    pairMessage: '',
+    pairRelationship: null,
+    posterSaving: false,
   },
   onLoad() {
+    clearResultTimers()
+    hasShownOnce = false
+    evaluation = null
+    viewModel = null
     const stored = loadProgress(definition)
-    if (stored.status === 'corrupt') return recoverInvalidProgress()
+    if (stored.status === 'corrupt') return recoverCorruptProgress(definition)
     if (stored.status !== 'current' || stored.progress.stage !== 'complete') {
       wx.reLaunch({ url: '/pages/home/index' })
       return
     }
     try {
       evaluation = evaluateComplete(definition, stored.progress.answers)
-      const viewModel = createResultViewModel(definition, evaluation)
+      viewModel = createResultViewModel(definition, evaluation)
+      currentCalculationLines = calculationLines(evaluation)
       const pendingPairCode = loadPendingPairCode()
-      const validPendingPairCode = pendingPairCode && decodePairCode(pendingPairCode).ok ? pendingPairCode : ''
-      if (pendingPairCode && !validPendingPairCode) clearPendingPairCode()
-      this.setData({ result: viewModel, pairInput: validPendingPairCode })
+      let pairRelationship: RelationshipView | null = null
+      let pairMessage = ''
+      if (pendingPairCode) {
+        const resolved = resolvePairRelationship(definition, evaluation.primaryPersona, pendingPairCode)
+        clearPendingPairCode()
+        if (resolved.ok) {
+          pairRelationship = relationshipView(resolved.relationship, resolved.peer.persona)
+          pairMessage = '关系已自动解锁。对方结果只在你的手机里参与计算。'
+          analytics.track('pair_resolve', { testId: definition.id, relation: resolved.relationship.key, source: 'share' })
+        }
+      }
+      this.setData({ result: viewModel, resultTransition: { lines: currentCalculationLines }, pairInput: '', pairRelationship, pairMessage })
       this.playCalculation()
     } catch {
-      recoverInvalidProgress()
+      recoverCorruptProgress(definition)
     }
+  },
+  onShow() {
+    if (!hasShownOnce) {
+      hasShownOnce = true
+      return
+    }
+    if (this.data.loading) this.playCalculation()
+    else if (this.data.ready && Number(this.data.revealStage) < 3) this.setData({ revealStage: 3 })
+  },
+  onHide() {
+    clearResultTimers()
   },
   onUnload() {
-    if (resultTimer) clearTimeout(resultTimer)
-    resultTimer = undefined
+    clearResultTimers()
+    hasShownOnce = false
+    evaluation = null
+    viewModel = null
+    currentCalculationLines = []
   },
   playCalculation() {
-    let index = 0
-    const advance = () => {
-      if (index >= definition.calculation.lines.length - 1) {
-        this.setData({ loading: false, ready: true, revealStage: 1 })
-        analytics.track('final_result_view', { testId: definition.id, testVersion: definition.version, outcome: evaluation?.finalOutcome, persona: evaluation?.primaryPersona })
-        return
-      }
-      index += 1
-      this.setData({ resultLineIndex: index })
-      const delay = index === definition.calculation.pauseAfterLine ? 620 : 260
-      resultTimer = setTimeout(advance, delay)
-    }
-    this.setData({ loading: true, ready: false, resultLineIndex: 0 })
-    resultTimer = setTimeout(advance, 260)
+    clearResultTimers()
+    const lines = currentCalculationLines
+    const interval = definition.calculation.durationMs / Math.max(1, lines.length)
+    this.setData({
+      loading: true,
+      ready: false,
+      revealStage: 0,
+      resultLineIndex: 0,
+      activeCalculationLine: lines[0] ?? '',
+    })
+    lines.slice(1).forEach((line, offset) => {
+      schedule(() => this.setData({ resultLineIndex: offset + 1, activeCalculationLine: line }), interval * (offset + 1))
+    })
+    schedule(() => {
+      this.setData({ loading: false, ready: true, revealStage: 1 })
+      analytics.track('final_result_view', {
+        testId: definition.id,
+        testVersion: definition.version,
+        outcome: evaluation?.finalOutcome,
+        persona: evaluation?.primaryPersona,
+      })
+      schedule(() => this.setData({ revealStage: 2 }), 650)
+      schedule(() => this.setData({ revealStage: 3 }), 1400)
+    }, definition.calculation.durationMs)
   },
-  revealNext() {
-    this.setData({ revealStage: Math.min(4, Number(this.data.revealStage) + 1) })
+  revealScore() {
+    if (Number(this.data.revealStage) < 3) return
+    this.setData({ revealStage: 4 })
   },
   shareIntent() {
     analytics.track('share_tap', { testId: definition.id, outcome: evaluation?.finalOutcome })
@@ -91,7 +183,11 @@ Page({
     wx.reLaunch({ url: '/pages/home/index' })
   },
   onPairInput(event: any) {
-    this.setData({ pairInput: normalizePairCode(String(event.detail.value ?? '')), pairMessage: '', pairRelationship: null })
+    this.setData({
+      pairInput: normalizePairCode(String(event.detail.value ?? '')),
+      pairMessage: '',
+      pairRelationship: null,
+    })
   },
   generatePairCode() {
     if (!evaluation) return
@@ -110,23 +206,52 @@ Page({
   },
   resolvePair() {
     if (!evaluation) return
-    const code = normalizePairCode(String(this.data.pairInput ?? ''))
-    const decoded = decodePairCode(code)
-    if (!decoded.ok) {
-      this.setData({ pairRelationship: null, pairMessage: pairCodeErrorMessage(decoded.error) })
+    const resolved = resolvePairRelationship(definition, evaluation.primaryPersona, String(this.data.pairInput ?? ''))
+    if (!resolved.ok) {
+      this.setData({ pairRelationship: null, pairMessage: pairCodeErrorMessage(resolved.error) })
       return
     }
-    const relationship = getPairRelationship(definition, evaluation.primaryPersona, decoded.result.persona)
     clearPendingPairCode()
-    this.setData({ pairRelationship: relationship, pairMessage: '' })
-    analytics.track('pair_resolve', { testId: definition.id, relation: relationship.key })
+    const relation = relationshipView(resolved.relationship, resolved.peer.persona)
+    this.setData({ pairRelationship: relation, pairMessage: '' })
+    analytics.track('pair_resolve', { testId: definition.id, relation: resolved.relationship.key, source: 'manual' })
+  },
+  async savePoster(model: PosterModel) {
+    if (this.data.posterSaving) return
+    this.setData({ posterSaving: true })
+    try {
+      const tempFilePath = await createPosterImage(this, model)
+      const status = await savePosterToAlbum(tempFilePath)
+      if (status === 'saved') wx.showToast({ title: '已保存到相册', icon: 'success' })
+      if (status === 'failed') wx.showToast({ title: '保存失败，请稍后再试', icon: 'none' })
+    } catch {
+      wx.showToast({ title: '生成结果卡失败', icon: 'none' })
+    } finally {
+      this.setData({ posterSaving: false })
+    }
+  },
+  saveSinglePoster() {
+    if (!viewModel) return
+    return this.savePoster(createSinglePosterModel(viewModel))
+  },
+  saveRelationshipPoster() {
+    const relationship = this.data.pairRelationship as RelationshipView | null
+    if (!relationship) return
+    return this.savePoster(createRelationshipPosterModel({
+      relationship,
+      ownPersonaName: relationship.ownPersonaName,
+      peerPersonaName: relationship.peerPersonaName,
+    }))
   },
   onShareAppMessage() {
     this.revealReflection()
     if (!evaluation) return { title: definition.title, path: definition.share.path }
-    const message = createShareMessage(definition, evaluation)
+    const relationship = this.data.pairRelationship as RelationshipView | null
+    const message = relationship
+      ? createRelationshipShareMessage(definition, relationship)
+      : createShareMessage(definition, evaluation)
     const pairCode = String(this.data.pairCode || encodePairCode(currentPairResult()))
     if (!this.data.pairCode) this.setData({ pairCode })
-    return { ...message, path: `${message.path}?pairCode=${pairCode}` }
+    return { ...message, path: appendPairCode(message.path, pairCode) }
   },
 })

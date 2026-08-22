@@ -1,7 +1,5 @@
 import type { AnswerId, DeathCauseId, EvidenceCategory, PersonaId, QuestionDefinition, QuestionOption } from '../../v3-types'
 
-type DimensionId = 'P' | 'V' | 'I' | 'J' | 'A'
-
 const weights = [9, 8, 2, 1, 5, 4, 5, 4, 5, 7, 0, 6, 8, 4, 5, 5, 8, 1, 0, 3, 7, 3, 0, 0, 0]
 const coefficients: Array<[number, number, number, number]> = [
   [1, .85, .45, .35], [1, .9, .45, .2], [1, .55, .25, .35], [.75, .65, 1, .45],
@@ -10,12 +8,6 @@ const coefficients: Array<[number, number, number, number]> = [
   [1, .7, .25, .15], [.4, .35, .9, .2], [.8, .85, 1, .75], [1, .55, .25, .15],
   [1, .9, .95, .45], [.7, .9, 1, .5], [0, 0, 0, 0], [1, .4, .8, .2],
   [1, .45, .25, .15], [1, .9, .55, .25], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0],
-]
-
-const dimensionByQuestion: DimensionId[][] = [
-  ['P'], ['J', 'A'], ['J'], ['P'], ['I', 'J'], ['A'], ['A'], ['J'], ['I', 'A'], ['I'],
-  ['I'], ['V', 'J'], ['V'], ['V'], ['A'], ['V'], ['J', 'A'], ['P'], ['I'], ['A'],
-  ['V'], ['I'], ['A'], ['I'], ['A'],
 ]
 
 const categoryByQuestion: EvidenceCategory[] = [
@@ -66,16 +58,11 @@ function deathTagsFor(answerKey: string): DeathCauseId[] {
 function option(questionIndex: number, optionIndex: number, text: string): QuestionOption {
   const id = (['A', 'B', 'C', 'D'] as AnswerId[])[optionIndex]!
   const coefficient = coefficients[questionIndex]![optionIndex]!
-  const dimensionEffects: QuestionOption['dimensionEffects'] = {}
-  for (const dimension of dimensionByQuestion[questionIndex]!) {
-    dimensionEffects[dimension] = Math.round(coefficient * 100)
-  }
   const answerKey = `Q${questionIndex + 1}${id}`
   return {
     id,
     text,
     coefficient,
-    dimensionEffects,
     evidence: {
       text,
       category: categoryByQuestion[questionIndex]!,

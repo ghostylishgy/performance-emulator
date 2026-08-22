@@ -2,7 +2,6 @@
   "navigationBarTitleText": "校准结果",
   "enableShareAppMessage": true,
   "usingComponents": {
-    "metric-bars": "../../components/metric-bars/index",
     "reflection-card": "../../components/reflection-card/index"
   }
 }

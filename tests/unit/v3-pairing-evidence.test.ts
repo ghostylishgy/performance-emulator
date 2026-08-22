@@ -23,8 +23,13 @@ describe('pair relationships and evidence capture', () => {
   it('selects only actual answers with category diversity', () => {
     const result = evaluateComplete(definition, allA)
     expect(result.evidence).toHaveLength(3)
-    expect(new Set(result.evidence.map((item) => item.questionId)).size).toBe(3)
-    for (const item of result.evidence) expect(allA[item.questionId]).toBe(item.optionId)
+    expect(new Set(result.evidence.flatMap((item) => item.questionIds)).size).toBeGreaterThanOrEqual(3)
+    for (const item of result.evidence) {
+      for (const answerKey of item.answerKeys) {
+        const questionId = answerKey.slice(0, -1)
+        expect(allA[questionId]).toBe(answerKey.slice(-1))
+      }
+    }
     expect(result.evidence.map((item) => item.category)).toContain('work_behavior')
     expect(result.evidence.map((item) => item.category)).toContain('expression_org')
     expect(new Set(result.evidence.map((item) => item.category)).size).toBeGreaterThanOrEqual(2)

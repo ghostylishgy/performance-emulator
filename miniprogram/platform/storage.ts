@@ -34,14 +34,14 @@ export function clearProgress(testId: string): boolean {
   try { wx.removeStorageSync(keyFor(testId)); return true } catch { return false }
 }
 
-export function savePendingPairCode(code: string): void {
-  try { wx.setStorageSync(pendingPairKey, code) } catch { /* Pairing remains optional. */ }
+export function savePendingPairCode(code: string): boolean {
+  try { wx.setStorageSync(pendingPairKey, code); return true } catch { return false }
 }
 
 export function loadPendingPairCode(): string {
   try { return String(wx.getStorageSync(pendingPairKey) || '') } catch { return '' }
 }
 
-export function clearPendingPairCode(): void {
-  try { wx.removeStorageSync(pendingPairKey) } catch { /* Pairing remains optional. */ }
+export function clearPendingPairCode(): boolean {
+  try { wx.removeStorageSync(pendingPairKey); return true } catch { return false }
 }

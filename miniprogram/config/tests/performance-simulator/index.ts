@@ -1,5 +1,6 @@
 import type { V3TestDefinition } from '../../v3-types'
 import { pairRelationships } from './pair-relationships'
+import { evidenceSynthesisRules } from './evidence-synthesis'
 import { personaTieBreak, personas } from './personas'
 import { questions } from './questions'
 
@@ -9,10 +10,6 @@ export const performanceSimulator: V3TestDefinition = {
   disclaimer: '职场娱乐测试。系统也没有参加过你们公司的绩效会，至少目前没有证据。',
   resultDisclaimer: '结果仅供娱乐，请勿据此判断真实绩效、晋升、优化风险或做职业决策。',
   questions,
-  dimensions: [
-    { id: 'P', name: '结果产出' }, { id: 'V', name: '成果可见' }, { id: 'I', name: '组织推进' },
-    { id: 'J', name: '判断可信' }, { id: 'A', name: '判断应变' },
-  ],
   outcomeScale: ['3.25', '3.5-', '3.5', '3.5+', '3.75'],
   outcomeThresholds: [
     { min: 0, outcome: '3.25' }, { min: 42, outcome: '3.5-' }, { min: 50, outcome: '3.5' },
@@ -38,14 +35,20 @@ export const performanceSimulator: V3TestDefinition = {
     strategy_faded: '战略突然过期', credit_unclear: '功劳进入公共区域', quota_tight: '名额发生自然现象',
     visibility_lag: '成果后知后觉', civilized_boundary: '边界感过于文明', impact_not_enough: '分量还差一点', none: '暂无明显死因',
   },
+  evidenceSynthesisRules,
   pairRelationships,
   calculation: {
-    lines: [
-      '正在统计确实干过的活……', '正在确认哪些活最后还记得是你干的……', '正在检查年初的战略现在还算不算战略……',
-      '正在参考一些不能写进公式的因素……', '正在确认优秀人数……', '正在确认优秀名额……',
-      '两项数据存在轻微分歧。', '组织进行了必要的工作……', '计算完成。大概。',
+    materialPool: [
+      '正在统计确实干过的活……',
+      '正在确认哪些活最后还记得是你干的……',
+      '正在检查年初的战略现在还算不算战略……',
+      '正在参考一些不能写进公式的因素……',
+      '正在确认优秀人数……',
+      '正在确认优秀名额……',
     ],
-    durationMs: 2800, pauseAfterLine: 5,
+    materialLineCount: 2,
+    endingLines: ['两项数据存在轻微分歧。', '组织进行了必要的工作……', '计算完成。大概。'],
+    durationMs: 3600,
   },
   reflection: {
     title: '最后，系统想认真一句',

@@ -24,6 +24,7 @@
 .hook-emphasis { color:var(--color-primary); font-weight:700; }
 .hook-note { display:inline-block; margin-top:16rpx; padding:7rpx 12rpx; color:#73591b; background:var(--color-accent); font-size:19rpx; font-weight:600; transform:rotate(-1.5deg); }
 .notice { margin-top:30rpx; padding:20rpx 24rpx; border-radius:16rpx; color:#755910; background:#fff4c6; font-size:24rpx; }
+.notice-title { margin-bottom:8rpx; font-size:28rpx; font-weight:900; }
 .actions { align-self:stretch; width:100%; box-sizing:border-box; margin-top:auto; padding-top:62rpx; text-align:center; }
 .cta-prompt { margin:0 auto 18rpx; color:#3f3847; font-size:28rpx; font-weight:700; text-align:center; }
 .prompt-arrow { display:inline-block; margin-left:12rpx; color:var(--color-primary); font-size:34rpx; }

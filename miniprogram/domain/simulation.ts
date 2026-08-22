@@ -13,7 +13,6 @@ export interface SimulationReport {
   personaCandidateDistribution: Distribution
   deathCauseDistribution: Distribution
   fourPointZeroHitRate: number
-  focusCorrelations: Record<string, number>
 }
 
 function createRandom(seed: number): () => number {
@@ -52,6 +51,6 @@ export function runSimulation(input: { definition: V3TestDefinition; runs: numbe
     metadata: { testId: definition.id, testVersion: definition.version, evaluationVersion: definition.evaluationVersion, runs, distribution, seed, optionWeights: weights },
     baseOutcomeDistribution: format(base, runs), finalOutcomeDistribution: format(final, runs), calibrationDistribution: format(calibration, runs),
     personaDistribution: format(persona, runs), personaCandidateDistribution: format(personaCandidates, runs), deathCauseDistribution: format(death, runs),
-    fourPointZeroHitRate: round((final['4.0'] ?? 0) / runs * 100), focusCorrelations: {},
+    fourPointZeroHitRate: round((final['4.0'] ?? 0) / runs * 100),
   }
 }

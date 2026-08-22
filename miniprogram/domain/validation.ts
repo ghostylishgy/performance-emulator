@@ -65,6 +65,21 @@ export function validateTestDefinition(definition: V3TestDefinition): string[] {
     for (const answer of persona.coreEvidenceAnswers) if (!answerKeys.has(answer)) errors.push(`${persona.id}: unknown core answer ${answer}`)
     if (persona.id !== definition.fallbackPersonaId && theoreticalMaximum(persona) <= 0) errors.push(`${persona.id}: theoretical maximum must be positive`)
   }
+  const synthesisIds = definition.evidenceSynthesisRules.map((rule) => rule.id)
+  for (const id of duplicateValues(synthesisIds)) errors.push(`duplicate evidence synthesis id: ${id}`)
+  for (const rule of definition.evidenceSynthesisRules) {
+    if (!rule.id || !rule.text.trim()) errors.push('evidence synthesis id and text are required')
+    if (new Set(rule.requiredAnswers.map((answer) => answer.slice(0, -1))).size < 2) errors.push(`${rule.id}: synthesis must cross at least two questions`)
+    for (const persona of rule.personaTags) if (!personaIds.includes(persona)) errors.push(`${rule.id}: unknown persona ${persona}`)
+    for (const answer of [...rule.requiredAnswers, ...rule.optionalAnswers, ...rule.excludedAnswers]) {
+      if (!answerKeys.has(answer)) errors.push(`${rule.id}: unknown answer ${answer}`)
+    }
+    if (!Number.isFinite(rule.priority)) errors.push(`${rule.id}: priority is invalid`)
+  }
+  for (const persona of specialPersonaIds) {
+    const count = definition.evidenceSynthesisRules.filter((rule) => rule.personaTags.includes(persona)).length
+    if (count < 3) errors.push(`${persona}: expected at least 3 synthesis rules, got ${count}`)
+  }
   if (definition.personaTieBreak.length !== 7 || new Set(definition.personaTieBreak).size !== 7) errors.push('persona tie-break must list seven unique special personas')
   const expectedPairKeys = new Set<string>()
   const allPersonaIds = personaIds as PersonaId[]
@@ -76,7 +91,10 @@ export function validateTestDefinition(definition: V3TestDefinition): string[] {
   for (const key of duplicateValues(relationshipKeys)) errors.push(`duplicate pair relationship: ${key}`)
   for (const key of expectedPairKeys) if (!relationshipKeys.includes(key)) errors.push(`missing pair relationship: ${key}`)
   for (const key of relationshipKeys) if (!expectedPairKeys.has(key)) errors.push(`unknown pair relationship: ${key}`)
-  if (definition.calculation.durationMs < 2000 || definition.calculation.durationMs > 3000) errors.push('calculation duration must be 2-3 seconds')
+  const calculationLineCount = definition.calculation.materialLineCount + definition.calculation.endingLines.length
+  if (definition.calculation.materialPool.length < definition.calculation.materialLineCount) errors.push('calculation material pool is too small')
+  if (calculationLineCount < 4 || calculationLineCount > 5) errors.push('calculation must display 4-5 readable phases')
+  if (definition.calculation.durationMs < 3000 || definition.calculation.durationMs > 4000) errors.push('calculation duration must be 3-4 seconds')
   if (definition.pairing.codeLength !== 5
     || !Number.isInteger(definition.pairing.algorithmVersion)
     || definition.pairing.algorithmVersion !== 3) errors.push('pairing policy is invalid')

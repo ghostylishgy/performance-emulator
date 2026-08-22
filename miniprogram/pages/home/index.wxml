@@ -28,7 +28,10 @@
   </view>
 
   <view wx:if="{{versionNotice}}" class="notice">{{versionNotice}}</view>
-  <view wx:if="{{pairInviteVisible}}" class="notice panel">有人等你对口径。完成 25 题后，关系鉴定会在本机直接揭晓。</view>
+  <view wx:if="{{pairInviteVisible}}" class="notice panel">
+    <view class="notice-title">有人等你对口径</view>
+    <view>先做完 25 题，看看你们凑一起是什么东西。</view>
+  </view>
 
   <view class="actions">
     <block wx:if="{{hasResume}}">

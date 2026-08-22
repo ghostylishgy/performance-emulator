@@ -26,6 +26,5 @@ console.log(JSON.stringify({
   finalOutcomeDistribution: report.finalOutcomeDistribution,
   calibrationDistribution: report.calibrationDistribution,
   fourPointZeroHitRate: report.fourPointZeroHitRate,
-  focusCorrelations: report.focusCorrelations,
 }, null, 2))
 

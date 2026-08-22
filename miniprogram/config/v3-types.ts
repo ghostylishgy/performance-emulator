@@ -31,11 +31,21 @@ export interface EvidenceConfig {
   deathTags: DeathCauseId[]
 }
 
+export interface EvidenceSynthesisRule {
+  id: string
+  personaTags: PersonaId[]
+  requiredAnswers: string[]
+  optionalAnswers: string[]
+  excludedAnswers: string[]
+  category: EvidenceCategory
+  priority: number
+  text: string
+}
+
 export interface QuestionOption {
   id: AnswerId
   text: string
   coefficient: number
-  dimensionEffects: Partial<Record<'P' | 'V' | 'I' | 'J' | 'A', number>>
   evidence: EvidenceConfig
 }
 
@@ -79,7 +89,6 @@ export interface V3TestDefinition {
   disclaimer: string
   resultDisclaimer: string
   questions: QuestionDefinition[]
-  dimensions: Array<{ id: 'P' | 'V' | 'I' | 'J' | 'A'; name: string }>
   outcomeScale: NormalOutcome[]
   outcomeThresholds: Array<{ min: number; outcome: NormalOutcome }>
   outcomeSubtitles: Record<Outcome, string>
@@ -94,8 +103,9 @@ export interface V3TestDefinition {
   fallbackPersonaId: 'stable_worker'
   personaTieBreak: PersonaId[]
   deathCauseLabels: Record<DeathCauseId, string>
+  evidenceSynthesisRules: EvidenceSynthesisRule[]
   pairRelationships: PairRelationship[]
-  calculation: { lines: string[]; durationMs: number; pauseAfterLine: number }
+  calculation: { materialPool: string[]; materialLineCount: number; endingLines: string[]; durationMs: number }
   reflection: { title: string; paragraphs: string[]; footer: string; button: string }
   share: { titleTemplate: string; path: string }
   pairing: { codeLength: number; algorithmVersion: number }
@@ -112,8 +122,10 @@ export interface PersonaCandidate {
 }
 
 export interface SelectedEvidence {
-  questionId: string
-  optionId: AnswerId
+  id: string
+  source: 'synthesis' | 'single'
+  questionIds: string[]
+  answerKeys: string[]
   text: string
   category: EvidenceCategory
 }
@@ -125,7 +137,6 @@ export interface EvaluationResult {
   answers: Answers
   baseScore: number
   baseOutcome: NormalOutcome
-  dimensions: Record<'P' | 'V' | 'I' | 'J' | 'A', number>
   organizationMetrics: Record<'L' | 'S' | 'R' | 'N', number>
   organizationScore: number
   organizationSignals: DeathCauseId[]
@@ -150,7 +161,6 @@ export interface ResultViewModel {
   baseScore: number
   organizationScore: number
   calibrationDelta: -1 | 0 | 1
-  metricBars: Array<{ id: string; label: string; value: number }>
   resultDisclaimer: string
 }
 

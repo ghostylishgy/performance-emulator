@@ -27,6 +27,10 @@ export type PairCodeDecodeResult =
   | { ok: true; result: PairCodeResult }
   | { ok: false; error: PairCodeError }
 
+export type PairRelationshipResolveResult =
+  | { ok: true; peer: PairCodeResult; relationship: PairRelationship }
+  | { ok: false; error: PairCodeError }
+
 export const pairKey = (left: PersonaId, right: PersonaId): string => [left, right].sort().join('+')
 
 export function getPairRelationship(definition: V3TestDefinition, left: PersonaId, right: PersonaId): PairRelationship {
@@ -106,6 +110,20 @@ export function decodePairCode(value: string): PairCodeDecodeResult {
 export function pairCodeFromShareOptions(options: { pairCode?: string } | undefined): string | null {
   const code = normalizePairCode(options?.pairCode ?? '')
   return decodePairCode(code).ok ? code : null
+}
+
+export function resolvePairRelationship(
+  definition: V3TestDefinition,
+  ownPersona: PersonaId,
+  value: string,
+): PairRelationshipResolveResult {
+  const decoded = decodePairCode(value)
+  if (!decoded.ok) return decoded
+  return {
+    ok: true,
+    peer: decoded.result,
+    relationship: getPairRelationship(definition, ownPersona, decoded.result.persona),
+  }
 }
 
 export function pairCodeErrorMessage(error: PairCodeError): string {

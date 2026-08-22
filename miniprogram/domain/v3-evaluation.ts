@@ -33,23 +33,6 @@ export function calculateBaseScore(definition: V3TestDefinition, answers: Answer
   }, 0))
 }
 
-export function calculateDimensions(definition: V3TestDefinition, answers: Answers): Record<'P' | 'V' | 'I' | 'J' | 'A', number> {
-  const totals = { P: 0, V: 0, I: 0, J: 0, A: 0 }
-  const counts = { P: 0, V: 0, I: 0, J: 0, A: 0 }
-  for (const question of definition.questions) {
-    const option = question.options.find((item) => item.id === answers[question.id])
-    if (!option) throw new Error(`Missing or invalid answer for ${question.id}`)
-    for (const dimension of definition.dimensions) {
-      const value = option.dimensionEffects[dimension.id]
-      if (value !== undefined) {
-        totals[dimension.id] += value
-        counts[dimension.id] += 1
-      }
-    }
-  }
-  return Object.fromEntries(definition.dimensions.map(({ id }) => [id, counts[id] ? Math.round(totals[id] / counts[id]) : 0])) as Record<'P' | 'V' | 'I' | 'J' | 'A', number>
-}
-
 export function calculateOrganization(definition: V3TestDefinition, answers: Answers): {
   metrics: Record<'L' | 'S' | 'R' | 'N', number>
   score: number
@@ -86,7 +69,6 @@ export function evaluateComplete(definition: V3TestDefinition, answers: Answers)
   assertCompleteAnswers(definition, answers)
   const baseScore = calculateBaseScore(definition, answers)
   const baseOutcome = outcomeForBaseScore(definition, baseScore)
-  const dimensions = calculateDimensions(definition, answers)
   const organization = calculateOrganization(definition, answers)
   let calibrationDelta: -1 | 0 | 1 = organization.score >= definition.organization.upThreshold ? 1
     : organization.score <= definition.organization.downThreshold ? -1 : 0
@@ -96,14 +78,14 @@ export function evaluateComplete(definition: V3TestDefinition, answers: Answers)
     && organization.metrics.S >= 80 && organization.metrics.R >= 80 && organization.signals.length === 0
   const finalOutcome: Outcome = specialHit ? '4.0' : genericOutcome
   const persona = selectPersona(definition, answers)
-  const deathCause = determineDeathCause({
+  const deathCause = finalOutcome === '4.0' ? 'none' : determineDeathCause({
     answers, organizationSignals: organization.signals, baseScore, baseOutcome,
     organizationMetrics: { L: organization.metrics.L }, primaryPersona: persona.primary,
   })
   const evidence = selectEvidence(definition, answers, persona.primary, deathCause)
   return {
     testId: definition.id, testVersion: definition.version, evaluationVersion: definition.evaluationVersion,
-    answers: { ...answers }, baseScore, baseOutcome, dimensions,
+    answers: { ...answers }, baseScore, baseOutcome,
     organizationMetrics: organization.metrics, organizationScore: organization.score,
     organizationSignals: organization.signals, calibrationDelta, finalOutcome,
     candidates: persona.candidates, primaryPersona: persona.primary, deathCause, evidence,
@@ -119,7 +101,6 @@ export function createResultViewModel(definition: V3TestDefinition, result: Eval
     evidence: result.evidence, outcome: result.finalOutcome, outcomeSubtitle: definition.outcomeSubtitles[result.finalOutcome],
     baseOutcome: result.baseOutcome, baseScore: result.baseScore, organizationScore: result.organizationScore,
     calibrationDelta: result.calibrationDelta,
-    metricBars: definition.dimensions.map((dimension) => ({ id: dimension.id, label: dimension.name, value: result.dimensions[dimension.id] })),
     resultDisclaimer: definition.resultDisclaimer,
   }
 }
