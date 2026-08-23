@@ -198,7 +198,7 @@ Page({
     if (!evaluation) return
     try {
       const pairCode = encodePairCode(currentPairResult())
-      this.setData({ pairCode, pairMessage: '对口径码已在本机生成，不会上传任何结果。', pairMessageTone: 'success' })
+      this.setData({ pairCode, pairMessage: '匿名码已在本机生成。', pairMessageTone: 'success' })
       analytics.track('pair_create', { testId: definition.id })
     } catch (error) {
       this.setData({ pairMessage: error instanceof Error ? error.message : '生成失败，请稍后再试。', pairMessageTone: 'error' })

@@ -13,6 +13,7 @@ button {
   font-size: 30rpx;
   font-weight: 700;
   letter-spacing: .2rpx;
+  white-space: nowrap;
 }
 
 button::after { border: none; }

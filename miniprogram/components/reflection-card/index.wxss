@@ -2,6 +2,6 @@
 
 .title { position:relative; margin-bottom:30rpx; color:var(--color-text); font-size:38rpx; font-weight:900; line-height:1.4; }
 .title::after { content:""; display:block; width:190rpx; height:12rpx; margin-top:4rpx; border-bottom:5rpx solid var(--color-accent); border-radius:50%; transform:rotate(-2deg); }
-.paragraph { margin-top:20rpx; white-space:pre-line; color:var(--color-text-secondary); font-size:27rpx; line-height:1.76; }
+.paragraph { margin-top:18rpx; overflow-wrap:anywhere; white-space:pre-line; color:var(--color-text-secondary); font-size:27rpx; line-height:1.68; text-wrap:balance; }
 .paragraph.lead { color:var(--color-primary-strong); font-weight:700; }
-.footer { margin-top:34rpx; padding:24rpx 22rpx 0; border-top:1rpx solid var(--color-divider); color:var(--color-secondary-strong); font-size:23rpx; font-weight:600; line-height:1.65; }
+.footer { margin-top:30rpx; padding:22rpx 18rpx 0; border-top:1rpx solid var(--color-divider); color:var(--color-secondary-strong); font-size:23rpx; font-weight:600; line-height:1.6; text-wrap:balance; }

@@ -100,7 +100,7 @@ describe('V3 presentation flow', () => {
     expect(logic).toMatch(/manualPairExpanded:\s*false/)
     expect(logic).toContain('toggleManualPair()')
     expect(logic).toContain('manualPairExpanded: !this.data.manualPairExpanded')
-    expect(result).toContain('已有对口径码？展开手动对口径')
+    expect(result).toContain('已有对口径码？手动输入')
     expect(result).toContain('wx:if="{{!manualPairExpanded}}"')
     expect(result).toContain('wx:if="{{manualPairExpanded}}"')
     const manualBlock = result.slice(result.indexOf('wx:if="{{manualPairExpanded}}"'))
@@ -203,6 +203,53 @@ describe('V3 presentation flow', () => {
       const rule = (css.match(new RegExp(`${selector.replace('.', '\\.')} \\{[^}]+\\}`)) ?? [''])[0]
       expect(rule, `${selector} should keep a 44px touch target`).toContain('min-height:44px')
     }
+  })
+
+  it('keeps action labels on one line and trims repeated explanatory copy', () => {
+    const appCss = read('miniprogram/app.wxss')
+    const home = read('miniprogram/pages/home/index.wxml')
+    const quiz = read('miniprogram/pages/quiz/index.wxml')
+    const result = read('miniprogram/pages/result/index.wxml')
+    expect((appCss.match(/button \{[^}]+\}/) ?? [''])[0]).toContain('white-space: nowrap')
+    expect(home).not.toContain('class="light-tip"')
+    expect(home).not.toContain('一些很严谨的职场玄学')
+    expect(home.match(/class="intro-copy/g)).toHaveLength(2)
+    expect(quiz).not.toContain('class="chapter"')
+    expect(quiz).not.toContain('想太久也没什么用')
+    expect(quiz).toContain('答案仅保存在本机')
+    expect(result).toContain('已有对口径码？手动输入')
+    expect(result).toContain('生成我的匿名码')
+    expect(result).toContain('鉴定你们的关系')
+  })
+
+  it('balances short mobile copy instead of leaving punctuation widows', () => {
+    const styles = [
+      read('miniprogram/pages/home/index.wxss'),
+      read('miniprogram/pages/result/index.wxss'),
+      read('miniprogram/components/question-card/index.wxss'),
+      read('miniprogram/components/option-card/index.wxss'),
+      read('miniprogram/components/reflection-card/index.wxss'),
+    ].join('\n')
+    for (const selector of [
+      '.intro-copy',
+      '.loading-active-copy',
+      '.evidence-text',
+      '.relationship-copy',
+      '.question',
+      '.text',
+      '.paragraph',
+      '.footer',
+    ]) {
+      const rule = (styles.match(new RegExp(`(?:^|\\n)${selector.replace('.', '\\.')} \\{[^}]+\\}`)) ?? [''])[0]
+      expect(rule, `${selector} should opt into balanced wrapping`).toContain('text-wrap:balance')
+    }
+  })
+
+  it('keeps entertainment disclaimers concise on home and result pages', () => {
+    expect(definition.disclaimer).toBe('仅供职场娱乐，请勿过度认真。')
+    expect(definition.resultDisclaimer).toBe('仅供娱乐，不代表真实绩效或职业建议。')
+    expect([...definition.disclaimer]).toHaveLength(14)
+    expect([...definition.resultDisclaimer]).toHaveLength(18)
   })
 
   it('animates quiz progress with transforms instead of width transitions', () => {

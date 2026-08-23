@@ -3,7 +3,7 @@
     <view class="loading-kicker">组织内部计算流程</view>
     <view class="loading-symbol"><view class="orbit orbit-one"></view><view class="orbit orbit-two"></view><view class="symbol-core">烛</view><view class="symbol-spark">✦</view></view>
     <view class="loading-title">正在计算。大概。</view>
-    <view class="loading-active-line"><text class="loading-status">●</text><text>{{activeCalculationLine}}</text></view>
+    <view class="loading-active-line"><text class="loading-status">●</text><text class="loading-active-copy">{{activeCalculationLine}}</text></view>
     <view class="loading-progress" aria-label="计算进度">
       <view class="loading-progress-dot {{index <= resultLineIndex ? 'active' : ''}}" wx:for="{{resultTransition.lines}}" wx:key="index"></view>
     </view>
@@ -25,7 +25,7 @@
   <view wx:if="{{revealStage >= 2}}" class="reveal-card death-reveal panel">
     <view class="section-kicker"><text class="kicker-pill">主要绩效死因</text><text class="kicker-index">02</text></view>
     <view class="death-label">{{result.deathCauseLabel}}</view>
-    <view class="death-note">同样是 3.5，死法各不相同。</view>
+    <view class="death-note">同样是 3.5，死法不同。</view>
   </view>
 
   <view wx:if="{{revealStage >= 3}}" class="reveal-card evidence-reveal panel">
@@ -47,21 +47,21 @@
     <view wx:if="{{!pairRelationship}}" class="result-actions lead-actions">
       <button class="primary-button" loading="{{posterSaving}}" disabled="{{posterSaving}}" bindtap="saveSinglePoster">保存我的结果卡</button>
       <button class="secondary-button" hover-class="text-pressed" open-type="share" bindtap="shareIntent" data-share-mode="invite">找个人来对一下口径</button>
-      <view class="pair-privacy">分享时只携带 5 位匿名结果码，不上传答题记录。</view>
+      <view class="pair-privacy">只分享 5 位匿名码，不含答题记录。</view>
     </view>
 
     <view class="pairing panel">
       <view class="section-kicker"><text class="kicker-pill">职场关系鉴定</text><text class="kicker-note">仅本机运行</text></view>
 
       <block wx:if="{{!pairRelationship}}">
-        <button wx:if="{{!manualPairExpanded}}" class="text-button pair-toggle" hover-class="text-pressed" bindtap="toggleManualPair">已有对口径码？展开手动对口径 ▾</button>
+        <button wx:if="{{!manualPairExpanded}}" class="text-button pair-toggle" hover-class="text-pressed" bindtap="toggleManualPair">已有对口径码？手动输入 ▾</button>
         <view wx:if="{{manualPairExpanded}}" class="pair-manual">
-          <button class="secondary-button pair-manual-action" hover-class="text-pressed" bindtap="generatePairCode">生成我的匿名对口径码</button>
+          <button class="secondary-button pair-manual-action" hover-class="text-pressed" bindtap="generatePairCode">生成我的匿名码</button>
           <view wx:if="{{pairCode}}" class="pair-code">{{pairCode}}</view>
-          <button wx:if="{{pairCode}}" class="text-button pair-copy" hover-class="text-pressed" bindtap="copyPairCode">复制对口径码</button>
-          <view class="pair-or">或输入同事的码，直接鉴定你们的关系</view>
+          <button wx:if="{{pairCode}}" class="text-button pair-copy" hover-class="text-pressed" bindtap="copyPairCode">复制匿名码</button>
+          <view class="pair-or">或输入同事的 5 位码</view>
           <input class="pair-input {{pairMessageTone === 'error' ? 'error' : ''}}" maxlength="5" value="{{pairInput}}" placeholder="5 位对口径码" bindinput="onPairInput" />
-          <button class="secondary-button pair-manual-action" hover-class="text-pressed" bindtap="resolvePair">查看职场关系鉴定</button>
+          <button class="secondary-button pair-manual-action" hover-class="text-pressed" bindtap="resolvePair">鉴定你们的关系</button>
         </view>
         <view wx:if="{{pairMessage}}" class="pair-message {{pairMessageTone}}">
           <text wx:if="{{pairMessageTone === 'error'}}" class="tone-mark">⚠ </text>{{pairMessage}}

@@ -24,7 +24,7 @@
 .subtitle { margin-top:26rpx; color:var(--color-text-secondary); font-size:29rpx; line-height:1.65; text-align:center; }
 .hook { position:relative; margin-top:34rpx; padding:26rpx 28rpx 28rpx; border:1rpx solid var(--color-border); border-radius:var(--radius-card); color:var(--color-text-secondary); background:rgba(255,253,249,.88); box-shadow:0 9rpx 24rpx rgba(72,51,39,.05); font-size:27rpx; line-height:1.65; text-align:left; }
 .hook-emphasis { color:var(--color-primary-strong); font-weight:800; }
-.hook-note { display:inline-block; margin-top:16rpx; padding:7rpx 12rpx; border-radius:var(--radius-tag); color:#65500f; background:var(--color-accent); font-size:19rpx; font-weight:700; transform:rotate(-1.5deg); }
+.hook-note { display:inline-block; margin-top:16rpx; padding:7rpx 12rpx; border-radius:var(--radius-tag); color:#65500f; background:var(--color-accent); font-size:19rpx; font-weight:700; transform:rotate(-1.5deg); white-space:nowrap; }
 .notice { margin-top:var(--space-md); }
 .notice-title { margin-bottom:8rpx; color:var(--color-text); font-size:28rpx; font-weight:900; }
 .actions { align-self:stretch; width:100%; box-sizing:border-box; margin-top:auto; padding-top:58rpx; text-align:center; }
@@ -37,17 +37,17 @@
 .resume-label { margin:14rpx 0 26rpx; color:var(--color-text); font-size:30rpx; font-weight:800; }
 .resume button { width:100%; min-height:88rpx; }
 .text-button { margin-top:12rpx; color:var(--color-text-secondary); background:transparent; font-size:25rpx; font-weight:500; }
-.light-tip { margin-top:30rpx; color:var(--color-text-secondary); font-size:23rpx; text-align:center; }
-.disclaimer { margin-top:18rpx; white-space:pre-line; color:var(--color-text-muted-readable); font-size:21rpx; line-height:1.65; text-align:center; }
+.disclaimer { margin-top:26rpx; color:var(--color-text-muted-readable); font-size:21rpx; line-height:1.55; text-align:center; text-wrap:balance; }
 
 .intro-backdrop { position:fixed; z-index:20; inset:0; display:flex; align-items:flex-end; padding:24rpx 24rpx calc(24rpx + env(safe-area-inset-bottom)); box-sizing:border-box; background:rgba(48,42,45,.34); }
 .intro-card { width:100%; max-height:calc(100vh - 72rpx); overflow-y:auto; padding:38rpx 32rpx 30rpx; border-radius:30rpx 30rpx 22rpx 22rpx; border-top:8rpx solid var(--color-primary); }
 .intro-kicker { display:inline-block; padding:7rpx 11rpx; border-radius:var(--radius-tag); color:var(--color-secondary-strong); background:var(--color-secondary-pale); font-size:18rpx; font-weight:800; letter-spacing:3rpx; }
 .intro-title { margin-top:18rpx; color:var(--color-text); font-size:42rpx; font-weight:900; }
-.intro-copy { margin-top:24rpx; color:var(--color-text-secondary); font-size:27rpx; line-height:1.75; }
+.intro-copy { margin-top:22rpx; color:var(--color-text-secondary); font-size:27rpx; line-height:1.68; text-wrap:balance; }
+.intro-copy-brief { margin-top:18rpx; }
 .intro-emphasis { display:inline-block; margin-top:28rpx; padding:10rpx 16rpx; border-radius:8rpx; color:#65500f; background:var(--color-accent); font-size:30rpx; font-weight:900; transform:rotate(-1deg); }
 .intro-button { width:100%; min-height:92rpx; margin-top:34rpx; }
-.intro-footer { margin-top:22rpx; color:var(--color-text-muted-readable); font-size:20rpx; line-height:1.65; text-align:center; }
+.intro-footer { margin-top:20rpx; color:var(--color-text-muted-readable); font-size:20rpx; line-height:1.55; text-align:center; text-wrap:balance; }
 
 @keyframes opening-pop { from { opacity:0; transform:rotate(-8deg) scale(.72); } to { opacity:1; transform:rotate(-4deg) scale(1); } }
 @keyframes opening-line { from { opacity:0; transform:translateY(8rpx); } to { opacity:1; transform:translateY(0); } }

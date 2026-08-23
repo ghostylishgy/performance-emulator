@@ -7,8 +7,8 @@ import { questions } from './questions'
 export const performanceSimulator: V3TestDefinition = {
   id: 'performance-simulator', version: 'v3', evaluationVersion: 'engine-v3',
   title: '大厂绩效模拟器', subtitle: '25 题。凭第一反应。', description: '哪个像你就点哪个。',
-  disclaimer: '职场娱乐测试。系统也没有参加过你们公司的绩效会，至少目前没有证据。',
-  resultDisclaimer: '结果仅供娱乐，请勿据此判断真实绩效、晋升、优化风险或做职业决策。',
+  disclaimer: '仅供职场娱乐，请勿过度认真。',
+  resultDisclaimer: '仅供娱乐，不代表真实绩效或职业建议。',
   questions,
   outcomeScale: ['3.25', '3.5-', '3.5', '3.5+', '3.75'],
   outcomeThresholds: [

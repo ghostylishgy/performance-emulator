@@ -1,7 +1,6 @@
 <view class="page-shell quiz">
   <view class="header">
     <view class="quiz-system-label">绩效内测进行中</view>
-    <view class="chapter">凭第一反应，想太久也没什么用</view>
     <quiz-progress current="{{questionNumber}}" total="{{total}}" />
   </view>
   <view class="question-wrap">
@@ -10,5 +9,5 @@
   <view wx:if="{{canGoBack}}" class="back-row">
     <view class="back" hover-class="back-pressed" bindtap="goBack">← 上一题</view>
   </view>
-  <view class="quiz-footnote"><text class="record-dot"></text>系统记录中……目前没有上传你的答案</view>
+  <view class="quiz-footnote"><text class="record-dot"></text>答案仅保存在本机</view>
 </view>
