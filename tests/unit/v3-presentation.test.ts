@@ -123,13 +123,26 @@ describe('V3 presentation flow', () => {
 
   it('promotes saving the personal card plus inviting a peer as the solo-stage main actions', () => {
     const result = read('miniprogram/pages/result/index.wxml')
-    const saveIndex = result.indexOf('bindtap="saveSinglePoster"')
-    const shareIndex = result.indexOf('bindtap="shareIntent"')
-    expect(saveIndex).toBeGreaterThan(-1)
-    expect(saveIndex).toBeLessThan(shareIndex)
-    expect(result.slice(saveIndex - 120, saveIndex)).toContain('primary-button')
-    expect(result.slice(shareIndex - 140, shareIndex)).toContain('secondary-button')
-    expect(result).toContain('找个人来对一下口径')
+    const leadBlock = (result.match(/<view wx:if="\{\{!pairRelationship\}\}" class="result-actions lead-actions">[\s\S]*?<\/view>/) ?? [''])[0]
+    expect(leadBlock).toContain('bindtap="saveSinglePoster"')
+    expect(leadBlock).toContain('bindtap="shareIntent"')
+    expect(leadBlock).toContain('找个人来对一下口径')
+    expect(leadBlock).toContain('pair-privacy')
+    expect(result.slice(0, result.indexOf('<view wx:if="{{!pairRelationship}}" class="result-actions lead-actions">')))
+      .not.toContain('保存我的结果卡')
+  })
+
+  it('hides the solo-stage action stack once a relationship result exists', () => {
+    const result = read('miniprogram/pages/result/index.wxml')
+    const leadActions = result.indexOf('class="result-actions lead-actions"')
+    const relationshipElse = result.indexOf('<block wx:else>')
+    expect(leadActions).toBeGreaterThan(-1)
+    expect(result.slice(leadActions - 60, leadActions)).toContain('wx:if="{{!pairRelationship}}"')
+    expect(relationshipElse).toBeGreaterThan(leadActions)
+    const takeover = result.slice(relationshipElse)
+    expect(takeover).not.toContain('lead-actions')
+    expect(takeover).not.toContain('保存我的结果卡')
+    expect(takeover).not.toContain('找个人来对一下口径')
   })
 
   it('hands the pairing panel over to the relationship result with its own main actions', () => {
@@ -148,15 +161,48 @@ describe('V3 presentation flow', () => {
     expect(takeover).toContain('再找一个人对口径')
   })
 
-  it('renders pair input error and success states beyond color alone', () => {
+  it('keeps invite buttons on the single-invite message while menu shares may carry the relationship', () => {
+    const result = read('miniprogram/pages/result/index.wxml')
+    const logic = read('miniprogram/pages/result/index.ts')
+    const shareButtons = [...result.matchAll(/<button[^>]*bindtap="shareIntent"[^>]*>/g)].map((match) => match[0])
+    expect(shareButtons.length).toBeGreaterThanOrEqual(2)
+    for (const button of shareButtons) expect(button).toContain('data-share-mode="invite"')
+    expect(logic).toContain("options?.target?.dataset?.shareMode === 'invite'")
+    const compactLogic = logic.replace(/\s/g, '')
+    expect(compactLogic).toContain('constinviteFromButton=options?.target?.dataset?.shareMode===\'invite\'')
+    expect(compactLogic).toContain('!inviteFromButton&&relationship?createRelationshipShareMessage(definition,relationship):createShareMessage(definition,evaluation)')
+    expect(logic).not.toMatch(/let\s+shareMode|this\.setData\(\{\s*shareMode/)
+  })
+
+  it('renders pair input error state beyond color alone and never greens the peer input', () => {
     const result = read('miniprogram/pages/result/index.wxml')
     const resultCss = read('miniprogram/pages/result/index.wxss')
-    expect(result).toContain('pairMessageTone === \'error\'')
+    const logic = read('miniprogram/pages/result/index.ts')
+    const inputTag = (result.match(/<input class="pair-input[^>]*>/) ?? [''])[0]
+    expect(inputTag).toContain("pairMessageTone === 'error'")
+    expect(inputTag).not.toContain('success')
+    expect(resultCss).toContain('.pair-input.error')
+    expect(resultCss).not.toContain('.pair-input.success')
     expect(result).toContain('⚠')
     expect(resultCss).toContain('.pair-message.error')
     expect(resultCss).toContain('.pair-message.success')
-    expect(resultCss).toContain('.pair-input.error')
-    expect(resultCss).toContain('.pair-input.success')
+    expect(logic.replace(/\s/g, '')).toContain("pairMessage:pairCodeErrorMessage(resolved.error),pairMessageTone:'error'")
+    expect(logic.replace(/\s/g, '')).toMatch(/generatePairCode[\s\S]*?pairMessageTone:'success'/)
+  })
+
+  it('gives key lightweight controls a reliable ~44px touch height', () => {
+    const homeCss = read('miniprogram/pages/home/index.wxss')
+    const quizCss = read('miniprogram/pages/quiz/index.wxss')
+    const resultCss = read('miniprogram/pages/result/index.wxss')
+    for (const [css, selector] of [
+      [homeCss, '.opening-skip'],
+      [quizCss, '.back'],
+      [resultCss, '.pair-toggle'],
+      [resultCss, '.pair-copy'],
+    ] as Array<[string, string]>) {
+      const rule = (css.match(new RegExp(`${selector.replace('.', '\\.')} \\{[^}]+\\}`)) ?? [''])[0]
+      expect(rule, `${selector} should keep a 44px touch target`).toContain('min-height:44px')
+    }
   })
 
   it('animates quiz progress with transforms instead of width transitions', () => {
@@ -177,7 +223,7 @@ describe('V3 presentation flow', () => {
     expect(home).toContain('bindtap="skipOpening"')
     expect(home).toContain('跳过开场')
     expect(homeCss).toContain('.opening-skip')
-    expect(homeCss).toMatch(/min-height:76rpx/)
+    expect(homeCss).toMatch(/min-height:44px/)
     expect(logic).toContain('skipOpening()')
     expect(logic).toContain('1050')
   })

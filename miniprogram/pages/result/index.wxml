@@ -44,9 +44,9 @@
       <view class="score-meta">基础 {{result.baseOutcome}} · 组织校准 {{result.calibrationDelta > 0 ? '+1' : (result.calibrationDelta < 0 ? '-1' : '0')}} 档</view>
     </view>
 
-    <view class="result-actions lead-actions">
+    <view wx:if="{{!pairRelationship}}" class="result-actions lead-actions">
       <button class="primary-button" loading="{{posterSaving}}" disabled="{{posterSaving}}" bindtap="saveSinglePoster">保存我的结果卡</button>
-      <button class="secondary-button" hover-class="text-pressed" open-type="share" bindtap="shareIntent">找个人来对一下口径</button>
+      <button class="secondary-button" hover-class="text-pressed" open-type="share" bindtap="shareIntent" data-share-mode="invite">找个人来对一下口径</button>
       <view class="pair-privacy">分享时只携带 5 位匿名结果码，不上传答题记录。</view>
     </view>
 
@@ -60,7 +60,7 @@
           <view wx:if="{{pairCode}}" class="pair-code">{{pairCode}}</view>
           <button wx:if="{{pairCode}}" class="text-button pair-copy" hover-class="text-pressed" bindtap="copyPairCode">复制对口径码</button>
           <view class="pair-or">或输入同事的码，直接鉴定你们的关系</view>
-          <input class="pair-input {{pairMessageTone === 'error' ? 'error' : (pairMessageTone === 'success' ? 'success' : '')}}" maxlength="5" value="{{pairInput}}" placeholder="5 位对口径码" bindinput="onPairInput" />
+          <input class="pair-input {{pairMessageTone === 'error' ? 'error' : ''}}" maxlength="5" value="{{pairInput}}" placeholder="5 位对口径码" bindinput="onPairInput" />
           <button class="secondary-button pair-manual-action" hover-class="text-pressed" bindtap="resolvePair">查看职场关系鉴定</button>
         </view>
         <view wx:if="{{pairMessage}}" class="pair-message {{pairMessageTone}}">
@@ -76,7 +76,7 @@
         <view class="relationship-copy">{{pairRelationship.copy}}</view>
         <view class="result-actions pair-actions">
           <button class="primary-button" loading="{{posterSaving}}" disabled="{{posterSaving}}" bindtap="saveRelationshipPoster">保存关系卡</button>
-          <button class="secondary-button" hover-class="text-pressed" open-type="share" bindtap="shareIntent">再找一个人对口径</button>
+          <button class="secondary-button" hover-class="text-pressed" open-type="share" bindtap="shareIntent" data-share-mode="invite">再找一个人对口径</button>
         </view>
       </block>
     </view>

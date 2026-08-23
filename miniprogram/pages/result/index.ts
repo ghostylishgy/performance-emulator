@@ -253,11 +253,12 @@ Page({
       peerPersonaName: relationship.peerPersonaName,
     }))
   },
-  onShareAppMessage() {
+  onShareAppMessage(options: { from?: string; target?: { dataset?: { shareMode?: string } } }) {
     this.revealReflection()
     if (!evaluation) return { title: definition.title, path: definition.share.path, imageUrl: '/assets/share-single.png' }
+    const inviteFromButton = options?.target?.dataset?.shareMode === 'invite'
     const relationship = this.data.pairRelationship as RelationshipView | null
-    const message = relationship
+    const message = !inviteFromButton && relationship
       ? createRelationshipShareMessage(definition, relationship)
       : createShareMessage(definition, evaluation)
     const pairCode = String(this.data.pairCode || encodePairCode(currentPairResult()))

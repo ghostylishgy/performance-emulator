@@ -5,7 +5,7 @@
 .header quiz-progress { display:block; margin-top:22rpx; }
 .question-wrap { margin-top:36rpx; animation:question-in .24s ease-out both; }
 .back-row { display:flex; align-items:center; justify-content:flex-start; width:100%; box-sizing:border-box; margin-top:14rpx; }
-.back { display:inline-flex; align-items:center; justify-content:flex-start; width:auto; box-sizing:border-box; margin:0; min-height:76rpx; padding:14rpx 26rpx; border:1rpx solid rgba(137,101,142,.24); border-radius:14rpx; color:var(--color-secondary-strong); background:var(--color-secondary-pale); font-size:23rpx; font-weight:700; line-height:1.2; text-align:left; }
+.back { display:inline-flex; align-items:center; justify-content:flex-start; width:auto; box-sizing:border-box; margin:0; min-height:44px; padding:14rpx 26rpx; border:1rpx solid rgba(137,101,142,.24); border-radius:14rpx; color:var(--color-secondary-strong); background:var(--color-secondary-pale); font-size:23rpx; font-weight:700; line-height:1.2; text-align:left; }
 .back-pressed { border-color:rgba(137,101,142,.42); background:#e7d9e9; transform:scale(.98); }
 .quiz-footnote { display:flex; align-items:center; gap:10rpx; margin:24rpx 4rpx 0; color:var(--color-text-muted-readable); font-size:20rpx; }
 .record-dot { width:10rpx; height:10rpx; border-radius:50%; background:var(--color-success); box-shadow:0 0 0 6rpx var(--color-success-soft); }
