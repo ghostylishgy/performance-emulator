@@ -1,5 +1,5 @@
-<view wx:if="{{openingVisible}}" class="opening" bindtap="skipOpening">
-  <view class="opening-file-id">INTERNAL ONLY · PERFORMANCE RECORD</view>
+<view wx:if="{{openingVisible}}" class="opening">
+  <view class="opening-file-id">INTERNAL ONLY</view>
   <view class="opening-mark"><view class="opening-flame"></view></view>
   <view class="opening-brand">烛龙实验室</view>
   <view class="opening-product">绩效内测会</view>
@@ -9,7 +9,7 @@
     <view>正在搜索优秀名额……</view>
   </view>
   <view class="opening-punchline"><view>员工档案未找到。</view><view>问题不大，系统一般也不看这个。</view></view>
-  <view class="opening-skip">SYSTEM BOOTING · 点击跳过</view>
+  <button class="opening-skip" hover-class="opening-skip-pressed" bindtap="skipOpening">跳过开场</button>
 </view>
 
 <view wx:else class="page-shell home">
@@ -18,7 +18,7 @@
     <view class="brand-name">烛龙实验室｜绩效内测会</view>
   </view>
   <view class="hero">
-    <view class="eyebrow beta-label">PERFORMANCE REVIEW BETA</view>
+    <view class="eyebrow beta-label">绩效季内测中</view>
     <view class="title">{{title}}</view>
     <view class="subtitle">{{subtitle}}</view>
     <view class="hook">
@@ -53,7 +53,7 @@
   <view class="disclaimer">{{disclaimer}}</view>
   <view wx:if="{{introVisible}}" class="intro-backdrop" catchtap="closeIntro">
     <view class="intro-card panel" catchtap="noop">
-      <view class="intro-kicker">BEFORE WE START</view>
+      <view class="intro-kicker">开始之前</view>
       <view class="intro-title">先说好，这不是考试。</view>
       <view class="intro-copy">过去大半年里，你干过的那些活，经过项目、汇报、领导、同事、名额，以及一些自然现象以后——到了绩效季，最后会被系统算成什么样。</view>
       <view class="intro-emphasis">25题，凭第一反应。</view>

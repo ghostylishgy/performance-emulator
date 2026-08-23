@@ -1,6 +1,6 @@
 <view wx:if="{{loading}}" class="page-shell result-loading-page">
   <view class="result-loading panel">
-    <view class="loading-kicker">CALCULATION ENGINE · INTERNAL REVIEW</view>
+    <view class="loading-kicker">组织内部计算流程</view>
     <view class="loading-symbol"><view class="orbit orbit-one"></view><view class="orbit orbit-two"></view><view class="symbol-core">烛</view><view class="symbol-spark">✦</view></view>
     <view class="loading-title">正在计算。大概。</view>
     <view class="loading-active-line"><text class="loading-status">●</text><text>{{activeCalculationLine}}</text></view>
@@ -13,23 +13,23 @@
 <view wx:elif="{{ready}}" class="page-shell result-page">
   <view class="result-head">
     <view class="result-brand"><text class="brand-dot"></text>烛龙实验室｜绩效内测会</view>
-    <view class="result-file-id">FILE · V3</view>
+    <view class="result-file-id">档案 · V3</view>
   </view>
 
   <view wx:if="{{revealStage >= 1}}" class="reveal-card persona-reveal panel">
-    <view class="section-kicker"><text>RESULT CONFIRMED</text><text>01 / 职场本体</text></view>
+    <view class="section-kicker"><text class="kicker-pill kicker-pill-brand">RESULT CONFIRMED</text><text class="kicker-index">01</text></view>
     <view class="persona-name">{{result.personaName}}</view>
-    <view class="persona-copy">{{result.personaCopy}}</view>
+    <view class="persona-copy">「{{result.personaCopy}}」</view>
   </view>
 
   <view wx:if="{{revealStage >= 2}}" class="reveal-card death-reveal panel">
-    <view class="section-kicker"><text>ORGANIZATION REVIEWED</text><text>02 / 主要绩效死因</text></view>
+    <view class="section-kicker"><text class="kicker-pill">主要绩效死因</text><text class="kicker-index">02</text></view>
     <view class="death-label">{{result.deathCauseLabel}}</view>
     <view class="death-note">同样是 3.5，死法各不相同。</view>
   </view>
 
   <view wx:if="{{revealStage >= 3}}" class="reveal-card evidence-reveal panel">
-    <view class="section-kicker"><text>PERFORMANCE RECORD</text><text>03 / 系统抓包</text></view>
+    <view class="section-kicker"><text class="kicker-pill">系统抓包</text><text class="kicker-index">03</text></view>
     <view class="evidence-item" wx:for="{{result.evidence}}" wx:key="id">
       <view class="evidence-index">{{index + 1}}</view><view class="evidence-text">{{item.text}}</view>
     </view>
@@ -38,33 +38,47 @@
 
   <block wx:if="{{revealStage >= 4}}">
     <view class="reveal-card score-reveal panel">
-      <view class="section-kicker"><text>CALCULATION COMPLETE</text><text>04 / 最终绩效</text></view>
+      <view class="section-kicker"><text class="kicker-pill">最终绩效</text><text class="kicker-index">04</text></view>
       <view class="final-score">{{result.outcome}}</view>
       <view class="score-subtitle">{{result.outcomeSubtitle}}</view>
       <view class="score-meta">基础 {{result.baseOutcome}} · 组织校准 {{result.calibrationDelta > 0 ? '+1' : (result.calibrationDelta < 0 ? '-1' : '0')}} 档</view>
-      <button class="secondary-button poster-button" loading="{{posterSaving}}" disabled="{{posterSaving}}" bindtap="saveSinglePoster">保存我的结果卡</button>
+    </view>
+
+    <view class="result-actions lead-actions">
+      <button class="primary-button" loading="{{posterSaving}}" disabled="{{posterSaving}}" bindtap="saveSinglePoster">保存我的结果卡</button>
+      <button class="secondary-button" hover-class="text-pressed" open-type="share" bindtap="shareIntent">找个人来对一下口径</button>
+      <view class="pair-privacy">分享时只携带 5 位匿名结果码，不上传答题记录。</view>
     </view>
 
     <view class="pairing panel">
-      <view class="section-kicker"><text>COLLEAGUE PROTOCOL</text><text>LOCAL ONLY</text></view><view class="section-title">和同事对个口径</view>
-      <button class="primary-button pair-button" open-type="share" bindtap="shareIntent">找个人来对一下口径</button>
-      <view class="pair-privacy">分享时只携带 5 位匿名结果码，不上传答题记录。</view>
-      <button class="secondary-button pair-button" bindtap="generatePairCode">单独生成匿名对口径码</button>
-      <view wx:if="{{pairCode}}" class="pair-code">{{pairCode}}</view>
-      <button wx:if="{{pairCode}}" class="text-button pair-copy" bindtap="copyPairCode">复制对口径码</button>
-      <view class="pair-or">也可以手动输入同事的码</view>
-      <input class="pair-input" maxlength="5" value="{{pairInput}}" placeholder="5位字母数字" bindinput="onPairInput" />
-      <button class="secondary-button pair-button" bindtap="resolvePair">查看职场关系鉴定</button>
-      <view wx:if="{{pairMessage}}" class="pair-message">{{pairMessage}}</view>
-      <view wx:if="{{pairRelationship}}" class="relationship">
-        <view class="relationship-stamp">RELATIONSHIP REVIEWED</view>
+      <view class="section-kicker"><text class="kicker-pill">职场关系鉴定</text><text class="kicker-note">仅本机运行</text></view>
+
+      <block wx:if="{{!pairRelationship}}">
+        <button wx:if="{{!manualPairExpanded}}" class="text-button pair-toggle" hover-class="text-pressed" bindtap="toggleManualPair">已有对口径码？展开手动对口径 ▾</button>
+        <view wx:if="{{manualPairExpanded}}" class="pair-manual">
+          <button class="secondary-button pair-manual-action" hover-class="text-pressed" bindtap="generatePairCode">生成我的匿名对口径码</button>
+          <view wx:if="{{pairCode}}" class="pair-code">{{pairCode}}</view>
+          <button wx:if="{{pairCode}}" class="text-button pair-copy" hover-class="text-pressed" bindtap="copyPairCode">复制对口径码</button>
+          <view class="pair-or">或输入同事的码，直接鉴定你们的关系</view>
+          <input class="pair-input {{pairMessageTone === 'error' ? 'error' : (pairMessageTone === 'success' ? 'success' : '')}}" maxlength="5" value="{{pairInput}}" placeholder="5 位对口径码" bindinput="onPairInput" />
+          <button class="secondary-button pair-manual-action" hover-class="text-pressed" bindtap="resolvePair">查看职场关系鉴定</button>
+        </view>
+        <view wx:if="{{pairMessage}}" class="pair-message {{pairMessageTone}}">
+          <text wx:if="{{pairMessageTone === 'error'}}" class="tone-mark">⚠ </text>{{pairMessage}}
+        </view>
+      </block>
+
+      <block wx:else>
         <view class="relationship-participants">
           <text>A｜{{pairRelationship.peerPersonaName}}</text><text>B｜{{pairRelationship.ownPersonaName}}</text>
         </view>
-        <view class="relationship-title">{{pairRelationship.title}}</view><view class="relationship-copy">{{pairRelationship.copy}}</view>
-        <button class="secondary-button relationship-button" loading="{{posterSaving}}" disabled="{{posterSaving}}" bindtap="saveRelationshipPoster">保存关系卡</button>
-        <button class="primary-button relationship-button" open-type="share" bindtap="shareIntent">把这段关系发出去</button>
-      </view>
+        <view class="relationship-title">{{pairRelationship.title}}</view>
+        <view class="relationship-copy">{{pairRelationship.copy}}</view>
+        <view class="result-actions pair-actions">
+          <button class="primary-button" loading="{{posterSaving}}" disabled="{{posterSaving}}" bindtap="saveRelationshipPoster">保存关系卡</button>
+          <button class="secondary-button" hover-class="text-pressed" open-type="share" bindtap="shareIntent">再找一个人对口径</button>
+        </view>
+      </block>
     </view>
 
     <view class="result-actions">
@@ -77,7 +91,7 @@
 
   <view wx:if="{{reflectionVisible}}" class="reflection-backdrop" catchtap="noop" catchtouchmove="noop">
     <view class="reflection-modal" catchtap="noop">
-      <view class="reflection-accent"></view><view class="reflection-system-label">SYSTEM MESSAGE / 系统稍微认真了一下</view>
+      <view class="reflection-accent"></view><view class="reflection-system-label">系统稍微认真了一下</view>
       <reflection-card content="{{reflection}}" />
       <button class="reflection-close" bindtap="closeReflection">{{reflection.button}}</button>
     </view>

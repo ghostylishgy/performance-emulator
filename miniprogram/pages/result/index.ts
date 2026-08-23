@@ -82,6 +82,8 @@ Page({
     pairCode: '',
     pairInput: '',
     pairMessage: '',
+    pairMessageTone: '',
+    manualPairExpanded: false,
     pairRelationship: null,
     posterSaving: false,
   },
@@ -108,7 +110,6 @@ Page({
         clearPendingPairCode()
         if (resolved.ok) {
           pairRelationship = relationshipView(resolved.relationship, resolved.peer.persona)
-          pairMessage = '关系已自动解锁。对方结果只在你的手机里参与计算。'
           analytics.track('pair_resolve', { testId: definition.id, relation: resolved.relationship.key, source: 'share' })
         }
       }
@@ -186,17 +187,21 @@ Page({
     this.setData({
       pairInput: normalizePairCode(String(event.detail.value ?? '')),
       pairMessage: '',
+      pairMessageTone: '',
       pairRelationship: null,
     })
+  },
+  toggleManualPair() {
+    this.setData({ manualPairExpanded: !this.data.manualPairExpanded })
   },
   generatePairCode() {
     if (!evaluation) return
     try {
       const pairCode = encodePairCode(currentPairResult())
-      this.setData({ pairCode, pairMessage: '对口径码已在本机生成，不会上传任何结果。' })
+      this.setData({ pairCode, pairMessage: '对口径码已在本机生成，不会上传任何结果。', pairMessageTone: 'success' })
       analytics.track('pair_create', { testId: definition.id })
     } catch (error) {
-      this.setData({ pairMessage: error instanceof Error ? error.message : '生成失败，请稍后再试。' })
+      this.setData({ pairMessage: error instanceof Error ? error.message : '生成失败，请稍后再试。', pairMessageTone: 'error' })
     }
   },
   copyPairCode() {
@@ -208,12 +213,17 @@ Page({
     if (!evaluation) return
     const resolved = resolvePairRelationship(definition, evaluation.primaryPersona, String(this.data.pairInput ?? ''))
     if (!resolved.ok) {
-      this.setData({ pairRelationship: null, pairMessage: pairCodeErrorMessage(resolved.error) })
+      this.setData({ pairRelationship: null, pairMessage: pairCodeErrorMessage(resolved.error), pairMessageTone: 'error' })
       return
     }
     clearPendingPairCode()
     const relation = relationshipView(resolved.relationship, resolved.peer.persona)
-    this.setData({ pairRelationship: relation, pairMessage: '' })
+    this.setData({
+      pairRelationship: relation,
+      pairMessage: '',
+      pairMessageTone: '',
+      manualPairExpanded: false,
+    })
     analytics.track('pair_resolve', { testId: definition.id, relation: resolved.relationship.key, source: 'manual' })
   },
   async savePoster(model: PosterModel) {

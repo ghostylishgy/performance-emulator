@@ -10,12 +10,16 @@ page,
   --color-text: #2b2628;
   --color-text-secondary: #6b6266;
   --color-text-muted: #9a9095;
+  --color-text-muted-readable: #6e686d;
   --color-text-inverse: #fffdfb;
   --color-dark: #302a2d;
 
   /* Brand: berry pink */
   --color-primary: #e94f87;
   --color-primary-strong: #c9366f;
+  --color-primary-deep: #ad2455;
+  --color-primary-action: #c9366f;
+  --color-primary-ink: #bb2f63;
   --color-primary-soft: #f5a0bd;
   --color-primary-pale: #fbe4ed;
 
@@ -43,9 +47,31 @@ page,
   --color-divider: #ede5df;
   --color-disabled: #ddd6d1;
   --color-disabled-text: #aaa19e;
+  --color-focus: #704f75;
   --radius-card: 24rpx;
   --radius-control: 18rpx;
   --radius-tag: 8rpx;
   --shadow-card: 0 12rpx 32rpx rgba(72, 51, 39, 0.08);
   --shadow-action: 0 12rpx 28rpx rgba(201, 54, 111, 0.20);
+
+  /* Spacing scale */
+  --space-xs: 12rpx;
+  --space-sm: 20rpx;
+  --space-md: 28rpx;
+  --space-lg: 40rpx;
+  --space-xl: 56rpx;
+  --space-2xl: 80rpx;
+
+  /* Typography scale */
+  --text-caption: 22rpx;
+  --text-body: 28rpx;
+  --text-subtitle: 33rpx;
+  --text-title: 42rpx;
+  --text-headline: 60rpx;
+  --text-display: 76rpx;
+
+  /* Line height */
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.65;
 }
