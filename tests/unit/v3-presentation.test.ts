@@ -15,15 +15,20 @@ describe('V3 presentation flow', () => {
     expect(quiz).not.toContain('chapter-transition')
   })
 
-  it('keeps persona-first reveal order: persona, death cause, evidence, then score', () => {
+  it('keeps persona-first hierarchy while moving score and death ahead of evidence', () => {
     const result = read('miniprogram/pages/result/index.wxml')
     const stages = [...result.matchAll(/revealStage >= (\d)/g)].map((match) => Number(match[1]))
     expect(stages).toEqual([1, 2, 3, 4])
-    expect(result.indexOf('RESULT CONFIRMED')).toBeLessThan(result.indexOf('主要绩效死因'))
-    expect(result.indexOf('主要绩效死因')).toBeLessThan(result.indexOf('系统抓包'))
-    expect(result.indexOf('系统抓包')).toBeLessThan(result.indexOf('最终绩效'))
-    expect(result.indexOf('revealStage === 3')).toBeLessThan(result.indexOf('最终绩效'))
-    expect(result.indexOf('{{result.personaName}}')).toBeLessThan(result.indexOf('{{result.outcome}}'))
+    const persona = result.indexOf('{{result.personaName}}')
+    const quote = result.indexOf('{{result.personaCopy}}')
+    const score = result.indexOf('{{result.outcome}}')
+    const death = result.indexOf('{{result.deathCauseLabel}}')
+    const evidence = result.indexOf('系统抓包')
+    expect(result.indexOf('RESULT CONFIRMED')).toBeLessThan(persona)
+    expect(persona).toBeLessThan(quote)
+    expect(quote).toBeLessThan(score)
+    expect(score).toBeLessThan(evidence)
+    expect(death).toBeLessThan(evidence)
   })
 
   it('makes persona the dominant visual anchor and demotes the final score', () => {
@@ -32,8 +37,8 @@ describe('V3 presentation flow', () => {
     const displaySize = Number((tokens.match(/--text-display:\s*(\d+)rpx/) ?? ['0', '0'])[1] ?? 0)
     const headlineSize = Number((tokens.match(/--text-headline:\s*(\d+)rpx/) ?? ['0', '0'])[1] ?? 0)
     expect(displaySize).toBeGreaterThan(headlineSize)
-    expect(resultCss.replace(/\s/g, '')).toContain('.persona-name{position:relative;z-index:1;margin-top:var(--space-md);color:var(--color-primary-ink);font-size:var(--text-display)')
-    expect(resultCss.replace(/\s/g, '')).toContain('.final-score{position:relative;z-index:1;margin-top:18rpx;color:var(--color-primary-ink);font-size:var(--text-headline)')
+    expect(resultCss.replace(/\s/g, '')).toContain('.persona-name{min-width:0;margin-top:var(--space-sm);overflow-wrap:anywhere;color:var(--color-primary-ink);font-size:var(--text-display)')
+    expect(resultCss.replace(/\s/g, '')).toContain('.final-score{margin-top:2rpx;font-size:var(--text-headline)')
     for (const match of resultCss.matchAll(/font-size:(\d{2,4})rpx/g)) {
       expect(Number(match[1])).toBeLessThanOrEqual(headlineSize)
     }
@@ -73,15 +78,66 @@ describe('V3 presentation flow', () => {
     expect(definition.calculation.materialPool).toHaveLength(6)
   })
 
-  it('requires at most one click to reveal the final score and clears all timers', () => {
+  it('reveals the first-screen verdict automatically after a 300ms calculation settle', () => {
     const result = read('miniprogram/pages/result/index.wxml')
     const logic = read('miniprogram/pages/result/index.ts')
-    expect(result.match(/bindtap="revealScore"/g)).toHaveLength(1)
+    expect(result).not.toContain('bindtap="revealScore"')
+    expect(logic).not.toContain('revealScore()')
     expect(result).not.toContain('revealNext')
+    expect(logic).toContain('const RESULT_SETTLE_DELAY_MS = 300')
+    expect(logic).toContain('definition.calculation.durationMs - RESULT_SETTLE_DELAY_MS')
+    expect(logic).toContain('const SCORE_STAMP_DELAY_MS = 180')
+    expect(logic).toContain('const EVIDENCE_REVEAL_DELAY_MS = 620')
+    expect(logic).toContain('const ACTIONS_REVEAL_DELAY_MS = 820')
+    expect(logic).toContain('this.setData({ revealStage: 4 })')
     expect(logic).toContain('clearResultTimers()')
     expect(logic).toContain('onHide()')
     expect(logic).toContain('onUnload()')
     expect(logic).toContain('activeCalculationLine')
+  })
+
+  it('keeps persona, quote, performance seal and death cause in one first-screen dossier', () => {
+    const result = read('miniprogram/pages/result/index.wxml')
+    const css = read('miniprogram/pages/result/index.wxss')
+    const dossier = (result.match(/<view wx:if="\{\{revealStage >= 1\}\}" class="result-dossier">[\s\S]*?<\/view>\s*<view wx:if="\{\{revealStage >= 3\}\}"/) ?? [''])[0]
+    for (const field of ['{{result.personaName}}', '{{result.personaCopy}}', '{{result.outcome}}', '{{result.deathCauseLabel}}']) {
+      expect(dossier).toContain(field)
+    }
+    expect(result.indexOf('result-dossier')).toBeLessThan(result.indexOf('evidence-reveal'))
+    expect(result).not.toContain('score-reveal')
+    expect(result).not.toContain('death-reveal')
+    expect(result).not.toContain('persona-reveal')
+    expect(result).not.toContain('kicker-index')
+    expect(css).toContain('.performance-seal')
+    expect(css).toContain('.death-annotation')
+    expect(css).not.toContain('.score-reveal')
+  })
+
+  it('covers the final-question redirect with an opaque route-exit surface', () => {
+    const quiz = read('miniprogram/pages/quiz/index.wxml')
+    const logic = read('miniprogram/pages/quiz/index.ts')
+    const css = read('miniprogram/pages/quiz/index.wxss')
+    expect(quiz).toContain('wx:if="{{leavingQuiz}}" class="quiz-exit-mask"')
+    expect(logic).toContain('leavingQuiz: false')
+    expect(logic).toContain('const isFinalQuestion = progress.currentQuestionIndex === definition.questions.length - 1')
+    expect(logic).toContain('leavingQuiz: isFinalQuestion')
+    const maskRule = (css.match(/\.quiz-exit-mask \{[^}]+\}/) ?? [''])[0]
+    expect(maskRule).toContain('position:fixed')
+    expect(maskRule).toContain('inset:0')
+    expect(maskRule).toContain('background:var(--color-page)')
+  })
+
+  it('crossfades the opening overlay over an already-rendered home surface', () => {
+    const home = read('miniprogram/pages/home/index.wxml')
+    const logic = read('miniprogram/pages/home/index.ts')
+    const css = read('miniprogram/pages/home/index.wxss')
+    expect(home).toContain("opening {{openingLeaving ? 'opening-leaving' : ''}}")
+    expect(home).toContain('<view class="page-shell home">')
+    expect(home).not.toContain('<view wx:else class="page-shell home">')
+    expect(logic).toContain('const OPENING_EXIT_MS = 180')
+    expect(logic).toContain('dismissOpening()')
+    expect(css).toContain('.opening-leaving')
+    expect(css).toContain('@keyframes opening-fade-out')
   })
 
   it('automatically consumes a pending pair code and exposes both local poster actions', () => {
@@ -266,7 +322,7 @@ describe('V3 presentation flow', () => {
     const home = read('miniprogram/pages/home/index.wxml')
     const homeCss = read('miniprogram/pages/home/index.wxss')
     const logic = read('miniprogram/pages/home/index.ts')
-    expect(home).toMatch(/class="opening"\s*>/)
+    expect(home).toContain('class="opening {{openingLeaving')
     expect(home).toContain('bindtap="skipOpening"')
     expect(home).toContain('跳过开场')
     expect(homeCss).toContain('.opening-skip')

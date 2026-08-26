@@ -16,35 +16,35 @@
     <view class="result-file-id">档案 · V3</view>
   </view>
 
-  <view wx:if="{{revealStage >= 1}}" class="reveal-card persona-reveal panel">
-    <view class="section-kicker"><text class="kicker-pill kicker-pill-brand">RESULT CONFIRMED</text><text class="kicker-index">01</text></view>
-    <view class="persona-name">{{result.personaName}}</view>
-    <view class="persona-copy">「{{result.personaCopy}}」</view>
-    <view wx:if="{{!pairRelationship}}" class="persona-mascot"><mascot scene="result" /></view>
-  </view>
-
-  <view wx:if="{{revealStage >= 2}}" class="reveal-card death-reveal panel">
-    <view class="section-kicker"><text class="kicker-pill">主要绩效死因</text><text class="kicker-index">02</text></view>
-    <view class="death-label">{{result.deathCauseLabel}}</view>
-    <view class="death-note">同样是 3.5，死法不同。</view>
+  <view wx:if="{{revealStage >= 1}}" class="result-dossier">
+    <view class="dossier-header"><text class="kicker-pill kicker-pill-brand">RESULT CONFIRMED</text><text class="dossier-record">档案结论</text></view>
+    <view class="dossier-copy">
+      <view class="persona-name">{{result.personaName}}</view>
+      <view class="persona-copy">「{{result.personaCopy}}」</view>
+    </view>
+    <view class="dossier-verdicts">
+      <view class="performance-block {{revealStage >= 2 ? 'is-stamped' : 'is-pending'}}">
+        <view class="performance-seal"><view class="seal-label">最终绩效</view><view class="final-score">{{result.outcome}}</view></view>
+        <view class="score-subtitle">{{result.outcomeSubtitle}}</view>
+      </view>
+      <view class="death-annotation">
+        <view class="death-kicker">主要绩效死因</view>
+        <view class="death-label">{{result.deathCauseLabel}}</view>
+        <view class="death-note">同样是 3.5，死法不同。</view>
+      </view>
+    </view>
+    <view class="score-meta">基础 {{result.baseOutcome}} · 组织校准 {{result.calibrationDelta > 0 ? '+1' : (result.calibrationDelta < 0 ? '-1' : '0')}} 档</view>
+    <view wx:if="{{!pairRelationship}}" class="dossier-mascot"><mascot scene="result" /></view>
   </view>
 
   <view wx:if="{{revealStage >= 3}}" class="reveal-card evidence-reveal panel">
-    <view class="section-kicker"><text class="kicker-pill">系统抓包</text><text class="kicker-index">03</text></view>
+    <view class="section-kicker"><text class="kicker-pill">系统抓包</text></view>
     <view class="evidence-item" wx:for="{{result.evidence}}" wx:key="id">
       <view class="evidence-index">{{index + 1}}</view><view class="evidence-text">{{item.text}}</view>
     </view>
   </view>
-  <button wx:if="{{revealStage === 3}}" class="primary-button reveal-button" bindtap="revealScore">最后看看组织怎么算的</button>
 
   <block wx:if="{{revealStage >= 4}}">
-    <view class="reveal-card score-reveal panel">
-      <view class="section-kicker"><text class="kicker-pill">最终绩效</text><text class="kicker-index">04</text></view>
-      <view class="final-score">{{result.outcome}}</view>
-      <view class="score-subtitle">{{result.outcomeSubtitle}}</view>
-      <view class="score-meta">基础 {{result.baseOutcome}} · 组织校准 {{result.calibrationDelta > 0 ? '+1' : (result.calibrationDelta < 0 ? '-1' : '0')}} 档</view>
-    </view>
-
     <view wx:if="{{!pairRelationship}}" class="result-actions lead-actions">
       <button class="primary-button" loading="{{posterSaving}}" disabled="{{posterSaving}}" bindtap="saveSinglePoster">保存我的结果卡</button>
       <button class="secondary-button" hover-class="text-pressed" open-type="share" bindtap="shareIntent" data-share-mode="invite">找个人来对一下口径</button>

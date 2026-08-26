@@ -1,4 +1,4 @@
-<view wx:if="{{openingVisible}}" class="opening">
+<view wx:if="{{openingVisible}}" class="opening {{openingLeaving ? 'opening-leaving' : ''}}">
   <view class="opening-file-id">INTERNAL ONLY</view>
   <view class="opening-mascot"><mascot scene="welcome" /></view>
   <view class="opening-brand">烛龙实验室</view>
@@ -12,7 +12,7 @@
   <button class="opening-skip" hover-class="opening-skip-pressed" bindtap="skipOpening">跳过开场</button>
 </view>
 
-<view wx:else class="page-shell home">
+<view class="page-shell home">
   <view class="brand-row">
     <view class="brand-fire"></view>
     <view class="brand-name">烛龙实验室｜绩效内测会</view>

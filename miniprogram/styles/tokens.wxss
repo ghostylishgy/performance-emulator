@@ -38,6 +38,7 @@ page,
   --color-success: #4f7d68;
   --color-success-soft: #e2efe8;
   --color-warning: #a66e29;
+  --color-warning-ink: #765b20;
   --color-warning-soft: #fae9cf;
   --color-risk: #b84a57;
   --color-risk-soft: #f8dfe2;
@@ -74,4 +75,12 @@ page,
   --leading-tight: 1.15;
   --leading-snug: 1.35;
   --leading-normal: 1.65;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-micro: 120ms;
+  --duration-exit: 180ms;
+  --duration-reveal: 320ms;
 }

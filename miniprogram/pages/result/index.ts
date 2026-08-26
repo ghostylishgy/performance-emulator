@@ -15,6 +15,10 @@ import { appendPairCode, createRelationshipShareMessage, createShareMessage } fr
 import { clearPendingPairCode, clearProgress, loadPendingPairCode, loadProgress } from '../../platform/storage'
 
 const definition = getTestDefinition(defaultTestId)
+const RESULT_SETTLE_DELAY_MS = 300
+const SCORE_STAMP_DELAY_MS = 180
+const EVIDENCE_REVEAL_DELAY_MS = 620
+const ACTIONS_REVEAL_DELAY_MS = 820
 let evaluation: EvaluationResult | null = null
 let viewModel: ResultViewModel | null = null
 let resultTimers: Array<ReturnType<typeof setTimeout>> = []
@@ -125,7 +129,7 @@ Page({
       return
     }
     if (this.data.loading) this.playCalculation()
-    else if (this.data.ready && Number(this.data.revealStage) < 3) this.setData({ revealStage: 3 })
+    else if (this.data.ready && Number(this.data.revealStage) < 4) this.setData({ revealStage: 4 })
   },
   onHide() {
     clearResultTimers()
@@ -140,7 +144,8 @@ Page({
   playCalculation() {
     clearResultTimers()
     const lines = currentCalculationLines
-    const interval = definition.calculation.durationMs / Math.max(1, lines.length)
+    const lineWindow = Math.max(0, definition.calculation.durationMs - RESULT_SETTLE_DELAY_MS)
+    const interval = lineWindow / Math.max(1, lines.length - 1)
     this.setData({
       loading: true,
       ready: false,
@@ -159,13 +164,10 @@ Page({
         outcome: evaluation?.finalOutcome,
         persona: evaluation?.primaryPersona,
       })
-      schedule(() => this.setData({ revealStage: 2 }), 650)
-      schedule(() => this.setData({ revealStage: 3 }), 1400)
+      schedule(() => this.setData({ revealStage: 2 }), SCORE_STAMP_DELAY_MS)
+      schedule(() => this.setData({ revealStage: 3 }), EVIDENCE_REVEAL_DELAY_MS)
+      schedule(() => this.setData({ revealStage: 4 }), ACTIONS_REVEAL_DELAY_MS)
     }, definition.calculation.durationMs)
-  },
-  revealScore() {
-    if (Number(this.data.revealStage) < 3) return
-    this.setData({ revealStage: 4 })
   },
   shareIntent() {
     analytics.track('share_tap', { testId: definition.id, outcome: evaluation?.finalOutcome })

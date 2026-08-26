@@ -8,4 +8,7 @@
 .back-pressed { border-color:rgba(137,101,142,.42); background:#e7d9e9; transform:scale(.98); }
 .quiz-footnote { display:flex; align-items:center; gap:10rpx; margin:24rpx 4rpx 0; color:var(--color-text-muted-readable); font-size:20rpx; white-space:nowrap; }
 .record-dot { width:10rpx; height:10rpx; border-radius:50%; background:var(--color-success); box-shadow:0 0 0 6rpx var(--color-success-soft); }
+.quiz-exit-mask { position:fixed; z-index:8; inset:0; background:var(--color-page); animation:quiz-exit-cover var(--duration-exit) var(--ease-in) both; }
 @keyframes question-in { from { opacity:0; transform:translateY(12rpx); } to { opacity:1; transform:translateY(0); } }
+@keyframes quiz-exit-cover { from { opacity:0; } to { opacity:1; } }
+@media (prefers-reduced-motion:reduce) { .quiz-exit-mask { animation-duration:var(--duration-micro); } }

@@ -6,12 +6,15 @@ import { showProgressSaveWarning } from '../../platform/progress-recovery'
 import { clearProgress, loadProgress, savePendingPairCode, saveProgress } from '../../platform/storage'
 
 const definition = getTestDefinition(defaultTestId)
+const OPENING_DURATION_MS = 1050
+const OPENING_EXIT_MS = 180
 let openingShown = false
 let openingTimer: ReturnType<typeof setTimeout> | undefined
 
 Page({
   data: {
     openingVisible: true,
+    openingLeaving: false,
     introVisible: false,
     title: definition.title,
     subtitle: definition.subtitle,
@@ -30,11 +33,11 @@ Page({
       else wx.showToast({ title: '对口径邀请暂存失败，可稍后手动输码', icon: 'none' })
     }
     if (openingShown) {
-      this.setData({ openingVisible: false })
+      this.setData({ openingVisible: false, openingLeaving: false })
       return
     }
     openingShown = true
-    openingTimer = setTimeout(() => this.setData({ openingVisible: false }), 1050)
+    openingTimer = setTimeout(() => this.dismissOpening(), OPENING_DURATION_MS)
   },
   onUnload() {
     if (openingTimer) clearTimeout(openingTimer)
@@ -62,10 +65,17 @@ Page({
       versionNotice: stored.status === 'version-mismatch' ? '测试版本已经更新，请重新开始。' : '',
     })
   },
-  skipOpening() {
+  dismissOpening() {
+    if (!this.data.openingVisible || this.data.openingLeaving) return
     if (openingTimer) clearTimeout(openingTimer)
-    openingTimer = undefined
-    this.setData({ openingVisible: false })
+    this.setData({ openingLeaving: true })
+    openingTimer = setTimeout(() => {
+      openingTimer = undefined
+      this.setData({ openingVisible: false, openingLeaving: false })
+    }, OPENING_EXIT_MS)
+  },
+  skipOpening() {
+    this.dismissOpening()
   },
   noop() {
     // Keep taps inside the intro card from closing it.

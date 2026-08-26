@@ -160,7 +160,7 @@ describe('Warm Internal Memo visual system', () => {
     expect(home).toContain('<mascot scene="welcome" />')
     expect(result).toContain('<mascot scene="analysis" />')
     expect(result).toContain('<mascot scene="result" />')
-    expect(result).toContain('wx:if="{{!pairRelationship}}" class="persona-mascot"')
+    expect(result).toContain('wx:if="{{!pairRelationship}}" class="dossier-mascot"')
     expect(quiz).not.toContain('<mascot')
     expect(homeConfig).toContain('"mascot": "../../components/mascot/index"')
     expect(resultConfig).toContain('"mascot": "../../components/mascot/index"')
@@ -191,11 +191,23 @@ describe('Warm Internal Memo visual system', () => {
     const css = read('miniprogram/components/mascot/index.wxss')
     expect(css).toContain('.mascot--welcome { width:216rpx; height:216rpx;')
     expect(css).toContain('.mascot--analysis { width:236rpx; height:236rpx;')
-    expect(css).toContain('.mascot--result { width:168rpx; height:168rpx;')
+    expect(css).toContain('.mascot--result { width:204rpx; height:204rpx;')
     expect(css).toMatch(/\.mascot--analysis[^}]+infinite/)
     expect(css.match(/infinite/g)).toHaveLength(1)
     expect(css).toContain('@media (prefers-reduced-motion: reduce)')
     expect(css).not.toMatch(/@keyframes[^}]+(?:top|left|width|height|margin|padding):/)
+  })
+
+  it('keeps both local share thumbnails valid and wired without a network fallback', () => {
+    const sharing = read('miniprogram/platform/sharing.ts')
+    for (const name of ['share-single.png', 'share-relationship.png']) {
+      const image = readFileSync(`miniprogram/assets/${name}`)
+      expect(image.subarray(0, 8)).toEqual(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))
+      expect(image.readUInt32BE(16)).toBe(750)
+      expect(image.readUInt32BE(20)).toBe(600)
+      expect(sharing).toContain(`imageUrl: '/assets/${name}'`)
+    }
+    expect(sharing).not.toMatch(/https?:\/\//)
   })
 })
 

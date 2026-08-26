@@ -10,4 +10,5 @@
     <view class="back" hover-class="back-pressed" bindtap="goBack">← 上一题</view>
   </view>
   <view class="quiz-footnote"><text class="record-dot"></text>答案仅保存在本机</view>
+  <view wx:if="{{leavingQuiz}}" class="quiz-exit-mask" aria-hidden="true"></view>
 </view>

@@ -17,7 +17,7 @@ function persistProgress(value: QuizProgress): void {
 }
 
 Page({
-  data: { question: {}, questionNumber: 1, total: definition.questions.length, selectedId: '', interactionLocked: false, canGoBack: false },
+  data: { question: {}, questionNumber: 1, total: definition.questions.length, selectedId: '', interactionLocked: false, canGoBack: false, leavingQuiz: false },
   onLoad() {
     const stored = loadProgress(definition)
     if (stored.status === 'corrupt') return recoverCorruptProgress(definition)
@@ -42,7 +42,7 @@ Page({
     const question = definition.questions[progress.currentQuestionIndex]
     if (!question) return
     actionLocked = false
-    this.setData({ question, questionNumber: progress.currentQuestionIndex + 1, selectedId: progress.answers[question.id] ?? '', interactionLocked: false, canGoBack: progress.currentQuestionIndex > 0 })
+    this.setData({ question, questionNumber: progress.currentQuestionIndex + 1, selectedId: progress.answers[question.id] ?? '', interactionLocked: false, canGoBack: progress.currentQuestionIndex > 0, leavingQuiz: false })
     analytics.track('question_view', { testId: definition.id, questionId: question.id, stage: 'continuous' })
   },
   selectOption(event: any) {
@@ -51,10 +51,11 @@ Page({
     if (!question) return
     const optionId = String(event.detail.optionId)
     const previous = progress.answers[question.id]
+    const isFinalQuestion = progress.currentQuestionIndex === definition.questions.length - 1
     actionLocked = true
     progress = setAnswer(progress, definition, question.id, optionId)
     persistProgress(progress)
-    this.setData({ selectedId: optionId, interactionLocked: true })
+    this.setData({ selectedId: optionId, interactionLocked: true, leavingQuiz: isFinalQuestion })
     analytics.track(previous ? 'answer_change' : 'answer_select', { testId: definition.id, questionId: question.id, optionId, stage: 'continuous' })
     transitionTimer = setTimeout(() => {
       if (!progress) return
