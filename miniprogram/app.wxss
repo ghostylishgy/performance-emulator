@@ -9,10 +9,16 @@ page {
 }
 
 button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
   border-radius: var(--radius-control);
   font-size: 30rpx;
   font-weight: 700;
   letter-spacing: .2rpx;
+  line-height: 1.2;
+  text-align: center;
   white-space: nowrap;
 }
 

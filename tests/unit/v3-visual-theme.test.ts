@@ -83,6 +83,39 @@ describe('Warm Internal Memo visual system', () => {
     expect(read('miniprogram/app.wxss')).toContain('font-size: var(--text-body)')
   })
 
+  it('centers native button content through the shared base without flattening intentional left-aligned controls', () => {
+    const appCss = read('miniprogram/app.wxss')
+    const buttonRule = (appCss.match(/button \{[^}]+\}/) ?? [''])[0]
+    for (const contract of [
+      'display: flex', 'align-items: center', 'justify-content: center', 'box-sizing: border-box',
+      'line-height: 1.2', 'text-align: center', 'white-space: nowrap',
+    ]) expect(buttonRule).toContain(contract)
+    expect(appCss).toContain('button::after { border: none; }')
+
+    const homeCss = read('miniprogram/pages/home/index.wxss')
+    expect(homeCss).toContain('.start { display:flex; align-items:center; justify-content:center;')
+    const quizCss = read('miniprogram/pages/quiz/index.wxss')
+    expect(quizCss).toContain('.back { display:inline-flex; align-items:center; justify-content:flex-start;')
+    const optionCss = read('miniprogram/components/option-card/index.wxss')
+    expect(optionCss).toContain('.option { position:relative; display:flex; align-items:flex-start;')
+    const resultCss = read('miniprogram/pages/result/index.wxss')
+    expect(resultCss).toContain('.pair-manual-action { width:100%; min-height:88rpx;')
+    expect(resultCss).toContain('.reflection-close { position:sticky; bottom:0; display:flex; align-items:center; justify-content:center; width:100%; min-height:88rpx;')
+  })
+
+  it('adds only a compact CSS paper fold to the death annotation', () => {
+    const resultCss = read('miniprogram/pages/result/index.wxss')
+    const noteRule = (resultCss.match(/\.death-annotation \{[^}]+\}/) ?? [''])[0]
+    const foldRule = (resultCss.match(/\.death-annotation::after \{[^}]+\}/) ?? [''])[0]
+    expect(noteRule).toContain('position:relative')
+    expect(noteRule).toContain('overflow:hidden')
+    expect(foldRule).toContain('width:16rpx')
+    expect(foldRule).toContain('height:16rpx')
+    expect(foldRule).toContain('var(--color-accent)')
+    expect(foldRule).toContain('var(--color-card)')
+    expect(foldRule).not.toContain('box-shadow')
+  })
+
   it('retires page-wide English system labels and keeps at most two per page', () => {
     const pages: Array<[string, string]> = [
       ['home', read('miniprogram/pages/home/index.wxml')],
