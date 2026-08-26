@@ -148,6 +148,55 @@ describe('Warm Internal Memo visual system', () => {
       expect.objectContaining({ imageUrl: '/assets/share-single.png' }),
     )
   })
+
+  it('uses one local mascot component in exactly the three approved scenes', () => {
+    const home = read('miniprogram/pages/home/index.wxml')
+    const result = read('miniprogram/pages/result/index.wxml')
+    const quiz = read('miniprogram/pages/quiz/index.wxml')
+    const component = read('miniprogram/components/mascot/index.wxml')
+    const homeConfig = read('miniprogram/pages/home/index.json')
+    const resultConfig = read('miniprogram/pages/result/index.json')
+
+    expect(home).toContain('<mascot scene="welcome" />')
+    expect(result).toContain('<mascot scene="analysis" />')
+    expect(result).toContain('<mascot scene="result" />')
+    expect(result).toContain('wx:if="{{!pairRelationship}}" class="persona-mascot"')
+    expect(quiz).not.toContain('<mascot')
+    expect(homeConfig).toContain('"mascot": "../../components/mascot/index"')
+    expect(resultConfig).toContain('"mascot": "../../components/mascot/index"')
+    for (const scene of ['welcome', 'analysis', 'result']) {
+      expect(component).toContain(`/assets/mascot/${scene}.png`)
+    }
+
+    const usages = filesUnder('miniprogram')
+      .filter((path) => path.endsWith('.wxml'))
+      .flatMap((path) => read(path).match(/<mascot\b/g) ?? [])
+    expect(usages).toHaveLength(3)
+    expect(read('miniprogram/platform/poster.ts')).not.toContain('/assets/mascot/')
+  })
+
+  it('keeps mascot assets compact, transparent-ready, and motion restrained', () => {
+    let totalBytes = 0
+    for (const scene of ['welcome', 'analysis', 'result']) {
+      const path = `miniprogram/assets/mascot/${scene}.png`
+      const image = readFileSync(path)
+      expect(image.subarray(1, 4).toString()).toBe('PNG')
+      expect(image.readUInt32BE(16)).toBe(512)
+      expect(image.readUInt32BE(20)).toBe(512)
+      expect(image[25]).toBe(6)
+      totalBytes += image.byteLength
+    }
+    expect(totalBytes).toBeLessThan(1_000_000)
+
+    const css = read('miniprogram/components/mascot/index.wxss')
+    expect(css).toContain('.mascot--welcome { width:216rpx; height:216rpx;')
+    expect(css).toContain('.mascot--analysis { width:236rpx; height:236rpx;')
+    expect(css).toContain('.mascot--result { width:168rpx; height:168rpx;')
+    expect(css).toMatch(/\.mascot--analysis[^}]+infinite/)
+    expect(css.match(/infinite/g)).toHaveLength(1)
+    expect(css).toContain('@media (prefers-reduced-motion: reduce)')
+    expect(css).not.toMatch(/@keyframes[^}]+(?:top|left|width|height|margin|padding):/)
+  })
 })
 
 describe('system font strategy boundary', () => {

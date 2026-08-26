@@ -1,0 +1,17 @@
+/* Hallmark · genre: playful · tone: lively, smart, reliable · anchor: blue-gold · macrostructure: single-purpose scene asset · pre-emit critique: P5 H5 E5 S5 R5 V4 · motion: pass · mobile: pass */
+:host { display:block; line-height:0; }
+.mascot { flex:none; }
+.mascot--welcome { width:216rpx; height:216rpx; animation:mascot-welcome-in .42s ease-out both; }
+.mascot--analysis { width:236rpx; height:236rpx; animation:mascot-analysis-float 2.6s ease-in-out infinite; }
+.mascot--result { width:168rpx; height:168rpx; animation:mascot-result-in .36s ease-out both; }
+.mascot__image { display:block; width:100%; height:100%; }
+
+@keyframes mascot-welcome-in { from { opacity:0; transform:translateY(12rpx) scale(.96); } to { opacity:1; transform:translateY(0) scale(1); } }
+@keyframes mascot-analysis-float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-8rpx); } }
+@keyframes mascot-result-in { from { opacity:0; transform:translateY(10rpx); } to { opacity:1; transform:translateY(0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .mascot--welcome,
+  .mascot--analysis,
+  .mascot--result { animation:none; opacity:1; transform:none; }
+}

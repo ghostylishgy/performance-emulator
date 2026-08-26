@@ -1,0 +1,5 @@
+<view class="mascot mascot--{{scene}}" aria-hidden="true">
+  <image wx:if="{{scene === 'welcome'}}" class="mascot__image" src="/assets/mascot/welcome.png" mode="aspectFit" />
+  <image wx:elif="{{scene === 'analysis'}}" class="mascot__image" src="/assets/mascot/analysis.png" mode="aspectFit" />
+  <image wx:elif="{{scene === 'result'}}" class="mascot__image" src="/assets/mascot/result.png" mode="aspectFit" />
+</view>

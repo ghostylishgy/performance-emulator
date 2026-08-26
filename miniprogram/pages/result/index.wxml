@@ -1,7 +1,7 @@
 <view wx:if="{{loading}}" class="page-shell result-loading-page">
   <view class="result-loading panel">
     <view class="loading-kicker">组织内部计算流程</view>
-    <view class="loading-symbol"><view class="orbit orbit-one"></view><view class="orbit orbit-two"></view><view class="symbol-core">烛</view><view class="symbol-spark">✦</view></view>
+    <view class="loading-mascot"><mascot scene="analysis" /></view>
     <view class="loading-title">正在计算。大概。</view>
     <view class="loading-active-line"><text class="loading-status">●</text><text class="loading-active-copy">{{activeCalculationLine}}</text></view>
     <view class="loading-progress" aria-label="计算进度">
@@ -20,6 +20,7 @@
     <view class="section-kicker"><text class="kicker-pill kicker-pill-brand">RESULT CONFIRMED</text><text class="kicker-index">01</text></view>
     <view class="persona-name">{{result.personaName}}</view>
     <view class="persona-copy">「{{result.personaCopy}}」</view>
+    <view wx:if="{{!pairRelationship}}" class="persona-mascot"><mascot scene="result" /></view>
   </view>
 
   <view wx:if="{{revealStage >= 2}}" class="reveal-card death-reveal panel">

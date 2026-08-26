@@ -1,5 +1,7 @@
 {
   "navigationBarTitleText": "绩效校准系统",
-  "usingComponents": {}
+  "usingComponents": {
+    "mascot": "../../components/mascot/index"
+  }
 }
 

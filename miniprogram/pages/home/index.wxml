@@ -1,6 +1,6 @@
 <view wx:if="{{openingVisible}}" class="opening">
   <view class="opening-file-id">INTERNAL ONLY</view>
-  <view class="opening-mark"><view class="opening-flame"></view></view>
+  <view class="opening-mascot"><mascot scene="welcome" /></view>
   <view class="opening-brand">烛龙实验室</view>
   <view class="opening-product">绩效内测会</view>
   <view class="opening-status">
