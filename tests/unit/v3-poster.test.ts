@@ -15,6 +15,7 @@ function fakeContext() {
   return {
     scale: vi.fn(), fillRect: vi.fn(), fillText: vi.fn(), beginPath: vi.fn(), moveTo: vi.fn(),
     lineTo: vi.fn(), quadraticCurveTo: vi.fn(), closePath: vi.fn(), fill: vi.fn(),
+    save: vi.fn(), restore: vi.fn(), translate: vi.fn(), rotate: vi.fn(), drawImage: vi.fn(),
     measureText: (text: string) => ({ width: [...text].length * 8 }),
     fillStyle: '', font: '', textBaseline: '',
   }
@@ -61,6 +62,17 @@ describe('local Canvas result cards', () => {
     expect(drawnText.indexOf('单点故障型')).toBeLessThan(drawnText.indexOf('—'))
   })
 
+  it('normalizes WeChat device-scaled text metrics before wrapping', () => {
+    const context = fakeContext() as ReturnType<typeof fakeContext> & { __posterPixelRatio?: number }
+    context.__posterPixelRatio = 3
+    context.font = '700 15px sans-serif'
+    context.measureText = (text: string) => ({ width: [...text].length * 45 })
+    const copy = '活确实干了，结果也确实有了；只是在组织记忆里，你偶尔被压缩成了团队。'
+    const lines = wrapCanvasText(context, copy, 270, 10)
+    expect(lines.join('')).toBe(copy)
+    expect(lines.length).toBeLessThanOrEqual(3)
+  })
+
   it('creates a local PNG through the 2D canvas node', async () => {
     const context = fakeContext()
     const canvas = { width: 0, height: 0, getContext: () => context }
@@ -83,6 +95,40 @@ describe('local Canvas result cards', () => {
     expect(exportSizes).toEqual([[1500, 2400]])
   })
 
+  it('loads the local result mascot before exporting a single poster', async () => {
+    const context = fakeContext()
+    let loadedSource = ''
+    const canvas = {
+      width: 0,
+      height: 0,
+      getContext: () => context,
+      createImage: () => {
+        const image: Record<string, any> = {}
+        Object.defineProperty(image, 'src', {
+          set: (value: string) => {
+            loadedSource = value
+            queueMicrotask(() => image.onload?.())
+          },
+        })
+        return image
+      },
+    }
+    ;(globalThis as typeof globalThis & { wx: unknown }).wx = {
+      createSelectorQuery: () => ({
+        in: () => ({
+          select: () => ({
+            fields: () => ({ exec: (callback: (items: unknown[]) => void) => callback([{ node: canvas }]) }),
+          }),
+        }),
+      }),
+      getWindowInfo: () => ({ pixelRatio: 3 }),
+      canvasToTempFilePath: (options: any) => options.success({ tempFilePath: 'single-with-mascot.png' }),
+    }
+    await expect(createPosterImage({}, createSinglePosterModel({ outcome: '3.5+' }))).resolves.toBe('single-with-mascot.png')
+    expect(loadedSource).toBe('/assets/mascot/result.png')
+    expect(context.drawImage).toHaveBeenCalled()
+  })
+
   it('keeps all configured single and relationship copy inside the poster canvas', () => {
     const models = [allA, allB, allC, allD].map((answers) =>
       createSinglePosterModel(createResultViewModel(definition, evaluateComplete(definition, answers))))
@@ -99,6 +145,32 @@ describe('local Canvas result cards', () => {
         expect(Number(call[2])).toBeGreaterThanOrEqual(0)
         expect(Number(call[2])).toBeLessThan(590)
       }
+    }
+  })
+
+  it('keeps the single poster hierarchy compact under long copy', () => {
+    const context = fakeContext()
+    const canvas = { width: 0, height: 0, getContext: () => context }
+    const model = createSinglePosterModel({
+      outcome: '3.5+',
+      personaName: '一个特别特别长的职场人格名称测试',
+      personaCopy: '这是一个很长很长的金句，用来验证单人结果海报在最长文案下依然能够稳定换行并且完整呈现。',
+      deathCauseLabel: '成果后知后觉与沟通断层',
+      evidence: [
+        { id: 'e1', source: 'synthesis', questionIds: [], answerKeys: [], text: '第一条很长的抓包证据，用于验证系统抓包区域不会挤出海报底部。', category: 'expression_org' },
+        { id: 'e2', source: 'single', questionIds: [], answerKeys: [], text: '第二条也比较长的抓包证据，应该保持清晰和完整。', category: 'expression_org' },
+      ],
+    })
+    drawPoster(canvas, model, 4)
+    const drawnText = context.fillText.mock.calls
+    const labels = drawnText.map((call) => call[0])
+    expect(labels).toContain('PERFORMANCE SCORE')
+    expect(labels).toContain('PRIMARY CAUSE')
+    expect(labels).toContain('SYSTEM CAPTURE / 系统抓包')
+    expect(labels.indexOf(model.title)).toBeLessThan(labels.indexOf('3.5+'))
+    expect(labels.indexOf('3.5+')).toBeLessThan(labels.indexOf('SYSTEM CAPTURE / 系统抓包'))
+    for (const call of drawnText) {
+      if (!['同样是3.5，死法各不相同。', '大厂绩效模拟器', '烛'].includes(call[0])) expect(Number(call[2])).toBeLessThan(548)
     }
   })
 

@@ -182,7 +182,7 @@ describe('Warm Internal Memo visual system', () => {
     )
   })
 
-  it('uses one local mascot component in exactly the three approved scenes', () => {
+  it('uses one local mascot component in three UI scenes and reuses the result pose in the single poster', () => {
     const home = read('miniprogram/pages/home/index.wxml')
     const result = read('miniprogram/pages/result/index.wxml')
     const quiz = read('miniprogram/pages/quiz/index.wxml')
@@ -205,7 +205,7 @@ describe('Warm Internal Memo visual system', () => {
       .filter((path) => path.endsWith('.wxml'))
       .flatMap((path) => read(path).match(/<mascot\b/g) ?? [])
     expect(usages).toHaveLength(3)
-    expect(read('miniprogram/platform/poster.ts')).not.toContain('/assets/mascot/')
+    expect(read('miniprogram/platform/poster.ts')).toContain("'/assets/mascot/result.png'")
   })
 
   it('keeps mascot assets compact, transparent-ready, and motion restrained', () => {

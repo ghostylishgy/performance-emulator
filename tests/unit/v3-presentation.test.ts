@@ -310,14 +310,31 @@ describe('V3 presentation flow', () => {
       '.loading-active-copy',
       '.evidence-text',
       '.relationship-copy',
-      '.question',
-      '.text',
       '.paragraph',
       '.footer',
     ]) {
       const rule = (styles.match(new RegExp(`(?:^|\\n)${selector.replace('.', '\\.')} \\{[^}]+\\}`)) ?? [''])[0]
       expect(rule, `${selector} should opt into balanced wrapping`).toContain('text-wrap:balance')
     }
+  })
+
+  it('lets quiz questions and options wrap naturally without authored line breaks', () => {
+    for (const question of definition.questions) {
+      expect(question.text).not.toContain('\n')
+      for (const option of question.options) expect(option.text).not.toContain('\n')
+    }
+    for (const [path, selector] of [
+      ['miniprogram/components/question-card/index.wxss', '.question'],
+      ['miniprogram/components/option-card/index.wxss', '.text'],
+    ] as const) {
+      const rule = (read(path).match(new RegExp(`(?:^|\\n)${selector.replace('.', '\\.')} \\{[^}]+\\}`)) ?? [''])[0]
+      expect(rule).toContain('white-space:normal')
+      expect(rule).not.toContain('white-space:pre-line')
+      expect(rule).not.toContain('text-wrap:balance')
+    }
+    const optionTextRule = (read('miniprogram/components/option-card/index.wxss').match(/(?:^|\n)\.text \{[^}]+\}/) ?? [''])[0]
+    expect(optionTextRule).toContain('flex:1')
+    expect(optionTextRule).toContain('min-width:0')
   })
 
   it('keeps entertainment disclaimers concise on home and result pages', () => {

@@ -1,4 +1,4 @@
 @import "../../styles/tokens.wxss";
 
-.question { min-width:0; max-width:660rpx; overflow-wrap:anywhere; white-space:pre-line; color:var(--color-text); font-size:40rpx; font-weight:800; line-height:1.44; text-align:left; letter-spacing:-.5rpx; text-wrap:balance; }
+.question { min-width:0; max-width:660rpx; overflow-wrap:anywhere; white-space:normal; color:var(--color-text); font-size:40rpx; font-weight:800; line-height:1.44; text-align:left; letter-spacing:-.5rpx; }
 .options { display:flex; flex-direction:column; gap:var(--space-sm); margin-top:46rpx; padding-bottom:24rpx; }

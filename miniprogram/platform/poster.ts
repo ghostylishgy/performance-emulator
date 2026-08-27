@@ -46,12 +46,20 @@ export function createRelationshipPosterModel(input: Partial<RelationshipPosterI
 
 export function wrapCanvasText(context: any, text: string, maxWidth: number, maxLines = 20): string[] {
   const lines: string[] = []
+  const measuredWidth = (value: string): number => {
+    const rawWidth = context.measureText(value).width
+    const pixelRatio = Math.max(1, Number(context.__posterPixelRatio) || 1)
+    const fontSize = Number((String(context.font ?? '').match(/([\d.]+)px/) ?? [])[1] ?? 0)
+    if (pixelRatio <= 1 || !fontSize) return rawWidth
+    const probeWidth = context.measureText('测').width
+    return probeWidth > fontSize * 1.65 ? rawWidth / pixelRatio : rawWidth
+  }
   for (const paragraph of String(text ?? '').split('\n')) {
     if (!paragraph) { lines.push(''); continue }
     let line = ''
     for (const char of [...paragraph]) {
       const candidate = `${line}${char}`
-      if (line && context.measureText(candidate).width > maxWidth) {
+      if (line && measuredWidth(candidate) > maxWidth) {
         lines.push(line)
         line = char
         if (lines.length >= maxLines) return lines
@@ -87,6 +95,7 @@ export const POSTER_COLORS = {
   primary: '#e94f87', primaryStrong: '#c9366f', primaryPale: '#fbe4ed',
   secondary: '#89658e', secondaryStrong: '#704f75', secondaryPale: '#f0e7f1',
   accent: '#f0ca6a', accentSoft: '#fff3ca', border: '#e4dad4',
+  paperEdge: '#8d3857', paperLayer: '#eadfce', paperFiber: '#eadfd5', tape: '#f2a7bf', causeInk: '#725819',
 } as const
 
 function fillRoundedRect(context: any, x: number, y: number, width: number, height: number, radius: number, color: string): void {
@@ -95,7 +104,63 @@ function fillRoundedRect(context: any, x: number, y: number, width: number, heig
   context.fill()
 }
 
+function withRotation(context: any, x: number, y: number, angle: number, draw: () => void): void {
+  if (typeof context.save !== 'function' || typeof context.restore !== 'function') {
+    draw()
+    return
+  }
+  context.save()
+  context.translate(x, y)
+  context.rotate(angle)
+  context.translate(-x, -y)
+  draw()
+  context.restore()
+}
+
+function drawSinglePaper(context: any): void {
+  context.fillStyle = POSTER_COLORS.paperLayer
+  context.fillRect(0, 0, 375, 600)
+  context.fillStyle = POSTER_COLORS.paperEdge
+  context.fillRect(0, 0, 375, 16)
+  fillRoundedRect(context, 7, 5, 361, 592, 15, POSTER_COLORS.paperLayer)
+  fillRoundedRect(context, 10, 10, 355, 584, 13, POSTER_COLORS.page)
+  context.fillStyle = POSTER_COLORS.primary
+  context.fillRect(10, 20, 4, 550)
+
+  context.fillStyle = POSTER_COLORS.paperFiber
+  for (let index = 0; index < 86; index += 1) {
+    const x = 17 + ((index * 71) % 338)
+    const y = 17 + ((index * 97) % 566)
+    context.fillRect(x, y, index % 4 === 0 ? 3 : 1, 1)
+  }
+}
+
 function drawPosterHeader(context: any, model: PosterModel, spineColor: string): void {
+  if (model.kind === 'single') {
+    fillRoundedRect(context, 24, 20, 228, 32, 3, POSTER_COLORS.card)
+    fillRoundedRect(context, 31, 27, 18, 18, 9, POSTER_COLORS.primaryPale)
+    context.fillStyle = POSTER_COLORS.primaryStrong
+    context.font = '900 9px sans-serif'
+    context.fillText('烛', 35, 31)
+    context.fillStyle = POSTER_COLORS.ink
+    context.font = '800 11px sans-serif'
+    context.fillText(model.brand, 56, 30)
+
+    withRotation(context, 320, 35, 0.025, () => {
+      fillRoundedRect(context, 284, 18, 72, 34, 2, POSTER_COLORS.primaryPale)
+      context.fillStyle = POSTER_COLORS.primaryStrong
+      context.font = '900 10px sans-serif'
+      context.fillText('INTERNAL', 294, 29)
+      context.fillStyle = POSTER_COLORS.primary
+      context.fillRect(294, 43, 50, 1)
+    })
+
+    context.fillStyle = POSTER_COLORS.secondaryStrong
+    context.font = '800 11px sans-serif'
+    context.fillText('PERFORMANCE RECORD · V3', 28, 67)
+    return
+  }
+
   context.fillStyle = spineColor
   context.fillRect(0, 0, 9, 600)
   context.fillStyle = POSTER_COLORS.inkSecondary
@@ -103,52 +168,239 @@ function drawPosterHeader(context: any, model: PosterModel, spineColor: string):
   context.fillText(model.brand, 28, 25)
   context.fillStyle = POSTER_COLORS.secondaryStrong
   context.font = '800 11px sans-serif'
-  context.fillText(model.kind === 'single' ? 'PERFORMANCE RECORD · V3' : 'RELATIONSHIP REVIEW · V3', 28, 54)
-  fillRoundedRect(context, 296, 23, 52, 24, 5, model.kind === 'single' ? POSTER_COLORS.primaryPale : POSTER_COLORS.secondaryPale)
-  context.fillStyle = model.kind === 'single' ? POSTER_COLORS.primaryStrong : POSTER_COLORS.secondaryStrong
+  context.fillText('RELATIONSHIP REVIEW · V3', 28, 54)
+  fillRoundedRect(context, 296, 23, 52, 24, 5, POSTER_COLORS.secondaryPale)
+  context.fillStyle = POSTER_COLORS.secondaryStrong
   context.font = '900 10px sans-serif'
   context.fillText('INTERNAL', 304, 30)
 }
 
-function drawSinglePoster(context: any, model: PosterModel): void {
+const SINGLE_POSTER_LAYOUT = {
+  titleX: 28,
+  titleY: 91,
+  titleWidth: 228,
+  titleLineHeight: 39,
+  quoteX: 22,
+  quoteWidth: 331,
+  quoteMinY: 158,
+  quotePaddingX: 34,
+  quoteTopPadding: 24,
+  quoteLineHeight: 18,
+  quoteMaxLines: 4,
+  factsGap: 16,
+  scoreX: 26,
+  scoreWidth: 158,
+  scoreHeight: 74,
+  causeX: 200,
+  causeWidth: 151,
+  causeHeight: 82,
+  evidenceGap: 96,
+} as const
+
+interface PosterDrawAssets {
+  mascot?: any
+}
+
+function drawSingleUnderline(context: any, y: number): void {
+  context.fillStyle = POSTER_COLORS.primary
+  context.fillRect(29, y, 196, 2)
+  context.fillRect(221, y - 1, 14, 3)
+}
+
+function drawSingleMascot(context: any, mascot: any): void {
+  if (!mascot || typeof context.drawImage !== 'function') return
+  try {
+    context.drawImage(mascot, 45, 0, 422, 350, 248, 75, 127, 106)
+  } catch {
+    // The poster remains complete if a device cannot decode the optional local asset.
+  }
+}
+
+function drawQuotePaper(context: any, x: number, y: number, width: number, height: number): void {
+  context.beginPath()
+  context.moveTo(x + 8, y)
+  context.lineTo(x + width - 8, y + 2)
+  context.lineTo(x + width, y + 12)
+  context.lineTo(x + width - 2, y + height - 9)
+  context.lineTo(x + width - 13, y + height)
+  context.lineTo(x + 17, y + height - 2)
+  context.lineTo(x, y + height - 12)
+  context.lineTo(x + 3, y + 10)
+  context.closePath()
+  context.fillStyle = POSTER_COLORS.primaryPale
+  context.fill()
+
+  for (const offset of [21, 43, 65]) fillRoundedRect(context, x - 1, y + offset, 9, 9, 5, POSTER_COLORS.page)
+  withRotation(context, x + width - 35, y + 10, -0.13, () => {
+    context.fillStyle = POSTER_COLORS.tape
+    context.fillRect(x + width - 58, y + 1, 48, 12)
+  })
+}
+
+function drawScoreStamp(context: any, model: PosterModel, y: number): void {
+  const { scoreX, scoreWidth, scoreHeight } = SINGLE_POSTER_LAYOUT
+  withRotation(context, scoreX + scoreWidth / 2, y + scoreHeight / 2, -0.012, () => {
+    fillRoundedRect(context, scoreX, y, scoreWidth, scoreHeight, 7, POSTER_COLORS.primaryStrong)
+    fillRoundedRect(context, scoreX + 4, y + 4, scoreWidth - 8, scoreHeight - 8, 5, POSTER_COLORS.page)
+    context.fillStyle = POSTER_COLORS.primaryStrong
+    context.font = '900 34px sans-serif'
+    context.fillText(model.score ?? '—', scoreX + 14, y + 12)
+    context.fillStyle = POSTER_COLORS.secondaryStrong
+    context.font = '800 8px sans-serif'
+    context.fillText('PERFORMANCE SCORE', scoreX + 14, y + 58)
+  })
+
+  fillRoundedRect(context, scoreX + scoreWidth - 30, y + scoreHeight - 25, 37, 37, 19, POSTER_COLORS.primaryStrong)
+  fillRoundedRect(context, scoreX + scoreWidth - 26, y + scoreHeight - 21, 29, 29, 15, POSTER_COLORS.primaryPale)
   context.fillStyle = POSTER_COLORS.primaryStrong
-  context.font = '900 38px sans-serif'
-  let y = drawLines(context, wrapCanvasText(context, model.title, 319, 2), 28, 84, 45) + 8
+  context.font = '900 9px sans-serif'
+  context.fillText('核准', scoreX + scoreWidth - 21, y + scoreHeight - 11)
+}
 
-  const quoteY = Math.max(158, y)
-  fillRoundedRect(context, 24, quoteY, 327, 112, 17, POSTER_COLORS.primaryPale)
+function drawCauseMemo(context: any, model: PosterModel, y: number): void {
+  const { causeX, causeWidth, causeHeight } = SINGLE_POSTER_LAYOUT
+  const cause = model.subtitle.replace(/^主要死因：/, '') || '暂无明显死因'
+  withRotation(context, causeX + causeWidth / 2, y + causeHeight / 2, 0.014, () => {
+    context.fillStyle = POSTER_COLORS.paperLayer
+    context.fillRect(causeX + 4, y + 5, causeWidth, causeHeight)
+    fillRoundedRect(context, causeX, y, causeWidth, causeHeight, 2, POSTER_COLORS.accentSoft)
+    fillRoundedRect(context, causeX + causeWidth / 2 - 6, y - 5, 12, 12, 6, POSTER_COLORS.accent)
+    context.fillStyle = POSTER_COLORS.causeInk
+    context.font = '800 13px sans-serif'
+    drawLines(context, wrapCanvasText(context, cause, causeWidth - 28, 3), causeX + 14, y + 20, 17)
+    context.fillStyle = POSTER_COLORS.accent
+    context.fillRect(causeX + 14, y + causeHeight - 12, 42, 2)
+  })
+}
+
+function drawEvidenceMemo(context: any, model: PosterModel, y: number): void {
+  const evidence = model.evidence.slice(0, 2)
+  const wrapped = evidence.map((item) => wrapCanvasText(context, item, 251, 2))
+  const itemHeight = wrapped.reduce((total, lines) => total + Math.max(1, lines.length) * 16 + 7, 0)
+  const cardHeight = Math.max(74, 35 + itemHeight)
+
+  fillRoundedRect(context, 22, y, 331, cardHeight, 7, POSTER_COLORS.card)
+  context.fillStyle = POSTER_COLORS.secondaryStrong
+  context.fillRect(22, y, 331, 4)
+  context.fillStyle = POSTER_COLORS.secondaryStrong
+  context.font = '800 11px sans-serif'
+  context.fillText('SYSTEM CAPTURE / 系统抓包', 36, y + 14)
+
+  let itemY = y + 35
+  for (const [index, lines] of wrapped.entries()) {
+    fillRoundedRect(context, 36, itemY, 22, 22, 3, POSTER_COLORS.secondaryStrong)
+    context.fillStyle = POSTER_COLORS.card
+    context.font = '900 10px sans-serif'
+    context.fillText(String(index + 1).padStart(2, '0'), 40, itemY + 6)
+    context.fillStyle = POSTER_COLORS.inkSecondary
+    context.font = '600 11px sans-serif'
+    itemY = drawLines(context, lines.length ? lines : ['暂无抓包证据'], 68, itemY + 2, 16) + 7
+    if (index === 0 && wrapped.length > 1) {
+      context.fillStyle = POSTER_COLORS.border
+      context.fillRect(68, itemY - 4, 253, 1)
+    }
+  }
+}
+
+function drawSingleFooter(context: any, model: PosterModel): void {
+  const y = 535
+  context.beginPath()
+  context.moveTo(10, y + 5)
+  context.lineTo(62, y)
+  context.lineTo(124, y + 4)
+  context.lineTo(187, y + 1)
+  context.lineTo(248, y + 5)
+  context.lineTo(311, y + 2)
+  context.lineTo(365, y + 6)
+  context.lineTo(365, 594)
+  context.lineTo(10, 594)
+  context.closePath()
+  context.fillStyle = POSTER_COLORS.paperLayer
+  context.fill()
+
+  context.fillStyle = POSTER_COLORS.primaryStrong
+  context.fillRect(25, y + 1, 18, 39)
+  context.fillStyle = POSTER_COLORS.page
+  context.beginPath()
+  context.moveTo(25, y + 40)
+  context.lineTo(34, y + 32)
+  context.lineTo(43, y + 40)
+  context.closePath()
+  context.fill()
+
+  const footerLines = String(model.footer).split('\n')
   context.fillStyle = POSTER_COLORS.ink
-  context.font = '700 15px sans-serif'
-  drawLines(context, wrapCanvasText(context, `“${model.quote}”`, 283, 3), 46, quoteY + 20, 23)
+  context.font = '700 11px sans-serif'
+  context.fillText(footerLines[0] ?? '', 56, y + 12)
+  context.fillStyle = POSTER_COLORS.primaryStrong
+  context.font = '900 13px sans-serif'
+  context.fillText(footerLines[1] ?? '', 56, y + 31)
 
-  const factY = quoteY + 130
+  fillRoundedRect(context, 311, y + 5, 38, 38, 19, POSTER_COLORS.primaryStrong)
+  fillRoundedRect(context, 316, y + 10, 28, 28, 14, POSTER_COLORS.primary)
+  context.fillStyle = POSTER_COLORS.primaryPale
+  context.font = '900 12px sans-serif'
+  context.fillText('烛', 324, y + 17)
+}
+
+function drawSinglePoster(context: any, model: PosterModel, assets: PosterDrawAssets): void {
+  context.fillStyle = POSTER_COLORS.primaryStrong
+  context.font = '900 36px sans-serif'
+  const titleLines = wrapCanvasText(context, model.title, SINGLE_POSTER_LAYOUT.titleWidth, 2)
+  const titleEnd = drawLines(
+    context,
+    titleLines,
+    SINGLE_POSTER_LAYOUT.titleX,
+    SINGLE_POSTER_LAYOUT.titleY,
+    SINGLE_POSTER_LAYOUT.titleLineHeight,
+  )
+  const underlineY = titleEnd + 7
+  drawSingleUnderline(context, underlineY)
+  drawSingleMascot(context, assets.mascot)
+
+  const quote = `“${model.quote}”`
+  context.font = '700 13px sans-serif'
+  let quoteLines = wrapCanvasText(context, quote, SINGLE_POSTER_LAYOUT.quoteWidth - SINGLE_POSTER_LAYOUT.quotePaddingX * 2, 20)
+  if (quoteLines.length > SINGLE_POSTER_LAYOUT.quoteMaxLines) {
+    context.font = '700 12px sans-serif'
+    quoteLines = wrapCanvasText(context, quote, SINGLE_POSTER_LAYOUT.quoteWidth - SINGLE_POSTER_LAYOUT.quotePaddingX * 2, 20)
+  }
+  quoteLines = quoteLines.slice(0, SINGLE_POSTER_LAYOUT.quoteMaxLines)
+  const quoteY = Math.max(SINGLE_POSTER_LAYOUT.quoteMinY, underlineY + 13)
+  const quoteHeight = Math.max(96, SINGLE_POSTER_LAYOUT.quoteTopPadding + quoteLines.length * SINGLE_POSTER_LAYOUT.quoteLineHeight + 18)
+  drawQuotePaper(context, SINGLE_POSTER_LAYOUT.quoteX, quoteY, SINGLE_POSTER_LAYOUT.quoteWidth, quoteHeight)
+  context.fillStyle = POSTER_COLORS.secondary
+  context.font = '900 27px sans-serif'
+  context.fillText('“', 38, quoteY + 9)
+  context.fillText('”', 316, quoteY + quoteHeight - 34)
+  context.fillStyle = POSTER_COLORS.ink
+  drawLines(
+    context,
+    quoteLines,
+    SINGLE_POSTER_LAYOUT.quoteX + SINGLE_POSTER_LAYOUT.quotePaddingX,
+    quoteY + SINGLE_POSTER_LAYOUT.quoteTopPadding,
+    SINGLE_POSTER_LAYOUT.quoteLineHeight,
+  )
+
+  const factY = quoteY + quoteHeight + SINGLE_POSTER_LAYOUT.factsGap
   context.fillStyle = POSTER_COLORS.muted
   context.font = '800 11px sans-serif'
   context.fillText('FINAL RESULT', 28, factY)
-  context.fillText('PRIMARY CAUSE', 142, factY)
-  context.fillStyle = POSTER_COLORS.primary
-  context.font = '900 36px sans-serif'
-  context.fillText(model.score ?? '—', 28, factY + 16)
-  fillRoundedRect(context, 138, factY + 14, 213, 48, 10, POSTER_COLORS.accentSoft)
-  context.fillStyle = '#725819'
-  context.font = '800 13px sans-serif'
-  drawLines(context, wrapCanvasText(context, model.subtitle.replace(/^主要死因：/, ''), 185, 2), 152, factY + 25, 18)
-
-  const evidenceY = factY + 82
+  context.fillStyle = POSTER_COLORS.accent
+  context.fillRect(105, factY + 5, 53, 1)
   context.fillStyle = POSTER_COLORS.secondaryStrong
   context.font = '800 11px sans-serif'
-  context.fillText('SYSTEM CAPTURE / 系统抓包', 28, evidenceY)
-  let itemY = evidenceY + 23
-  for (const [index, item] of model.evidence.slice(0, 2).entries()) {
-    fillRoundedRect(context, 28, itemY + 1, 19, 19, 5, POSTER_COLORS.secondaryPale)
-    context.fillStyle = POSTER_COLORS.secondaryStrong
-    context.font = '900 10px sans-serif'
-    context.fillText(String(index + 1).padStart(2, '0'), 32, itemY + 5)
-    context.fillStyle = POSTER_COLORS.inkSecondary
-    context.font = '600 13px sans-serif'
-    const lines = wrapCanvasText(context, item, 280, 2)
-    itemY = drawLines(context, lines, 58, itemY + 1, 18) + 8
-  }
+  context.fillText('PRIMARY CAUSE', 200, factY)
+  context.fillStyle = POSTER_COLORS.accent
+  context.fillRect(295, factY + 5, 47, 1)
+
+  const scoreY = factY + 18
+  drawScoreStamp(context, model, scoreY)
+  drawCauseMemo(context, model, scoreY)
+
+  const evidenceY = scoreY + SINGLE_POSTER_LAYOUT.evidenceGap
+  drawEvidenceMemo(context, model, evidenceY)
+  drawSingleFooter(context, model)
 }
 
 function drawRelationshipPoster(context: any, model: PosterModel): void {
@@ -175,7 +427,12 @@ function drawRelationshipPoster(context: any, model: PosterModel): void {
   }
 }
 
-export function drawPoster(canvas: any, model: PosterModel, pixelRatio: number): { width: number; height: number } {
+export function drawPoster(
+  canvas: any,
+  model: PosterModel,
+  pixelRatio: number,
+  assets: PosterDrawAssets = {},
+): { width: number; height: number } {
   const width = 375
   const height = 600
   const dpr = Math.max(1, Math.min(4, Number(pixelRatio) || 1))
@@ -183,34 +440,55 @@ export function drawPoster(canvas: any, model: PosterModel, pixelRatio: number):
   canvas.height = height * dpr
   const context = canvas.getContext('2d')
   context.scale(dpr, dpr)
+  context.__posterPixelRatio = dpr
   context.fillStyle = POSTER_COLORS.page
   context.fillRect(0, 0, width, height)
   context.textBaseline = 'top'
+  if (model.kind === 'single') drawSinglePaper(context)
   drawPosterHeader(context, model, model.kind === 'single' ? POSTER_COLORS.primary : POSTER_COLORS.secondary)
-  if (model.kind === 'single') drawSinglePoster(context, model)
+  if (model.kind === 'single') drawSinglePoster(context, model, assets)
   else drawRelationshipPoster(context, model)
 
-  context.fillStyle = POSTER_COLORS.inkSecondary
-  context.font = '700 12px sans-serif'
-  drawLines(context, String(model.footer).split('\n'), 28, 554, 17)
+  if (model.kind === 'relationship') {
+    context.fillStyle = POSTER_COLORS.inkSecondary
+    context.font = '700 12px sans-serif'
+    drawLines(context, String(model.footer).split('\n'), 28, 554, 17)
+  }
   return { width, height }
+}
+
+function loadLocalCanvasImage(canvas: any, source: string): Promise<any | null> {
+  if (typeof canvas?.createImage !== 'function') return Promise.resolve(null)
+  return new Promise((resolve) => {
+    const image = canvas.createImage()
+    image.onload = () => resolve(image)
+    image.onerror = () => resolve(null)
+    image.src = source
+  })
 }
 
 export function createPosterImage(page: any, model: PosterModel): Promise<string> {
   return new Promise((resolve, reject) => {
-    wx.createSelectorQuery().in(page).select('#posterCanvas').fields({ node: true, size: true }).exec((result: any[]) => {
+    wx.createSelectorQuery().in(page).select('#posterCanvas').fields({ node: true, size: true }).exec(async (result: any[]) => {
       const canvas = result?.[0]?.node
       if (!canvas) return reject(new Error('本地画布初始化失败'))
-      const rawPixelRatio = wx.getWindowInfo?.().pixelRatio ?? wx.getSystemInfoSync?.().pixelRatio ?? 2
-      const pixelRatio = Math.max(1, Math.min(4, Number(rawPixelRatio) || 1))
-      const size = drawPoster(canvas, model, pixelRatio)
-      wx.canvasToTempFilePath({
-        canvas, x: 0, y: 0, width: size.width, height: size.height,
-        destWidth: size.width * pixelRatio, destHeight: size.height * pixelRatio,
-        fileType: 'png', quality: 1,
-        success: (response: { tempFilePath: string }) => resolve(response.tempFilePath),
-        fail: (error: unknown) => reject(error),
-      })
+      try {
+        const rawPixelRatio = wx.getWindowInfo?.().pixelRatio ?? wx.getSystemInfoSync?.().pixelRatio ?? 2
+        const pixelRatio = Math.max(1, Math.min(4, Number(rawPixelRatio) || 1))
+        const mascot = model.kind === 'single'
+          ? await loadLocalCanvasImage(canvas, '/assets/mascot/result.png')
+          : null
+        const size = drawPoster(canvas, model, pixelRatio, { mascot })
+        wx.canvasToTempFilePath({
+          canvas, x: 0, y: 0, width: size.width, height: size.height,
+          destWidth: size.width * pixelRatio, destHeight: size.height * pixelRatio,
+          fileType: 'png', quality: 1,
+          success: (response: { tempFilePath: string }) => resolve(response.tempFilePath),
+          fail: (error: unknown) => reject(error),
+        })
+      } catch (error) {
+        reject(error)
+      }
     })
   })
 }
