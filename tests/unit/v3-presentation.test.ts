@@ -15,6 +15,26 @@ describe('V3 presentation flow', () => {
     expect(quiz).not.toContain('chapter-transition')
   })
 
+  it('locks the approved home, question, result and reflection copy', () => {
+    const home = read('miniprogram/pages/home/index.wxml')
+    const result = read('miniprogram/pages/result/index.wxml')
+    const option = (questionId: string, optionId: string) => definition.questions
+      .find((question) => question.id === questionId)!.options.find((item) => item.id === optionId)!.text
+    expect(definition.subtitle).toBe('25题，测测你的工位物种。')
+    expect(home).toContain('正在确认优秀名额是否存在……')
+    expect(home).toContain('看看我是哪路牛马')
+    expect(option('Q1', 'B')).toBe('团队的项目，但最难啃的那块，确实是我扛的')
+    expect(option('Q3', 'C')).toBe('把领导最近半个月发过的问号翻出来，做了一次横向语气比对')
+    expect(option('Q14', 'A')).toBe('笑着说“能用上挺好”，剩下的意见交给后槽牙')
+    expect(option('Q24', 'A')).toBe('领导真会替我去抢，至少这次不是客套')
+    expect(option('Q24', 'B')).toBe('会替我说几句，能不能抢到就看现场了')
+    expect(result).toContain('组织内部校准记录')
+    expect(result).toContain('保存这份校准单（留底备查）')
+    expect(result).toContain('对结果存疑，申请复议')
+    expect(result).toContain('同样是 3.5，死法不同。')
+    expect(definition.reflection.footer).toBe('如果你笑完以后，还顺手想起了点什么，这个测试就没白做。')
+  })
+
   it('keeps persona-first hierarchy while moving score and death ahead of evidence', () => {
     const result = read('miniprogram/pages/result/index.wxml')
     const stages = [...result.matchAll(/revealStage >= (\d)/g)].map((match) => Number(match[1]))
@@ -24,7 +44,7 @@ describe('V3 presentation flow', () => {
     const score = result.indexOf('{{result.outcome}}')
     const death = result.indexOf('{{result.deathCauseLabel}}')
     const evidence = result.indexOf('系统抓包')
-    expect(result.indexOf('RESULT CONFIRMED')).toBeLessThan(persona)
+    expect(result.indexOf('CONFIDENTIAL')).toBeLessThan(persona)
     expect(persona).toBeLessThan(quote)
     expect(quote).toBeLessThan(score)
     expect(score).toBeLessThan(evidence)
@@ -182,10 +202,10 @@ describe('V3 presentation flow', () => {
     const leadBlock = (result.match(/<view wx:if="\{\{!pairRelationship\}\}" class="result-actions lead-actions">[\s\S]*?<\/view>/) ?? [''])[0]
     expect(leadBlock).toContain('bindtap="saveSinglePoster"')
     expect(leadBlock).toContain('bindtap="shareIntent"')
-    expect(leadBlock).toContain('找个人来对一下口径')
+    expect(leadBlock).toContain('看看 TA 是哪路牛马')
     expect(leadBlock).toContain('pair-privacy')
     expect(result.slice(0, result.indexOf('<view wx:if="{{!pairRelationship}}" class="result-actions lead-actions">')))
-      .not.toContain('保存我的结果卡')
+      .not.toContain('保存这份校准单（留底备查）')
   })
 
   it('hides the solo-stage action stack once a relationship result exists', () => {
@@ -197,8 +217,7 @@ describe('V3 presentation flow', () => {
     expect(relationshipElse).toBeGreaterThan(leadActions)
     const takeover = result.slice(relationshipElse)
     expect(takeover).not.toContain('lead-actions')
-    expect(takeover).not.toContain('保存我的结果卡')
-    expect(takeover).not.toContain('找个人来对一下口径')
+    expect(takeover).not.toContain('保存这份校准单（留底备查）')
   })
 
   it('hands the pairing panel over to the relationship result with its own main actions', () => {
@@ -214,7 +233,7 @@ describe('V3 presentation flow', () => {
     expect(takeover.slice(saveIndex - 120, saveIndex)).toContain('primary-button')
     expect(takeover.slice(shareIndex - 140, shareIndex)).toContain('secondary-button')
     expect(takeover).toContain('保存关系卡')
-    expect(takeover).toContain('再找一个人对口径')
+    expect(takeover).toContain('看看 TA 是哪路牛马')
   })
 
   it('keeps invite buttons on the single-invite message while menu shares may carry the relationship', () => {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { performanceSimulator as definition } from '../../miniprogram/config/tests/performance-simulator'
-import { calculateBaseScore, evaluateComplete, outcomeForBaseScore } from '../../miniprogram/domain/v3-evaluation'
+import { calculateBaseScore, createResultViewModel, evaluateComplete, outcomeForBaseScore } from '../../miniprogram/domain/v3-evaluation'
 import { allA, allB, allD, answersForCoefficient } from '../fixtures'
 
 describe('V3 performance and organization scoring', () => {
@@ -57,5 +57,39 @@ describe('V3 performance and organization scoring', () => {
     const result = evaluateComplete(definition, allA)
     expect(result.finalOutcome).toBe('4.0')
     expect(result.deathCause).toBe('none')
+  })
+
+  it('derives all four calibration explanations from the actual outcome', () => {
+    const cases = [
+      [{ ...allB, Q19: 'A' as const }, '原始评定 3.5+ · 经组织校准，上调至 3.75'],
+      [allB, '原始评定 3.5+ · 组织校准：维持原判'],
+      [{ ...allB, Q19: 'D' as const, Q21: 'D' as const, Q22: 'D' as const, Q24: 'D' as const }, '原始评定 3.5+ · 经组织校准，下调至 3.5'],
+      [allA, '原始评定 3.75 · 4.0 条件核验通过'],
+    ] as const
+    for (const [answers, copy] of cases) {
+      expect(createResultViewModel(definition, evaluateComplete(definition, answers)).calibrationSummary).toBe(copy)
+    }
+  })
+
+  it('shows the mascot note only for the existing credit-unclear organization signal', () => {
+    const flagged = evaluateComplete(definition, { ...allB, Q21: 'C' })
+    expect(flagged.organizationSignals).toContain('credit_unclear')
+    expect(createResultViewModel(definition, flagged).mascotNote).toBe('干活有你，合影没你。行，我记着了。')
+    expect(createResultViewModel(definition, evaluateComplete(definition, allB)).mascotNote).toBe('')
+  })
+
+  it('maps every death cause to an approved record and changes only the visibility label', () => {
+    expect(definition.deathCauseRecords).toEqual({
+      strategy_faded: '判定记录：项目按原计划跑完，只是终点线昨晚被连夜拆除了。',
+      credit_unclear: '判定记录：活主要由你完成，成果经各级汇报稀释后，已被划定为公摊面积。',
+      quota_tight: '判定记录：未发现明显工作缺陷。优秀名额在本周期内发生了物理级收缩。',
+      visibility_lag: '判定记录：事情运行得太顺，组织一度认为这件事本来就会自己发生。',
+      civilized_boundary: '判定记录：不抢未认领之功，不甩无主之锅；在本周期的绩效现场里，显得过分体面。',
+      impact_not_enough: '判定记录：工作密度已达 100%，距离让大领导眼前一黑又一亮，还差一次戏剧性机缘。',
+      none: '判定记录：本周期未检出致命硬伤。系统建议保持当前姿态，切勿主动加戏。',
+    })
+    expect(definition.deathCauseLabels.visibility_lag).toBe('成果被当成自然规律')
+    expect(definition.deathCauseLabels.credit_unclear).toBe('功劳进入公共区域')
+    expect(definition.deathCauseRecords.none).toBe('判定记录：本周期未检出致命硬伤。系统建议保持当前姿态，切勿主动加戏。')
   })
 })

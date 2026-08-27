@@ -81,7 +81,7 @@ describe('self-contained local pair code', () => {
       definition.pairRelationships.find((item) => item.key === ['desk_firewall', sample.persona].sort().join('+')),
     )
     const message = createRelationshipShareMessage(definition, resolved.relationship)
-    expect(message.title).toContain(`「${resolved.relationship.title}」`)
+    expect(message.title).toBe(`我俩的牛马组合出结果了：「${resolved.relationship.title}」`)
     expect(message.imageUrl).toBe('/assets/share-relationship.png')
     expect(appendPairCode(message.path, code)).toContain(`pairCode=${code}`)
   })

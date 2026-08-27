@@ -10,6 +10,17 @@ describe('pair relationships and evidence capture', () => {
     expect(new Set(definition.pairRelationships.map((item) => item.key)).size).toBe(36)
   })
 
+  it('locks the four approved relationship verdicts', () => {
+    expect(getPairRelationship(definition, 'result_captioner', 'result_captioner').copy)
+      .toBe('同一个项目，你俩能在各自的周报里，分别写出两个拯救大盘的主角。')
+    expect(getPairRelationship(definition, 'org_weather_station', 'stable_worker').copy)
+      .toBe('一个每天在工位上感知风云变幻，另一个雷打不动把手里的活干完。暴风雨来了，牛马还在帮气象台点外卖。')
+    expect(getPairRelationship(definition, 'result_captioner', 'org_weather_station').copy)
+      .toBe('领导还没把嘴张开，气象台已经递了眼色，字幕师的下一版战略 PPT 已经修改到了“致谢”页。')
+    expect(getPairRelationship(definition, 'reality_patcher', 'reality_patcher').copy)
+      .toBe('三个月前那个“先凑合一下”，现在已经成为正式流程。')
+  })
+
   it('returns the same relationship for A+B and B+A', () => {
     for (const left of definition.personas) {
       for (const right of definition.personas) {

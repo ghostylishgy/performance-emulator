@@ -40,7 +40,7 @@ export const personas: PersonaDefinition[] = [
   {
     id: 'result_captioner',
     name: '成果字幕师',
-    copy: '你不只把事情做出来，也知道怎样把结果翻译成组织能够看见和记住的语言。',
+    copy: '你做的不是 PPT，是把埋头苦干的散装现场，重新排版成合乎大盘逻辑的汇报奇迹。',
     signals: {
       C: contributionSignals,
       T: { Q12A: 3, Q13A: 3, Q16A: 3, Q14C: 1, Q13D: -3, Q16D: -3 },
@@ -73,7 +73,7 @@ export const personas: PersonaDefinition[] = [
   {
     id: 'reality_patcher',
     name: '现实补丁师',
-    copy: '正式方案还在路上时，你往往已经先让现实跑了起来，而且知道要用小步验证控制风险。',
+    copy: '别人还在等正式方案，你已经用最野的路子把现场先跑通了，临了还不忘提醒同事：“先别声张。”',
     signals: {
       W: { Q10D: 3, Q15C: 3, Q17C: 2, Q2A: 1, Q9A: 1 },
       E: { Q17C: 3, Q9A: 1 },
@@ -89,7 +89,7 @@ export const personas: PersonaDefinition[] = [
   {
     id: 'desk_firewall',
     name: '工位防火墙',
-    copy: '你会先确认来源、范围和责任，再把该接的事情接住。边界不是拒绝工作，而是让工作有入口。',
+    copy: '想把活塞给你，手续必须比报销还齐全。没有明确拍板人和对齐邮件，谁也别想踏进你工位半步。',
     signals: {
       S: { Q2C: 3, Q6A: 3, Q7A: 2, Q8B: 3, Q15A: 3, Q17A: 2, Q17B: 2, Q17D: 1 },
       T: { Q2C: 1, Q8B: 2, Q17B: 2, Q17D: 3 },
@@ -108,7 +108,7 @@ export const personas: PersonaDefinition[] = [
   {
     id: 'org_weather_station',
     name: '组织气象台',
-    copy: '你会读空气，也会根据情境调整动作。真正的信号感知，最后必须落到行动。',
+    copy: '领导的邮件还没发，你已经从他今天关会议室门的声音里，听懂了下季度的预算。',
     signals: {
       S: { Q12B: 3, Q17B: 2, Q20C: 2, Q3A: 1, Q3B: 1, Q3C: 2, Q3D: 1, Q11A: 1, Q11B: 2, Q11C: 2, Q11D: 1, Q25A: 1, Q25B: 2, Q25C: 2, Q25D: 1 },
       I: { Q12B: 3, Q17B: 3, Q20C: 2, Q3A: 1, Q3B: 2, Q3C: 2, Q3D: 1, Q11A: 2, Q11B: 2, Q11C: 1, Q11D: 2, Q25A: 1, Q25B: 2, Q25C: 2, Q25D: 1 },

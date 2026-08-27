@@ -24,7 +24,7 @@ export function createRelationshipShareMessage(
   relationship: PairRelationship,
 ): ShareMessage {
   return {
-    title: `系统说我们两个属于「${relationship.title}」`,
+    title: `我俩的牛马组合出结果了：「${relationship.title}」`,
     path: definition.share.path,
     imageUrl: '/assets/share-relationship.png',
   }

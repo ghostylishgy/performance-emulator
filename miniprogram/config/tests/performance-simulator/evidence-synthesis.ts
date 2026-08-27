@@ -37,7 +37,7 @@ export const evidenceSynthesisRules: EvidenceSynthesisRule[] = [
   rule('captioner-closed-loop', 'result_captioner', ['Q12A', 'Q21A'], 'expression_org', 96,
     '从临时追问到年底算功劳，你倾向于让进度、结果和名字形成一个不用考古的闭环。', ['Q13A']),
   rule('captioner-memory-builder', 'result_captioner', ['Q16A', 'Q13A'], 'work_behavior', 92,
-    '你会给成果补上数据、结论和清楚的主语，等于主动帮组织建立一份不容易失忆的索引。', ['Q21A']),
+    '你很清楚组织的短期记忆只有两周，所以每次交差，都会把数据、结论和“谁干的”一起加粗。', ['Q21A']),
   rule('captioner-work-translator', 'result_captioner', ['Q2A', 'Q12A'], 'work_behavior', 88,
     '你能先把火救下来，也能很快把现场翻译成进度、风险和下一步，而不是只留下“已处理”。', ['Q1A']),
 
@@ -55,7 +55,7 @@ export const evidenceSynthesisRules: EvidenceSynthesisRule[] = [
   rule('patcher-route-and-prototype', 'reality_patcher', ['Q10D', 'Q15C'], 'work_behavior', 95,
     '流程不给路时你会自己找路，模板没出现时你会先糊一版能跑的，现实很少等手续齐全。', ['Q17C']),
   rule('patcher-problem-to-trial', 'reality_patcher', ['Q9A', 'Q17C'], 'expression_org', 91,
-    '你会先把没人认领的问题拆开，再用一次小试验把争论变成可以观察的结果。', ['Q15C']),
+    '群里还在争论可不可行，你已经先糊了个能跑的版本出来：“先试一下，不行再说。”', ['Q15C']),
   rule('patcher-rescue-prototype', 'reality_patcher', ['Q2A', 'Q15C'], 'human_moment', 87,
     '你对“先救下来再说”很熟，很多后来被称为方案的东西，最初只是你先做的能跑版本。', ['Q10D']),
 
@@ -75,7 +75,7 @@ export const evidenceSynthesisRules: EvidenceSynthesisRule[] = [
   rule('weather-prepare-before-talk', 'org_weather_station', ['Q25B', 'Q12B'], 'work_behavior', 91,
     '领导一句“聊两句”，你会先判断他为什么突然问起，再把过去半年的重点项目过一遍。', ['Q20C']),
   rule('weather-adjust-not-panic', 'org_weather_station', ['Q3A', 'Q17B'], 'human_moment', 88,
-    '你读语境不是为了多焦虑一会儿，而是为了决定现在补结论，还是换个场合把风险讲透。', ['Q12B'], ['Q20D']),
+    '看到群里的气压骤降，你没有跟着发“收到”，而是先私聊两个关键的人探探水温。', ['Q12B'], ['Q20D']),
 
   rule('stable-transferable', 'stable_worker', ['Q4C', 'Q18C'], 'work_behavior', 86,
     '你既不会把自己包装成唯一入口，也没有完全退出现场；交接能跑，历史包袱偶尔还会回头。', ['Q8B']),

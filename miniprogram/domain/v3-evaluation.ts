@@ -95,12 +95,23 @@ export function evaluateComplete(definition: V3TestDefinition, answers: Answers)
 export function createResultViewModel(definition: V3TestDefinition, result: EvaluationResult): ResultViewModel {
   const persona = definition.personas.find((item) => item.id === result.primaryPersona)
   if (!persona) throw new Error(`Missing persona ${result.primaryPersona}`)
+  const calibrationSummary = result.finalOutcome === '4.0'
+    ? `原始评定 ${result.baseOutcome} · 4.0 条件核验通过`
+    : result.finalOutcome === result.baseOutcome
+      ? `原始评定 ${result.baseOutcome} · 组织校准：维持原判`
+      : result.calibrationDelta > 0
+        ? `原始评定 ${result.baseOutcome} · 经组织校准，上调至 ${result.finalOutcome}`
+        : `原始评定 ${result.baseOutcome} · 经组织校准，下调至 ${result.finalOutcome}`
+  const mascotNote = result.organizationSignals
+    .map((signal) => definition.mascotSignalNotes[signal])
+    .find((note): note is string => Boolean(note)) ?? ''
   return {
     personaId: persona.id, personaName: persona.name, personaCopy: persona.copy,
     deathCause: result.deathCause, deathCauseLabel: definition.deathCauseLabels[result.deathCause],
+    deathCauseRecord: definition.deathCauseRecords[result.deathCause],
     evidence: result.evidence, outcome: result.finalOutcome, outcomeSubtitle: definition.outcomeSubtitles[result.finalOutcome],
     baseOutcome: result.baseOutcome, baseScore: result.baseScore, organizationScore: result.organizationScore,
-    calibrationDelta: result.calibrationDelta,
+    calibrationDelta: result.calibrationDelta, calibrationSummary, mascotNote,
     resultDisclaimer: definition.resultDisclaimer,
   }
 }

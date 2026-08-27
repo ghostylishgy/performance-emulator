@@ -132,7 +132,7 @@ describe('Warm Internal Memo visual system', () => {
     }
     const resultMarkup = pages[2] ?? ['', '']
     const homeMarkup = pages[0] ?? ['', '']
-    expect(resultMarkup[1]).toContain('RESULT CONFIRMED')
+    expect(resultMarkup[1]).toContain('CONFIDENTIAL')
     expect(homeMarkup[1]).toContain('INTERNAL ONLY')
     const resultWatermark = read('miniprogram/pages/result/index.wxss')
     expect(resultWatermark).toContain('content:"INTERNAL ONLY"')

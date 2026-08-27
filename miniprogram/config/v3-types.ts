@@ -103,6 +103,8 @@ export interface V3TestDefinition {
   fallbackPersonaId: 'stable_worker'
   personaTieBreak: PersonaId[]
   deathCauseLabels: Record<DeathCauseId, string>
+  deathCauseRecords: Record<DeathCauseId, string>
+  mascotSignalNotes: Partial<Record<DeathCauseId, string>>
   evidenceSynthesisRules: EvidenceSynthesisRule[]
   pairRelationships: PairRelationship[]
   calculation: { materialPool: string[]; materialLineCount: number; endingLines: string[]; durationMs: number }
@@ -154,6 +156,7 @@ export interface ResultViewModel {
   personaCopy: string
   deathCause: DeathCauseId
   deathCauseLabel: string
+  deathCauseRecord: string
   evidence: SelectedEvidence[]
   outcome: Outcome
   outcomeSubtitle: string
@@ -161,6 +164,8 @@ export interface ResultViewModel {
   baseScore: number
   organizationScore: number
   calibrationDelta: -1 | 0 | 1
+  calibrationSummary: string
+  mascotNote: string
   resultDisclaimer: string
 }
 

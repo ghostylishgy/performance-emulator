@@ -78,4 +78,13 @@ describe('V3 independent persona thresholds', () => {
       org_weather_station: 40,
     })
   })
+
+  it('locks the approved persona copy without changing the stable or invisible fallbacks', () => {
+    expect(persona('org_weather_station').copy).toBe('领导的邮件还没发，你已经从他今天关会议室门的声音里，听懂了下季度的预算。')
+    expect(persona('result_captioner').copy).toBe('你做的不是 PPT，是把埋头苦干的散装现场，重新排版成合乎大盘逻辑的汇报奇迹。')
+    expect(persona('desk_firewall').copy).toBe('想把活塞给你，手续必须比报销还齐全。没有明确拍板人和对齐邮件，谁也别想踏进你工位半步。')
+    expect(persona('reality_patcher').copy).toBe('别人还在等正式方案，你已经用最野的路子把现场先跑通了，临了还不忘提醒同事：“先别声张。”')
+    expect(persona('invisible_contributor').copy).toBe('活确实干了，结果也确实有了；只是在组织记忆里，你偶尔被压缩成了“团队”。')
+    expect(persona('stable_worker').copy).toBe('没有特别离谱的单一属性，胜在稳定、耐用，放进大多数组织环境里都能正常运行。')
+  })
 })

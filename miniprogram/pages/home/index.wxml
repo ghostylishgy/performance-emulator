@@ -6,7 +6,7 @@
   <view class="opening-status">
     <view>正在加载年度工作痕迹……</view>
     <view>正在连接组织……</view>
-    <view>正在搜索优秀名额……</view>
+    <view>正在确认优秀名额是否存在……</view>
   </view>
   <view class="opening-punchline"><view>员工档案未找到。</view><view>问题不大，系统一般也不看这个。</view></view>
   <button class="opening-skip" hover-class="opening-skip-pressed" bindtap="skipOpening">跳过开场</button>
@@ -45,7 +45,7 @@
     </block>
     <block wx:else>
       <view class="cta-prompt">不信，但想试试<text class="prompt-arrow">↓</text></view>
-      <button class="primary-button start" bindtap="start">开始打分<text class="button-spark">✦</text></button>
+      <button class="primary-button start" bindtap="start">看看我是哪路牛马</button>
     </block>
   </view>
 

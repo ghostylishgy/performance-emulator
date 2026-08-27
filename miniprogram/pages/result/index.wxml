@@ -17,7 +17,7 @@
   </view>
 
   <view wx:if="{{revealStage >= 1}}" class="result-dossier">
-    <view class="dossier-header"><text class="kicker-pill kicker-pill-brand">RESULT CONFIRMED</text><text class="dossier-record">档案结论</text></view>
+    <view class="dossier-header"><text class="kicker-pill kicker-pill-brand">CONFIDENTIAL</text><text class="dossier-record">组织内部校准记录</text></view>
     <view class="dossier-copy">
       <view class="persona-name">{{result.personaName}}</view>
       <view class="persona-copy">「{{result.personaCopy}}」</view>
@@ -30,11 +30,13 @@
       <view class="death-annotation">
         <view class="death-kicker">主要绩效死因</view>
         <view class="death-label">{{result.deathCauseLabel}}</view>
+        <view class="death-record">{{result.deathCauseRecord}}</view>
         <view class="death-note">同样是 3.5，死法不同。</view>
       </view>
     </view>
-    <view class="score-meta">基础 {{result.baseOutcome}} · 组织校准 {{result.calibrationDelta > 0 ? '+1' : (result.calibrationDelta < 0 ? '-1' : '0')}} 档</view>
+    <view class="score-meta">{{result.calibrationSummary}}</view>
     <view wx:if="{{!pairRelationship}}" class="dossier-mascot"><mascot scene="result" /></view>
+    <view wx:if="{{!pairRelationship && result.mascotNote}}" class="dossier-mascot-note">{{result.mascotNote}}</view>
   </view>
 
   <view wx:if="{{revealStage >= 3}}" class="reveal-card evidence-reveal panel">
@@ -46,8 +48,8 @@
 
   <block wx:if="{{revealStage >= 4}}">
     <view wx:if="{{!pairRelationship}}" class="result-actions lead-actions">
-      <button class="primary-button" loading="{{posterSaving}}" disabled="{{posterSaving}}" bindtap="saveSinglePoster">保存我的结果卡</button>
-      <button class="secondary-button" hover-class="text-pressed" open-type="share" bindtap="shareIntent" data-share-mode="invite">找个人来对一下口径</button>
+      <button class="primary-button" loading="{{posterSaving}}" disabled="{{posterSaving}}" bindtap="saveSinglePoster">保存这份校准单（留底备查）</button>
+      <button class="secondary-button" hover-class="text-pressed" open-type="share" bindtap="shareIntent" data-share-mode="invite">看看 TA 是哪路牛马</button>
       <view class="pair-privacy">只分享 5 位匿名码，不含答题记录。</view>
     </view>
 
@@ -77,13 +79,13 @@
         <view class="relationship-copy">{{pairRelationship.copy}}</view>
         <view class="result-actions pair-actions">
           <button class="primary-button" loading="{{posterSaving}}" disabled="{{posterSaving}}" bindtap="saveRelationshipPoster">保存关系卡</button>
-          <button class="secondary-button" hover-class="text-pressed" open-type="share" bindtap="shareIntent" data-share-mode="invite">再找一个人对口径</button>
+          <button class="secondary-button" hover-class="text-pressed" open-type="share" bindtap="shareIntent" data-share-mode="invite">看看 TA 是哪路牛马</button>
         </view>
       </block>
     </view>
 
     <view class="result-actions">
-      <button class="secondary-button" bindtap="restart">我不服，再测一次</button>
+      <button class="secondary-button" bindtap="restart">对结果存疑，申请复议</button>
     </view>
     <view class="disclaimer">{{result.resultDisclaimer}}</view>
   </block>

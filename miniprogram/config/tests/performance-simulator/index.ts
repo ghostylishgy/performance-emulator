@@ -6,7 +6,7 @@ import { questions } from './questions'
 
 export const performanceSimulator: V3TestDefinition = {
   id: 'performance-simulator', version: 'v3', evaluationVersion: 'engine-v3',
-  title: '大厂绩效模拟器', subtitle: '25 题。凭第一反应。', description: '哪个像你就点哪个。',
+  title: '大厂绩效模拟器', subtitle: '25题，测测你的工位物种。', description: '哪个像你就点哪个。',
   disclaimer: '仅供职场娱乐，请勿过度认真。',
   resultDisclaimer: '仅供娱乐，不代表真实绩效或职业建议。',
   questions,
@@ -33,8 +33,18 @@ export const performanceSimulator: V3TestDefinition = {
   personas, fallbackPersonaId: 'stable_worker', personaTieBreak,
   deathCauseLabels: {
     strategy_faded: '战略突然过期', credit_unclear: '功劳进入公共区域', quota_tight: '名额发生自然现象',
-    visibility_lag: '成果后知后觉', civilized_boundary: '边界感过于文明', impact_not_enough: '分量还差一点', none: '暂无明显死因',
+    visibility_lag: '成果被当成自然规律', civilized_boundary: '边界感过于文明', impact_not_enough: '分量还差一点', none: '暂无明显死因',
   },
+  deathCauseRecords: {
+    strategy_faded: '判定记录：项目按原计划跑完，只是终点线昨晚被连夜拆除了。',
+    credit_unclear: '判定记录：活主要由你完成，成果经各级汇报稀释后，已被划定为公摊面积。',
+    quota_tight: '判定记录：未发现明显工作缺陷。优秀名额在本周期内发生了物理级收缩。',
+    visibility_lag: '判定记录：事情运行得太顺，组织一度认为这件事本来就会自己发生。',
+    civilized_boundary: '判定记录：不抢未认领之功，不甩无主之锅；在本周期的绩效现场里，显得过分体面。',
+    impact_not_enough: '判定记录：工作密度已达 100%，距离让大领导眼前一黑又一亮，还差一次戏剧性机缘。',
+    none: '判定记录：本周期未检出致命硬伤。系统建议保持当前姿态，切勿主动加戏。',
+  },
+  mascotSignalNotes: { credit_unclear: '干活有你，合影没你。行，我记着了。' },
   evidenceSynthesisRules,
   pairRelationships,
   calculation: {
@@ -60,7 +70,7 @@ export const performanceSimulator: V3TestDefinition = {
       '懂得独立判断，也懂得借助组织；\n愿意承担责任，也保留自己的边界。',
       '绩效只是工作的一部分。别让它变成你对自己的全部评价。',
     ],
-    footer: '如果这个测试除了让你笑了一下，还让你想了一下，那我们就算多赚到了。', button: '我知道了',
+    footer: '如果你笑完以后，还顺手想起了点什么，这个测试就没白做。', button: '我知道了',
   },
   share: { titleTemplate: '我的绩效结果是 {outcome} · {persona}', path: '/pages/home/index' },
   pairing: { codeLength: 5, algorithmVersion: 3 },
