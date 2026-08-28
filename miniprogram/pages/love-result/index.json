@@ -1,6 +1,5 @@
 {
   "navigationBarTitleText": "鉴定完成",
   "navigationBarBackgroundColor": "#F4F1EA",
-  "navigationBarTextStyle": "black",
-  "enableShareAppMessage": true
+  "navigationBarTextStyle": "black"
 }

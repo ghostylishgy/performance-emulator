@@ -1,6 +1,5 @@
 {
   "navigationBarTitleText": "校准结果",
-  "enableShareAppMessage": true,
   "usingComponents": {
     "mascot": "../../components/mascot/index",
     "reflection-card": "../../components/reflection-card/index"
