@@ -1,14 +1,18 @@
 {
   "pages": [
+    "pages/product-entry/index",
+    "pages/love-accident/index",
+    "pages/love-quiz/index",
+    "pages/love-result/index",
     "pages/home/index",
     "pages/quiz/index",
     "pages/result/index"
   ],
   "window": {
-    "navigationBarTitleText": "绩效校准系统",
-    "navigationBarBackgroundColor": "#F6F1EA",
+    "navigationBarTitleText": "恋爱事故鉴定书",
+    "navigationBarBackgroundColor": "#F4F1EA",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#F6F1EA",
+    "backgroundColor": "#F4F1EA",
     "backgroundTextStyle": "light"
   },
   "style": "v2",

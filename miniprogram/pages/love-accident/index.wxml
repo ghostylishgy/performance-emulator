@@ -1,0 +1,14 @@
+<view class="love-page">
+  <view class="agency">人间事故鉴定中心</view>
+  <view class="case-file">
+    <view class="case-number">CASE FILE · LOVE</view>
+    <view class="red-rule"></view>
+    <view class="title">{{title}}</view>
+    <view class="copy">爱的时候叫宝宝，<br />分手以后开始找发票。</view>
+    <button class="start-button" bindtap="startAssessment">开始鉴定</button>
+    <button wx:if="{{hasProgress}}" class="secondary-action" bindtap="resumeAssessment">继续上次鉴定</button>
+    <button wx:if="{{hasResult}}" class="secondary-action" bindtap="viewResult">查看上次结果</button>
+    <view class="stage-note">16 项匿名行为取样 · 不采集身份信息</view>
+  </view>
+  <view class="footer-mark">HUMAN INCIDENT IDENTIFICATION CENTER</view>
+</view>

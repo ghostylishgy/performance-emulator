@@ -8,6 +8,7 @@
     "test": "vitest run",
     "test:unit": "vitest run tests/unit",
     "validate:config": "tsx scripts/validate-config.ts",
+    "simulate:love": "tsx scripts/simulate-love.ts --runs=100000 --seed=20260828 --output=reports/love-accident-monte-carlo.json",
     "simulate": "tsx scripts/monte-carlo.ts --runs=100000 --distribution=weighted --seed=20260813 --output=reports/monte-carlo-weighted.json",
     "simulate:uniform": "tsx scripts/monte-carlo.ts --runs=100000 --distribution=uniform --seed=20260813 --output=reports/monte-carlo-uniform.json"
   },

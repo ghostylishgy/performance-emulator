@@ -4,6 +4,21 @@ import { calculateBaseScore, createResultViewModel, evaluateComplete, outcomeFor
 import { allA, allB, allD, answersForCoefficient } from '../fixtures'
 
 describe('V3 performance and organization scoring', () => {
+  it('locks the finalized Q6 and Q7 copy and coefficients', () => {
+    expect(definition.questions[5]?.options.map(({ id, text, coefficient }) => ({ id, text, coefficient }))).toEqual([
+      { id: 'A', text: '先问清楚，到底有多简单', coefficient: 1 },
+      { id: 'B', text: '嘴上说好，已经开始排时间了', coefficient: 0.7 },
+      { id: 'C', text: '笑着说“我看看”，文件夹已经建好了', coefficient: 0.55 },
+      { id: 'D', text: '先问一句：“这是帮一下，还是以后都归我了？”', coefficient: 0.95 },
+    ])
+    expect(definition.questions[6]?.options.map(({ id, text, coefficient }) => ({ id, text, coefficient }))).toEqual([
+      { id: 'A', text: '先问清楚，真急就先做关键部分', coefficient: 1 },
+      { id: 'B', text: '回“收到”，给自己争取三分钟', coefficient: 0.7 },
+      { id: 'C', text: '看到“今天”两个字，先喝了口水', coefficient: 0.25 },
+      { id: 'D', text: '把手头的活截了个图，问“今天先放弃哪个？”', coefficient: 0.95 },
+    ])
+  })
+
   it('uses the configured BaseScore lower and upper bounds', () => {
     expect(calculateBaseScore(definition, answersForCoefficient('max'))).toBe(99.6)
     const minimum = calculateBaseScore(definition, answersForCoefficient('min'))

@@ -1,0 +1,13 @@
+page { background: #F4F1EA; color: #111111; }
+.result-page { box-sizing: border-box; min-height: 100vh; padding: 58rpx 42rpx calc(60rpx + env(safe-area-inset-bottom)); background: #F4F1EA; }
+.agency { color: #183153; font-size: 22rpx; font-weight: 900; letter-spacing: 5rpx; }
+.result-file { margin-top: 54rpx; padding: 42rpx 34rpx 50rpx; border: 4rpx solid #111111; box-shadow: 13rpx 13rpx 0 #111111; }
+.status { display: inline-block; padding: 8rpx 14rpx; color: #F4F1EA; background: #C1121F; font-size: 22rpx; font-weight: 950; letter-spacing: 4rpx; }
+.red-rule { width: 90rpx; height: 9rpx; margin: 32rpx 0 38rpx; background: #C1121F; }
+.label { color: #183153; font-size: 21rpx; font-weight: 900; letter-spacing: 4rpx; }
+.persona-name { margin-top: 20rpx; font-size: 60rpx; font-weight: 950; line-height: 1.2; }
+.summary { margin-top: 42rpx; font-size: 31rpx; font-weight: 850; line-height: 1.6; }
+.detail { margin-top: 22rpx; font-size: 27rpx; font-weight: 550; line-height: 1.8; }
+.share-button, .retry-button { width: 100%; min-height: 98rpx; border-radius: 0; font-size: 29rpx; font-weight: 900; letter-spacing: 4rpx; }
+.share-button { margin-top: 58rpx; color: #F4F1EA; background: #C1121F; }
+.retry-button { margin-top: 22rpx; color: #111111; border: 3rpx solid #111111; background: transparent; }

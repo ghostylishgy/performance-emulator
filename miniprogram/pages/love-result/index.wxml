@@ -1,0 +1,15 @@
+<view wx:if="{{ready}}" class="result-page">
+  <view class="agency">人间事故鉴定中心</view>
+  <view class="result-file">
+    <view class="status">鉴定完成</view>
+    <view class="red-rule"></view>
+    <view class="label">最终事故人格</view>
+    <view class="persona-name">{{personaName}}</view>
+    <block wx:if="{{resultCard}}">
+      <view class="summary">{{resultCard.summary}}</view>
+      <view class="detail">{{resultCard.detail}}</view>
+    </block>
+  </view>
+  <button class="share-button" open-type="share">分享鉴定</button>
+  <button class="retry-button" bindtap="retry">再次测试</button>
+</view>

@@ -1,4 +1,5 @@
 import { defaultTestId, getTestDefinition } from '../../config/test-registry'
+import { getProduct, PERFORMANCE_PRODUCT_ID } from '../../config/products'
 import type { EvaluationResult, PairCodeResult, PairRelationship, PersonaId, ResultViewModel } from '../../config/v3-types'
 import { createResultViewModel, evaluateComplete } from '../../domain/v3-evaluation'
 import { encodePairCode, normalizePairCode, pairCodeErrorMessage, resolvePairRelationship } from '../../domain/v3-pairing'
@@ -12,9 +13,11 @@ import {
 import type { PosterModel } from '../../platform/poster'
 import { recoverCorruptProgress } from '../../platform/progress-recovery'
 import { appendPairCode, createRelationshipShareMessage, createShareMessage } from '../../platform/sharing'
+import { buildProductPagePath, buildProductSharePath, guardProductAccess, normalizeProductSource, type ProductRouteOptions, type ProductSource } from '../../platform/product-routing'
 import { clearPendingPairCode, clearProgress, loadPendingPairCode, loadProgress } from '../../platform/storage'
 
 const definition = getTestDefinition(defaultTestId)
+const product = getProduct(PERFORMANCE_PRODUCT_ID)!
 const RESULT_SETTLE_DELAY_MS = 300
 const SCORE_STAMP_DELAY_MS = 180
 const EVIDENCE_REVEAL_DELAY_MS = 620
@@ -24,6 +27,8 @@ let viewModel: ResultViewModel | null = null
 let resultTimers: Array<ReturnType<typeof setTimeout>> = []
 let currentCalculationLines: string[] = []
 let hasShownOnce = false
+let pageSource: ProductSource = 'normal'
+let accessAllowed = false
 
 interface RelationshipView extends PairRelationship {
   ownPersonaName: string
@@ -91,7 +96,10 @@ Page({
     pairRelationship: null,
     posterSaving: false,
   },
-  onLoad() {
+  onLoad(options: ProductRouteOptions) {
+    pageSource = normalizeProductSource(options.source)
+    accessAllowed = guardProductAccess(product.product_id, options)
+    if (!accessAllowed) return
     clearResultTimers()
     hasShownOnce = false
     evaluation = null
@@ -99,7 +107,7 @@ Page({
     const stored = loadProgress(definition)
     if (stored.status === 'corrupt') return recoverCorruptProgress(definition)
     if (stored.status !== 'current' || stored.progress.stage !== 'complete') {
-      wx.reLaunch({ url: '/pages/home/index' })
+      wx.reLaunch({ url: buildProductPagePath(product.routes.home, product.product_id, pageSource) })
       return
     }
     try {
@@ -114,7 +122,7 @@ Page({
         clearPendingPairCode()
         if (resolved.ok) {
           pairRelationship = relationshipView(resolved.relationship, resolved.peer.persona)
-          analytics.track('pair_resolve', { testId: definition.id, relation: resolved.relationship.key, source: 'share' })
+          analytics.track('pair_resolve', { product_id: product.product_id, testId: definition.id, relation: resolved.relationship.key, pair_source: 'share', source: pageSource })
         }
       }
       this.setData({ result: viewModel, resultTransition: { lines: currentCalculationLines }, pairInput: '', pairRelationship, pairMessage })
@@ -124,6 +132,7 @@ Page({
     }
   },
   onShow() {
+    if (!accessAllowed) return
     if (!hasShownOnce) {
       hasShownOnce = true
       return
@@ -140,6 +149,8 @@ Page({
     evaluation = null
     viewModel = null
     currentCalculationLines = []
+    accessAllowed = false
+    pageSource = 'normal'
   },
   playCalculation() {
     clearResultTimers()
@@ -158,11 +169,13 @@ Page({
     })
     schedule(() => {
       this.setData({ loading: false, ready: true, revealStage: 1 })
-      analytics.track('final_result_view', {
+      analytics.track('result_view', {
+        product_id: product.product_id,
         testId: definition.id,
         testVersion: definition.version,
         outcome: evaluation?.finalOutcome,
         persona: evaluation?.primaryPersona,
+        source: pageSource,
       })
       schedule(() => this.setData({ revealStage: 2 }), SCORE_STAMP_DELAY_MS)
       schedule(() => this.setData({ revealStage: 3 }), EVIDENCE_REVEAL_DELAY_MS)
@@ -170,20 +183,20 @@ Page({
     }, definition.calculation.durationMs)
   },
   shareIntent() {
-    analytics.track('share_tap', { testId: definition.id, outcome: evaluation?.finalOutcome })
+    analytics.track('share_click', { product_id: product.product_id, testId: definition.id, outcome: evaluation?.finalOutcome, source: pageSource })
     this.revealReflection()
   },
   revealReflection() {
     if (this.data.reflectionVisible) return
     this.setData({ reflectionVisible: true })
-    analytics.track('reflection_view', { testId: definition.id })
+    analytics.track('reflection_view', { product_id: product.product_id, testId: definition.id, source: pageSource })
   },
   closeReflection() { this.setData({ reflectionVisible: false }) },
   noop() { /* Absorb backdrop taps. */ },
   restart() {
     clearProgress(definition.id)
-    analytics.track('restart', { testId: definition.id })
-    wx.reLaunch({ url: '/pages/home/index' })
+    analytics.track('retry_click', { product_id: product.product_id, testId: definition.id, source: pageSource })
+    wx.reLaunch({ url: buildProductPagePath(product.routes.home, product.product_id, pageSource) })
   },
   onPairInput(event: any) {
     this.setData({
@@ -201,7 +214,7 @@ Page({
     try {
       const pairCode = encodePairCode(currentPairResult())
       this.setData({ pairCode, pairMessage: '匿名码已在本机生成。', pairMessageTone: 'success' })
-      analytics.track('pair_create', { testId: definition.id })
+      analytics.track('pair_create', { product_id: product.product_id, testId: definition.id, source: pageSource })
     } catch (error) {
       this.setData({ pairMessage: error instanceof Error ? error.message : '生成失败，请稍后再试。', pairMessageTone: 'error' })
     }
@@ -226,7 +239,7 @@ Page({
       pairMessageTone: '',
       manualPairExpanded: false,
     })
-    analytics.track('pair_resolve', { testId: definition.id, relation: resolved.relationship.key, source: 'manual' })
+    analytics.track('pair_resolve', { product_id: product.product_id, testId: definition.id, relation: resolved.relationship.key, pair_source: 'manual', source: pageSource })
   },
   async savePoster(model: PosterModel) {
     if (this.data.posterSaving) return
@@ -257,7 +270,7 @@ Page({
   },
   onShareAppMessage(options: { from?: string; target?: { dataset?: { shareMode?: string } } }) {
     this.revealReflection()
-    if (!evaluation) return { title: definition.title, path: definition.share.path, imageUrl: '/assets/share-single.png' }
+    if (!evaluation) return { title: definition.title, path: buildProductSharePath(product.product_id), imageUrl: '/assets/share-single.png' }
     const inviteFromButton = options?.target?.dataset?.shareMode === 'invite'
     const relationship = this.data.pairRelationship as RelationshipView | null
     const message = !inviteFromButton && relationship

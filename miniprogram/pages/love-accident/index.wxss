@@ -1,0 +1,47 @@
+page { background: #F4F1EA; color: #111111; }
+
+.love-page {
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding: 72rpx 48rpx calc(48rpx + env(safe-area-inset-bottom));
+  background: #F4F1EA;
+  display: flex;
+  flex-direction: column;
+}
+
+.agency { color: #183153; font-size: 24rpx; font-weight: 800; letter-spacing: 5rpx; }
+
+.case-file {
+  margin-top: 80rpx;
+  padding: 46rpx 38rpx 42rpx;
+  border: 3rpx solid #111111;
+  background: #F4F1EA;
+  box-shadow: 14rpx 14rpx 0 #111111;
+}
+
+.case-number { color: #183153; font-size: 20rpx; font-weight: 800; letter-spacing: 4rpx; }
+.red-rule { width: 92rpx; height: 10rpx; margin: 28rpx 0 34rpx; background: #C1121F; }
+.title { max-width: 520rpx; font-size: 68rpx; font-weight: 950; line-height: 1.12; letter-spacing: -2rpx; }
+.copy { margin-top: 48rpx; font-size: 32rpx; font-weight: 650; line-height: 1.75; }
+
+.start-button {
+  width: 100%;
+  min-height: 104rpx;
+  margin-top: 62rpx;
+  border-radius: 0;
+  color: #F4F1EA;
+  background: #C1121F;
+  box-shadow: none;
+  font-size: 32rpx;
+  font-weight: 900;
+  letter-spacing: 6rpx;
+}
+
+.start-button:active { color: #F4F1EA; background: #9E0E19; transform: translateY(2rpx); box-shadow: none; }
+.secondary-action {
+  width: 100%; min-height: 88rpx; margin-top: 22rpx; border: 3rpx solid #111111; border-radius: 0;
+  color: #111111; background: transparent; box-shadow: none; font-size: 27rpx; font-weight: 850; letter-spacing: 3rpx;
+}
+.secondary-action:active { color: #F4F1EA; background: #183153; }
+.stage-note { margin-top: 24rpx; color: #55504A; font-size: 21rpx; line-height: 1.5; text-align: center; }
+.footer-mark { margin-top: auto; padding-top: 72rpx; color: #183153; font-size: 17rpx; font-weight: 800; letter-spacing: 3rpx; }

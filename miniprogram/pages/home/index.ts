@@ -1,15 +1,20 @@
 import { defaultTestId, getTestDefinition } from '../../config/test-registry'
+import { getProduct, PERFORMANCE_PRODUCT_ID } from '../../config/products'
 import { createProgress } from '../../domain/session'
 import { analytics } from '../../platform/analytics'
 import { pairCodeFromShareOptions } from '../../domain/v3-pairing'
 import { showProgressSaveWarning } from '../../platform/progress-recovery'
+import { buildProductPagePath, guardProductAccess, normalizeProductSource, type ProductRouteOptions, type ProductSource } from '../../platform/product-routing'
 import { clearProgress, loadProgress, savePendingPairCode, saveProgress } from '../../platform/storage'
 
 const definition = getTestDefinition(defaultTestId)
+const product = getProduct(PERFORMANCE_PRODUCT_ID)!
 const OPENING_DURATION_MS = 1050
 const OPENING_EXIT_MS = 180
 let openingShown = false
 let openingTimer: ReturnType<typeof setTimeout> | undefined
+let pageSource: ProductSource = 'normal'
+let accessAllowed = false
 
 Page({
   data: {
@@ -26,7 +31,10 @@ Page({
     versionNotice: '',
     pairInviteVisible: false,
   },
-  onLoad(options: { pairCode?: string }) {
+  onLoad(options: ProductRouteOptions) {
+    pageSource = normalizeProductSource(options.source)
+    accessAllowed = guardProductAccess(product.product_id, options)
+    if (!accessAllowed) return
     const pairCode = pairCodeFromShareOptions(options)
     if (pairCode) {
       if (savePendingPairCode(pairCode)) this.setData({ pairInviteVisible: true })
@@ -42,9 +50,12 @@ Page({
   onUnload() {
     if (openingTimer) clearTimeout(openingTimer)
     openingTimer = undefined
+    accessAllowed = false
+    pageSource = 'normal'
   },
   onShow() {
-    analytics.track('test_view', { testId: definition.id, testVersion: definition.version })
+    if (!accessAllowed) return
+    analytics.track('page_view', { product_id: product.product_id, testId: definition.id, testVersion: definition.version, page: 'home', source: pageSource })
     const stored = loadProgress(definition)
     if (stored.status === 'current') {
       const answered = Object.keys(stored.progress.answers).length
@@ -89,20 +100,19 @@ Page({
   beginTest() {
     clearProgress(definition.id)
     if (!saveProgress(createProgress(definition))) showProgressSaveWarning()
-    analytics.track('test_start', { testId: definition.id, testVersion: definition.version })
-    wx.navigateTo({ url: '/pages/quiz/index' })
+    analytics.track('test_start', { product_id: product.product_id, testId: definition.id, testVersion: definition.version, source: pageSource })
+    wx.navigateTo({ url: buildProductPagePath(product.routes.test!, product.product_id, pageSource) })
   },
   resume() {
     const stored = loadProgress(definition)
     if (stored.status !== 'current') return this.start()
-    analytics.track('resume_test', { testId: definition.id, stage: stored.progress.stage })
-    const url = stored.progress.stage === 'complete'
-      ? '/pages/result/index'
-      : '/pages/quiz/index'
+    analytics.track('resume_test', { product_id: product.product_id, testId: definition.id, stage: stored.progress.stage, source: pageSource })
+    const route = stored.progress.stage === 'complete' ? product.routes.result! : product.routes.test!
+    const url = buildProductPagePath(route, product.product_id, pageSource)
     wx.navigateTo({ url })
   },
   restart() {
-    analytics.track('restart', { testId: definition.id })
+    analytics.track('retry_click', { product_id: product.product_id, testId: definition.id, source: pageSource })
     this.start()
   },
 })

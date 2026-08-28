@@ -91,9 +91,9 @@ export const personas: PersonaDefinition[] = [
     name: '工位防火墙',
     copy: '想把活塞给你，手续必须比报销还齐全。没有明确拍板人和对齐邮件，谁也别想踏进你工位半步。',
     signals: {
-      S: { Q2C: 3, Q6A: 3, Q7A: 2, Q8B: 3, Q15A: 3, Q17A: 2, Q17B: 2, Q17D: 1 },
+      S: { Q2C: 3, Q6A: 3, Q6D: 3, Q7A: 2, Q7D: 2, Q8B: 3, Q15A: 3, Q17A: 2, Q17B: 2, Q17D: 1 },
       T: { Q2C: 1, Q8B: 2, Q17B: 2, Q17D: 3 },
-      W: { Q2C: 1, Q6A: 2, Q7A: 3, Q8B: 1, Q15A: 2, Q17A: 3, Q17B: 2, Q17D: 1 },
+      W: { Q2C: 1, Q6A: 2, Q6D: 2, Q7A: 3, Q7D: 3, Q8B: 1, Q15A: 2, Q17A: 3, Q17B: 2, Q17D: 1 },
     },
     criteria: [
       { kind: 'axisMin', axis: 'S', min: 6 },
@@ -103,7 +103,7 @@ export const personas: PersonaDefinition[] = [
         { kind: 'selectedCountMin', answers: ['Q2C', 'Q6A', 'Q8B', 'Q15A'], min: 2 },
       ] },
     ],
-    coreEvidenceAnswers: ['Q2C', 'Q6A', 'Q8B', 'Q15A'],
+    coreEvidenceAnswers: ['Q2C', 'Q6A', 'Q6D', 'Q7D', 'Q8B', 'Q15A'],
   },
   {
     id: 'org_weather_station',

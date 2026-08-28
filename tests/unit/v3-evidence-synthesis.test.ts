@@ -37,6 +37,14 @@ describe('cross-question evidence synthesis', () => {
     expect(optionalRank.rank).toBeGreaterThan(baseRank.rank)
   })
 
+  it('binds the scope-first evidence rule to the finalized explicit-boundary answers', () => {
+    const rule = definition.evidenceSynthesisRules.find((item) => item.id === 'firewall-scope-first')!
+    expect(rule.requiredAnswers).toEqual(['Q6D', 'Q7D'])
+    expect(synthesisRuleMatches(rule, withAnswers(repeatedAnswers('B'), { Q6: 'D', Q7: 'D' }), 'desk_firewall')).toBe(true)
+    expect(synthesisRuleMatches(rule, withAnswers(repeatedAnswers('B'), { Q6: 'C', Q7: 'D' }), 'desk_firewall')).toBe(false)
+    expect(synthesisRuleMatches(rule, withAnswers(repeatedAnswers('B'), { Q6: 'D', Q7: 'A' }), 'desk_firewall')).toBe(false)
+  })
+
   it('prefers synthesis, references only selected behavior and keeps category diversity', () => {
     const answers = withAnswers(repeatedAnswers('B'), {
       Q2: 'A', Q7: 'A', Q9: 'A', Q13: 'D', Q21: 'D',

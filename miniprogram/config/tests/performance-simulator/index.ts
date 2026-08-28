@@ -72,7 +72,7 @@ export const performanceSimulator: V3TestDefinition = {
     ],
     footer: '如果你笑完以后，还顺手想起了点什么，这个测试就没白做。', button: '我知道了',
   },
-  share: { titleTemplate: '我的绩效结果是 {outcome} · {persona}', path: '/pages/home/index' },
+  share: { titleTemplate: '我的绩效结果是 {outcome} · {persona}', path: '/pages/product-entry/index?product_id=performance&source=share' },
   pairing: { codeLength: 5, algorithmVersion: 3 },
   theme: { accent: '#e94f87', background: '#f6f1ea' },
 }

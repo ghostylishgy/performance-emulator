@@ -59,7 +59,7 @@ export const evidenceSynthesisRules: EvidenceSynthesisRule[] = [
   rule('patcher-rescue-prototype', 'reality_patcher', ['Q2A', 'Q15C'], 'human_moment', 87,
     '你对“先救下来再说”很熟，很多后来被称为方案的东西，最初只是你先做的能跑版本。', ['Q10D']),
 
-  rule('firewall-scope-first', 'desk_firewall', ['Q6A', 'Q7A'], 'work_behavior', 99,
+  rule('firewall-scope-first', 'desk_firewall', ['Q6D', 'Q7D'], 'work_behavior', 99,
     '你不是不接活，只是现在习惯先把范围问清楚，再决定今天到底先救哪一部分。', ['Q17D']),
   rule('firewall-owner-and-size', 'desk_firewall', ['Q8B', 'Q15A'], 'work_behavior', 95,
     '版本再乱、活再新，你都会先确认谁拍板、这锅多大，以及做到哪儿才算真正结束。', ['Q2C']),

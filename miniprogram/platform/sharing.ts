@@ -1,9 +1,17 @@
 import type { EvaluationResult, PairRelationship, V3TestDefinition } from '../config/v3-types'
+import { getProductByTestId } from '../config/products'
+import { buildProductSharePath } from './product-routing'
 
 export interface ShareMessage {
   title: string
   path: string
   imageUrl: string
+}
+
+function sharePathFor(definition: V3TestDefinition): string {
+  const product = getProductByTestId(definition.id)
+  if (!product) throw new Error(`No product is registered for test: ${definition.id}`)
+  return buildProductSharePath(product.product_id)
 }
 
 export function createShareMessage(definition: V3TestDefinition, result: EvaluationResult): ShareMessage {
@@ -14,7 +22,7 @@ export function createShareMessage(definition: V3TestDefinition, result: Evaluat
     title: definition.share.titleTemplate
       .replace('{outcome}', result.finalOutcome)
       .replace('{persona}', personaName),
-    path: definition.share.path,
+    path: sharePathFor(definition),
     imageUrl: '/assets/share-single.png',
   }
 }
@@ -25,7 +33,7 @@ export function createRelationshipShareMessage(
 ): ShareMessage {
   return {
     title: `我俩的牛马组合出结果了：「${relationship.title}」`,
-    path: definition.share.path,
+    path: sharePathFor(definition),
     imageUrl: '/assets/share-relationship.png',
   }
 }

@@ -13,7 +13,7 @@ describe('V3 independent persona thresholds', () => {
     ['result_captioner', answers('Q1A', 'Q2A', 'Q12A', 'Q13A')],
     ['wild_middleware', answers('Q5C', 'Q9B', 'Q10B')],
     ['reality_patcher', answers('Q10D', 'Q15C')],
-    ['desk_firewall', answers('Q6A', 'Q7A', 'Q8B')],
+    ['desk_firewall', answers('Q6D', 'Q7D', 'Q8B')],
     ['org_weather_station', answers('Q12B', 'Q17B', 'Q20C')],
   ]
 
@@ -44,6 +44,23 @@ describe('V3 independent persona thresholds', () => {
 
   it('does not let inactivity qualify as desk firewall', () => {
     expect(evaluatePersona(persona('desk_firewall'), answers('Q6C', 'Q7C', 'Q15D'))).toBeNull()
+  })
+
+  it('maps the finalized Q6-D and Q7-D semantics to desk-firewall signals without leaking to Q6-C', () => {
+    const firewall = persona('desk_firewall')
+    const scopeSignals = firewall.signals.S!
+    const boundarySignals = firewall.signals.W!
+    expect(scopeSignals).toMatchObject({ Q6D: 3, Q7D: 2 })
+    expect(boundarySignals).toMatchObject({ Q6D: 2, Q7D: 3 })
+    expect(scopeSignals.Q6C).toBeUndefined()
+    expect(boundarySignals.Q6C).toBeUndefined()
+    expect(firewall.coreEvidenceAnswers).toEqual(expect.arrayContaining(['Q6D', 'Q7D']))
+    expect(firewall.criteria[2]).toEqual({ kind: 'anyOf', criteria: [
+      { kind: 'axisMin', axis: 'T', min: 1 },
+      { kind: 'selectedCountMin', answers: ['Q2C', 'Q6A', 'Q8B', 'Q15A'], min: 2 },
+    ] })
+    expect(evaluatePersona(firewall, answers('Q6D', 'Q7D', 'Q8B'))?.id).toBe('desk_firewall')
+    expect(evaluatePersona(firewall, answers('Q6C', 'Q7D'))).toBeNull()
   })
 
   it('requires real contribution for invisible contributor and result captioner', () => {
