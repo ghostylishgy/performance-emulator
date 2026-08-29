@@ -44,4 +44,5 @@ page { background: #F4F1EA; color: #111111; }
 }
 .secondary-action:active { color: #F4F1EA; background: #183153; }
 .stage-note { margin-top: 24rpx; color: #55504A; font-size: 21rpx; line-height: 1.5; text-align: center; }
+.entertainment-note { margin-top: 10rpx; color: #77716A; font-size: 19rpx; line-height: 1.5; text-align: center; }
 .footer-mark { margin-top: auto; padding-top: 72rpx; color: #183153; font-size: 17rpx; font-weight: 800; letter-spacing: 3rpx; }

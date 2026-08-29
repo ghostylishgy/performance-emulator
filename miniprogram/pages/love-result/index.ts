@@ -1,7 +1,7 @@
 import { getProduct, LOVE_ACCIDENT_PRODUCT_ID } from '../../config/products'
 import { loveAccidentTest } from '../../config/tests/love-accident/index'
 import type { LoveEvaluationResult } from '../../config/tests/love-accident/types'
-import { evaluateLoveAccident, personaName } from '../../domain/love-evaluation'
+import { evaluateLoveAccident } from '../../domain/love-evaluation'
 import { analytics } from '../../platform/analytics'
 import { clearLoveProgress, loadLoveProgress } from '../../platform/love-storage'
 import {
@@ -40,10 +40,11 @@ Page({
     try {
       evaluation = evaluateLoveAccident(definition, stored.progress.answers)
       const persona = definition.personas.find((item) => item.id === evaluation?.final_persona)
+      if (!persona?.resultCard) throw new Error(`Missing result card for ${evaluation.final_persona}`)
       this.setData({
         ready: true,
-        personaName: personaName(definition, evaluation.final_persona),
-        resultCard: persona?.resultCard ?? null,
+        personaName: persona.resultCard.personaName,
+        resultCard: persona.resultCard,
       })
       analytics.track('result_view', {
         product_id: product.product_id,

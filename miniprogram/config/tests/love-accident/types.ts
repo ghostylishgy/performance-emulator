@@ -31,8 +31,17 @@ export interface LovePersonaDefinition {
 }
 
 export interface LoveResultCardContent {
-  summary: string
-  detail: string
+  personaId: LovePersonaId
+  personaName: string
+  headline: string
+  punchline: string
+  metrics: Array<{
+    label: string
+    value: string
+  }>
+  verdict: string
+  illustrationKey: string
+  illustrationDescription: string
 }
 
 export interface LoveRuleCondition {

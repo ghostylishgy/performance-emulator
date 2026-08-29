@@ -138,7 +138,7 @@ export const loveQuestions: LoveQuestionDefinition[] = [
     title: '从“宝宝”到“证据”',
     prompt: '关系彻底闹翻以后，你最先做什么？',
     options: [
-      { id: 'A', text: '找朋友狠狠干一顿吐槽', scores: {} },
+      { id: 'A', text: '找朋友狠狠吐槽一顿', scores: {} },
       { id: 'B', text: '拉黑删除，眼不见心不烦', scores: { DIGNITY: 1 } },
       { id: 'C', text: '把重要聊天和转账截图保存下来', scores: { EVIDENCE: 3, AUDIT: 1 } },
       { id: 'D', text: '新建文件夹：聊天记录 / 转账记录 / 其他证据', scores: { EVIDENCE: 5, AUDIT: 2 } },

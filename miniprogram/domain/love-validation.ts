@@ -23,6 +23,18 @@ export function validateLoveTestDefinition(definition: LoveTestDefinition): stri
   for (const persona of definition.personas) {
     if (!persona.name.trim()) errors.push(`${persona.id}: name is required`)
     if (!Number.isFinite(persona.baseline) || persona.baseline <= 0) errors.push(`${persona.id}: baseline must be positive`)
+    const card = persona.resultCard
+    if (!card) {
+      errors.push(`${persona.id}: result card is required`)
+      continue
+    }
+    if (card.personaId !== persona.id) errors.push(`${persona.id}: result card personaId mismatch`)
+    if (card.personaName !== persona.name) errors.push(`${persona.id}: result card personaName mismatch`)
+    if (!card.headline.trim() || !card.punchline.trim() || !card.verdict.trim()) errors.push(`${persona.id}: result card copy is required`)
+    if (card.metrics.length !== 3 || card.metrics.some((metric) => !metric.label.trim() || !metric.value.trim())) {
+      errors.push(`${persona.id}: result card must contain three complete metrics`)
+    }
+    if (!card.illustrationKey.trim() || !card.illustrationDescription.trim()) errors.push(`${persona.id}: illustration metadata is required`)
   }
   const ruleIds = definition.combinationRules.map((rule) => rule.id)
   if (new Set(ruleIds).size !== ruleIds.length) errors.push('combination rule ids must be unique')

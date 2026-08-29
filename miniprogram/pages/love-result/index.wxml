@@ -1,15 +1,24 @@
 <view wx:if="{{ready}}" class="result-page">
   <view class="agency">人间事故鉴定中心</view>
   <view class="result-file">
-    <view class="status">鉴定完成</view>
+    <view class="result-kicker">事故鉴定结果</view>
     <view class="red-rule"></view>
-    <view class="label">最终事故人格</view>
     <view class="persona-name">{{personaName}}</view>
     <block wx:if="{{resultCard}}">
-      <view class="summary">{{resultCard.summary}}</view>
-      <view class="detail">{{resultCard.detail}}</view>
+      <view class="headline">{{resultCard.headline}}</view>
+      <view class="punchline">{{resultCard.punchline}}</view>
+      <view class="metrics">
+        <view wx:for="{{resultCard.metrics}}" wx:key="label" class="metric-row">
+          <view class="metric-label">{{item.label}}</view>
+          <view class="metric-value">{{item.value}}</view>
+        </view>
+      </view>
+      <view class="verdict-label">鉴定意见</view>
+      <view class="verdict">{{resultCard.verdict}}</view>
+      <view class="stamp" aria-label="鉴定成立">鉴定成立</view>
     </block>
   </view>
-  <button class="share-button" open-type="share">分享鉴定</button>
-  <button class="retry-button" bindtap="retry">再次测试</button>
+  <view class="entertainment-note">本测试仅供娱乐，不构成任何现实判断。</view>
+  <button class="share-button" open-type="share">分享结果</button>
+  <button class="retry-button" bindtap="retry">再测一次</button>
 </view>
