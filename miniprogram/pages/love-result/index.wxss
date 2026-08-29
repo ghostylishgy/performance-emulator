@@ -15,8 +15,11 @@ page { background: #F4F1EA; color: #111111; }
 .verdict-label { margin-top: 32rpx; color: #183153; font-size: 20rpx; font-weight: 900; letter-spacing: 4rpx; }
 .verdict { margin-top: 12rpx; padding-right: 100rpx; font-size: 27rpx; font-weight: 750; line-height: 1.68; }
 .stamp { position: absolute; right: 24rpx; bottom: 22rpx; width: 92rpx; height: 92rpx; border: 5rpx double #C1121F; color: #C1121F; font-size: 23rpx; font-weight: 950; line-height: 92rpx; text-align: center; transform: rotate(-8deg); opacity: .92; }
+.persona-visual { margin-top: 38rpx; }
+.persona-visual-label { margin-bottom: 14rpx; color: #183153; font-size: 21rpx; font-weight: 900; letter-spacing: 3rpx; }
+.persona-visual-image { display: block; width: 100%; height: auto; border: 3rpx solid #111111; background: #F4F1EA; box-sizing: border-box; }
 .entertainment-note { margin-top: 28rpx; color: #77716A; font-size: 19rpx; line-height: 1.5; text-align: center; }
-.share-button, .retry-button { width: 100%; min-height: 98rpx; border-radius: 0; font-size: 29rpx; font-weight: 900; letter-spacing: 4rpx; }
-.share-button::after, .retry-button::after { border: none; }
-.share-button { margin-top: 20rpx; color: #F4F1EA; background: #C1121F; }
-.retry-button { margin-top: 22rpx; color: #111111; border: 3rpx solid #111111; background: transparent; }
+button.share-button, button.retry-button { width: 100% !important; min-height: 98rpx; margin-left: 0 !important; margin-right: 0 !important; border-radius: 0; font-size: 29rpx; font-weight: 900; letter-spacing: 4rpx; }
+button.share-button::after, button.retry-button::after { border: none; }
+button.share-button { margin-top: 20rpx; color: #F4F1EA; background: #C1121F; }
+button.retry-button { margin-top: 22rpx; color: #111111; border: 3rpx solid #111111; background: transparent; }

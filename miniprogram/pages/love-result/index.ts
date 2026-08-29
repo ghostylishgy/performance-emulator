@@ -1,5 +1,6 @@
 import { getProduct, LOVE_ACCIDENT_PRODUCT_ID } from '../../config/products'
 import { loveAccidentTest } from '../../config/tests/love-accident/index'
+import { loveShareAssets } from './share-assets'
 import type { LoveEvaluationResult } from '../../config/tests/love-accident/types'
 import { evaluateLoveAccident } from '../../domain/love-evaluation'
 import { analytics } from '../../platform/analytics'
@@ -20,7 +21,7 @@ let source: ProductSource = 'normal'
 let accessAllowed = false
 
 Page({
-  data: { ready: false, personaName: '', resultCard: null },
+  data: { ready: false, personaName: '', resultCard: null, shareImageUrl: '' },
   onLoad(options: ProductRouteOptions) {
     source = normalizeProductSource(options.source)
     accessAllowed = guardProductAccess(product.product_id, options)
@@ -45,6 +46,7 @@ Page({
         ready: true,
         personaName: persona.resultCard.personaName,
         resultCard: persona.resultCard,
+        shareImageUrl: loveShareAssets[evaluation.final_persona].friend,
       })
       analytics.track('result_view', {
         product_id: product.product_id,
@@ -87,6 +89,21 @@ Page({
     return {
       title: '恋爱事故鉴定书｜看看这段关系算什么事故',
       path: buildProductSharePath(product.product_id),
+      ...(evaluation ? { imageUrl: loveShareAssets[evaluation.final_persona].friend } : {}),
+    }
+  },
+  onShareTimeline() {
+    analytics.track('share_click', {
+      product_id: product.product_id,
+      testId: definition.id,
+      finalPersona: evaluation?.final_persona,
+      resolutionMode: evaluation?.resolution_mode,
+      source,
+    })
+    return {
+      title: '恋爱事故鉴定书｜看看这段关系算什么事故',
+      query: `product_id=${product.product_id}&source=share`,
+      ...(evaluation ? { imageUrl: loveShareAssets[evaluation.final_persona].timeline } : {}),
     }
   },
 })

@@ -12,8 +12,13 @@ describe('love accident mini-program flow', () => {
       test: '/pages/love-quiz/index',
       result: '/pages/love-result/index',
     })
-    const pages = (JSON.parse(readFileSync('miniprogram/app.json', 'utf8')) as { pages: string[] }).pages
-    expect(pages).toEqual(expect.arrayContaining(['pages/love-accident/index', 'pages/love-quiz/index', 'pages/love-result/index']))
+    const app = JSON.parse(readFileSync('miniprogram/app.json', 'utf8')) as {
+      pages: string[]
+      subPackages: Array<{ root: string; pages: string[] }>
+    }
+    expect(app.pages).toEqual(expect.arrayContaining(['pages/love-accident/index', 'pages/love-quiz/index']))
+    expect(app.pages).not.toContain('pages/love-result/index')
+    expect(app.subPackages).toContainEqual({ root: 'pages/love-result', pages: ['index'] })
   })
 
   it('reports all required love events and answer duration only through the adapter', () => {

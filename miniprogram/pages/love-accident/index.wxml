@@ -4,7 +4,10 @@
     <view class="case-number">CASE FILE · LOVE</view>
     <view class="red-rule"></view>
     <view class="title">{{title}}</view>
-    <view class="copy">爱的时候叫宝宝，<br />分手以后开始找发票。</view>
+    <view class="copy">
+      <view>爱的时候叫宝宝，</view>
+      <view>分手以后开始找发票。</view>
+    </view>
     <button class="start-button" bindtap="startAssessment">开始鉴定</button>
     <button wx:if="{{hasProgress}}" class="secondary-action" bindtap="resumeAssessment">继续上次鉴定</button>
     <button wx:if="{{hasResult}}" class="secondary-action" bindtap="viewResult">查看上次结果</button>

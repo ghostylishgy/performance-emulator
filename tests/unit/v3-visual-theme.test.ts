@@ -214,8 +214,8 @@ describe('Warm Internal Memo visual system', () => {
       const path = `miniprogram/assets/mascot/${scene}.png`
       const image = readFileSync(path)
       expect(image.subarray(1, 4).toString()).toBe('PNG')
-      expect(image.readUInt32BE(16)).toBe(512)
-      expect(image.readUInt32BE(20)).toBe(512)
+      expect(image.readUInt32BE(16)).toBe(384)
+      expect(image.readUInt32BE(20)).toBe(384)
       expect(image[25]).toBe(6)
       totalBytes += image.byteLength
     }

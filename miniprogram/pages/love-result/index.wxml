@@ -18,6 +18,10 @@
       <view class="stamp" aria-label="鉴定成立">鉴定成立</view>
     </block>
   </view>
+  <view wx:if="{{shareImageUrl}}" class="persona-visual">
+    <view class="persona-visual-label">你的事故人格图</view>
+    <image class="persona-visual-image" src="{{shareImageUrl}}" mode="widthFix" />
+  </view>
   <view class="entertainment-note">本测试仅供娱乐，不构成任何现实判断。</view>
   <button class="share-button" open-type="share">分享结果</button>
   <button class="retry-button" bindtap="retry">再测一次</button>
