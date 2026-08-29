@@ -10,6 +10,7 @@ export type ProductSource = 'normal' | 'share'
 export interface ProductRouteOptions {
   product_id?: string
   source?: string
+  persona?: string
   pairCode?: string
   [key: string]: string | undefined
 }
@@ -36,8 +37,15 @@ export function appendRouteQuery(path: string, query: Record<string, string | nu
   const entries = Object.entries(query).filter((entry): entry is [string, string | number | boolean] => entry[1] !== undefined)
   if (!entries.length) return path
   const separator = path.includes('?') ? '&' : '?'
-  const serialized = entries.map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`).join('&')
+  const serialized = serializeRouteQuery(Object.fromEntries(entries))
   return `${path}${separator}${serialized}`
+}
+
+export function serializeRouteQuery(query: Record<string, string | number | boolean | undefined>): string {
+  return Object.entries(query)
+    .filter((entry): entry is [string, string | number | boolean] => entry[1] !== undefined)
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)
+    .join('&')
 }
 
 export function buildProductPagePath(
@@ -61,7 +69,18 @@ export function buildProductSharePath(
 ): string {
   const product = getProduct(productId)
   if (!product) throw new Error(`Unknown product: ${productId}`)
-  return appendRouteQuery(product.routes.shareEntry, { ...extra, product_id: product.product_id, source: 'share' })
+  const { product_id: _ignoredProductId, source: _ignoredSource, ...safeExtra } = extra
+  return appendRouteQuery(product.routes.shareEntry, { product_id: product.product_id, source: 'share', ...safeExtra })
+}
+
+export function buildProductShareQuery(
+  productId: ProductId,
+  extra: Record<string, string | number | boolean | undefined> = {},
+): string {
+  const product = getProduct(productId)
+  if (!product) throw new Error(`Unknown product: ${productId}`)
+  const { product_id: _ignoredProductId, source: _ignoredSource, ...safeExtra } = extra
+  return serializeRouteQuery({ product_id: product.product_id, source: 'share', ...safeExtra })
 }
 
 export function guardProductAccess(productId: ProductId, options: ProductRouteOptions = {}): boolean {

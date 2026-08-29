@@ -135,7 +135,7 @@ export const loveQuestions: LoveQuestionDefinition[] = [
   },
   {
     id: 'Q13',
-    title: '从“宝宝”到“证据”',
+    title: '昨天还叫宝宝，今天直接变被告',
     prompt: '关系彻底闹翻以后，你最先做什么？',
     options: [
       { id: 'A', text: '找朋友狠狠吐槽一顿', scores: {} },

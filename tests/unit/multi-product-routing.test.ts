@@ -11,6 +11,7 @@ import {
 import { getActiveAdSlot, adSlots } from '../../miniprogram/platform/advertising'
 import {
   buildProductHomePath,
+  buildProductShareQuery,
   buildProductSharePath,
   normalizeProductSource,
   resolveProduct,
@@ -35,6 +36,8 @@ describe('multi-product routing infrastructure', () => {
   it('builds stable product-aware home and share paths', () => {
     expect(buildProductHomePath(LOVE_ACCIDENT_PRODUCT_ID)).toBe('/pages/love-accident/index?product_id=love_accident&source=normal')
     expect(buildProductSharePath(LOVE_ACCIDENT_PRODUCT_ID)).toBe('/pages/product-entry/index?product_id=love_accident&source=share')
+    expect(buildProductSharePath(LOVE_ACCIDENT_PRODUCT_ID, { persona: 'AUDIT' })).toBe('/pages/product-entry/index?product_id=love_accident&source=share&persona=AUDIT')
+    expect(buildProductShareQuery(LOVE_ACCIDENT_PRODUCT_ID, { persona: 'AUDIT' })).toBe('product_id=love_accident&source=share&persona=AUDIT')
     expect(normalizeProductSource('share')).toBe('share')
     expect(normalizeProductSource('unexpected')).toBe('normal')
   })

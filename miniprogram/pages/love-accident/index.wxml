@@ -1,18 +1,27 @@
 <view class="love-page">
-  <view class="agency">人间事故鉴定中心</view>
+  <view class="agency-row">
+    <text class="agency">人间事故鉴定中心</text>
+    <text class="agency-badge">SAMPLE // 2026</text>
+  </view>
   <view class="case-file">
-    <view class="case-number">CASE FILE · LOVE</view>
+    <view class="case-number-row">
+      <text class="case-number">CASE FILE · LOVE-2026</text>
+      <text class="case-pill">UNRESOLVED</text>
+    </view>
     <view class="red-rule"></view>
     <view class="title">{{title}}</view>
     <view class="copy">
       <view>爱的时候叫宝宝，</view>
       <view>分手以后开始找发票。</view>
     </view>
-    <button class="start-button" bindtap="startAssessment">开始鉴定</button>
+    <button class="start-button" bindtap="startAssessment">
+      <text class="btn-text">开始鉴定</text>
+      <text class="btn-arrow">→</text>
+    </button>
     <button wx:if="{{hasProgress}}" class="secondary-action" bindtap="resumeAssessment">继续上次鉴定</button>
     <button wx:if="{{hasResult}}" class="secondary-action" bindtap="viewResult">查看上次结果</button>
     <view class="stage-note">16 项匿名行为取样 · 不采集身份信息</view>
     <view class="entertainment-note">本测试仅供娱乐，不构成任何现实判断。</view>
   </view>
-  <view class="footer-mark">HUMAN INCIDENT IDENTIFICATION CENTER</view>
+  <view class="footer-mark">CARBON-BASED GLITCH · INCIDENT LAB</view>
 </view>

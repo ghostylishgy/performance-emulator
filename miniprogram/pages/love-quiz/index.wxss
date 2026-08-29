@@ -1,22 +1,205 @@
 page { background: #F4F1EA; color: #111111; }
-.quiz-page { box-sizing: border-box; min-height: 100vh; padding: 36rpx 34rpx calc(56rpx + env(safe-area-inset-bottom)); background: #F4F1EA; }
-.quiz-head { display: flex; align-items: baseline; justify-content: space-between; }
-.agency { color: #183153; font-size: 20rpx; font-weight: 900; letter-spacing: 4rpx; }
-.counter { color: #C1121F; font-size: 26rpx; font-weight: 950; letter-spacing: 2rpx; }
-.progress-track { height: 8rpx; margin-top: 24rpx; background: rgba(17, 17, 17, .16); overflow: hidden; }
-.progress-fill { height: 100%; background: #C1121F; transition: width .2s ease; }
-.question-file { margin-top: 42rpx; padding: 34rpx 30rpx 38rpx; border: 3rpx solid #111111; box-shadow: 9rpx 9rpx 0 #111111; }
-.question-id { color: #C1121F; font-size: 24rpx; font-weight: 950; letter-spacing: 3rpx; }
-.question-title { margin-top: 18rpx; font-size: 39rpx; font-weight: 950; line-height: 1.3; }
-.question-prompt { margin-top: 24rpx; font-size: 29rpx; font-weight: 600; line-height: 1.75; white-space: pre-line; }
-.options { margin-top: 40rpx; display: flex; flex-direction: column; gap: 20rpx; }
-button.option { width: 100% !important; min-height: 112rpx; height: auto; margin: 0 !important; padding: 24rpx 26rpx; border: 3rpx solid #111111; border-radius: 0; color: #111111; background: transparent; box-shadow: none; display: flex; align-items: flex-start; text-align: left; white-space: normal; }
-button.option::after { border: none; }
-button.option:active { background: #EAE4D8 !important; transform: translateY(2rpx); }
-.option-id { flex: 0 0 auto; width: 48rpx; color: #C1121F; font-size: 28rpx; font-weight: 950; line-height: 1.55; }
-.option-text { flex: 1; min-width: 0; font-size: 27rpx; font-weight: 650; line-height: 1.55; word-break: break-word; }
-.option-selected { color: #F4F1EA !important; border-color: #C1121F !important; background: #C1121F !important; }
-.option-selected .option-id { color: #F4F1EA; }
-.option[disabled] { opacity: 1; }
-button.back-button { width: auto !important; height: auto !important; min-height: 44px !important; margin: 24rpx auto 0 !important; padding: 10rpx 28rpx !important; border: 0 !important; border-radius: 0; color: #183153; background: transparent !important; box-shadow: none !important; font-size: 23rpx; font-weight: 800; line-height: 1.4 !important; }
-button.back-button::after { border: 0; }
+
+.quiz-page {
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding: 30rpx 30rpx calc(48rpx + env(safe-area-inset-bottom));
+  background: #F4F1EA;
+  animation: pageFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes pageFadeIn {
+  0% { opacity: 0; transform: translateY(12rpx); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.quiz-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.agency {
+  color: #183153;
+  font-size: 21rpx;
+  font-weight: 900;
+  letter-spacing: 4rpx;
+}
+
+.counter-badge {
+  display: flex;
+  align-items: baseline;
+  padding: 4rpx 14rpx;
+  background: #111111;
+  color: #F4F1EA;
+  font-family: monospace, sans-serif;
+}
+
+.counter-prefix {
+  color: #C1121F;
+  font-size: 17rpx;
+  font-weight: 900;
+  margin-right: 6rpx;
+}
+
+.counter {
+  color: #F4F1EA;
+  font-size: 25rpx;
+  font-weight: 900;
+}
+
+.counter-total {
+  color: #9A9095;
+  font-size: 19rpx;
+  font-weight: 700;
+}
+
+.progress-track {
+  height: 10rpx;
+  margin-top: 20rpx;
+  background: rgba(17, 17, 17, 0.12);
+  border: 2rpx solid #111111;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #C1121F;
+  transition: width 0.24s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.question-file {
+  position: relative;
+  margin-top: 36rpx;
+  padding: 38rpx 28rpx 32rpx;
+  border: 4rpx solid #111111;
+  background: #F4F1EA;
+  box-shadow: 10rpx 10rpx 0 #111111;
+}
+
+.question-tab {
+  position: absolute;
+  top: -18rpx;
+  left: 20rpx;
+  padding: 4rpx 14rpx;
+  background: #183153;
+  color: #F4F1EA;
+  font-size: 18rpx;
+  font-weight: 900;
+  letter-spacing: 2rpx;
+  border: 2rpx solid #111111;
+  font-family: monospace, sans-serif;
+}
+
+.question-title {
+  font-size: 38rpx;
+  font-weight: 900;
+  line-height: 1.35;
+  color: #111111;
+}
+
+.question-prompt {
+  margin-top: 18rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  line-height: 1.7;
+  color: #302A2D;
+  white-space: pre-line;
+}
+
+.options {
+  margin-top: 32rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+}
+
+button.option {
+  width: 100% !important;
+  min-height: 104rpx;
+  height: auto;
+  margin: 0 !important;
+  padding: 22rpx 24rpx;
+  border: 3rpx solid #111111;
+  border-radius: 0;
+  color: #111111;
+  background: #F4F1EA;
+  box-shadow: 6rpx 6rpx 0 #111111;
+  display: flex;
+  align-items: flex-start;
+  text-align: left;
+  white-space: normal;
+  box-sizing: border-box;
+  transition: transform 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
+}
+
+button.option::after {
+  border: none;
+}
+
+button.option:active {
+  background: #EAE4D8 !important;
+  transform: translateY(2rpx);
+  box-shadow: 4rpx 4rpx 0 #111111;
+}
+
+button.option.option-selected {
+  color: #F4F1EA !important;
+  border-color: #111111 !important;
+  background: #C1121F !important;
+  box-shadow: 8rpx 8rpx 0 #111111 !important;
+  transform: translateY(-2rpx);
+}
+
+.option-id {
+  flex: 0 0 auto;
+  width: 42rpx;
+  height: 42rpx;
+  margin-right: 18rpx;
+  color: #F4F1EA;
+  background: #111111;
+  border: 2rpx solid #111111;
+  font-size: 23rpx;
+  font-weight: 900;
+  line-height: 42rpx;
+  text-align: center;
+}
+
+.option-selected .option-id {
+  color: #C1121F;
+  background: #F4F1EA;
+  border-color: #F4F1EA;
+}
+
+.option-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 27rpx;
+  font-weight: 700;
+  line-height: 1.55;
+  word-break: break-word;
+}
+
+.option[disabled] {
+  opacity: 1;
+}
+
+button.back-button {
+  width: auto !important;
+  height: auto !important;
+  min-height: 44px !important;
+  margin: 24rpx auto 0 !important;
+  padding: 10rpx 28rpx !important;
+  border: 0 !important;
+  border-radius: 0;
+  color: #183153;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-size: 23rpx;
+  font-weight: 800;
+  line-height: 1.4 !important;
+}
+
+button.back-button::after {
+  border: 0;
+}

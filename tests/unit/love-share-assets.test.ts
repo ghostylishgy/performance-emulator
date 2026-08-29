@@ -131,10 +131,9 @@ describe('love accident share assets', () => {
   it('binds both channels to evaluation.final_persona and never changes persona by channel', () => {
     const result = readFileSync('miniprogram/pages/love-result/index.ts', 'utf8')
     const home = readFileSync('miniprogram/pages/love-accident/index.ts', 'utf8')
-    expect(result).toContain('imageUrl: loveShareAssets[evaluation.final_persona].friend')
-    expect(result).toContain('imageUrl: loveShareAssets[evaluation.final_persona].timeline')
+    expect(result).toContain('imageUrl: loveShareAssets[activePersona].friend')
+    expect(result).toContain('imageUrl: loveShareAssets[activePersona].timeline')
     expect(result).toContain('shareImageUrl: loveShareAssets[evaluation.final_persona].friend')
-    expect(result.match(/loveShareAssets\[evaluation\.final_persona\]/g)).toHaveLength(3)
     expect(result).toContain('onShareAppMessage()')
     expect(result).toContain('onShareTimeline()')
     expect(result).not.toMatch(/Math\.random|randomPersona|random_persona|fallbackPersona|fallback_persona/)

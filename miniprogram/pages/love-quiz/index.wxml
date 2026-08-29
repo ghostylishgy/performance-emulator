@@ -1,11 +1,15 @@
 <view class="quiz-page">
   <view class="quiz-head">
-    <view class="agency">人间事故鉴定中心</view>
-    <view class="counter">{{questionNumber}} / {{total}}</view>
+    <text class="agency">人间事故鉴定中心</text>
+    <view class="counter-badge">
+      <text class="counter-prefix">SAMPLE</text>
+      <text class="counter">{{questionNumber}}</text>
+      <text class="counter-total">/{{total}}</text>
+    </view>
   </view>
   <view class="progress-track"><view class="progress-fill" style="width: {{progressPercent}}%;"></view></view>
   <view class="question-file">
-    <view class="question-id">{{question.id}}</view>
+    <view class="question-tab">CASE RECORD // {{question.id}}</view>
     <view class="question-title">{{question.title}}</view>
     <view class="question-prompt">{{question.prompt}}</view>
   </view>
@@ -13,7 +17,7 @@
     <button
       wx:for="{{question.options}}"
       wx:key="id"
-      class="option {{selectedId === item.id ? 'option-selected' : ''}}"
+      class="option option-{{item.id}} {{selectedId === item.id ? 'option-selected' : ''}}"
       data-option-id="{{item.id}}"
       disabled="{{interactionLocked}}"
       bindtap="selectOption"
@@ -22,5 +26,5 @@
       <text class="option-text">{{item.text}}</text>
     </button>
   </view>
-  <button wx:if="{{canGoBack}}" class="back-button" disabled="{{interactionLocked}}" bindtap="goBack">返回上一题</button>
+  <button wx:if="{{canGoBack}}" class="back-button" disabled="{{interactionLocked}}" bindtap="goBack">← 返回上一题</button>
 </view>
