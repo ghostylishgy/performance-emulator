@@ -1,5 +1,10 @@
 # V3 架构边界
 
+本文件记录既有测评产品边界。第三个教材工具产品的独立架构与 UI 交接分别见
+[`textbook-product-charter.md`](textbook-product-charter.md)、
+[`textbook-product-architecture.md`](textbook-product-architecture.md) 和
+[`textbook-ui-handoff.md`](textbook-ui-handoff.md)。教材分包不得改变本文件描述的既有测评逻辑。
+
 ## 基础设施约束
 
 - Native WeChat Mini Program
@@ -61,4 +66,3 @@ checksum          5 bits (CRC-5 style)
 - Poster：如实现，只能使用客户端 Canvas 生成和保存；不得上传服务器或对象存储。
 - Share：使用微信官方分享能力，query 可携带自包含 pairCode。
 - Mini Program Code：只有在微信提供完全原生、无需自建后端的能力时才允许接入；当前未实现。
-

@@ -7,6 +7,7 @@ export type AnalyticsEvent =
   | 'reflection_view' | 'restart'
   | 'pair_create' | 'pair_resolve'
   | 'ad_request' | 'ad_impression' | 'ad_error' | 'ad_close'
+  | 'book_set_open' | 'official_link_copy' | 'offline_interest'
 
 export type AnalyticsProperties = {
   product_id: string
@@ -54,6 +55,8 @@ const WECHAT_ALLOWED_FIELDS = new Set([
   'page', 'test_id', 'test_version', 'stage', 'route_reason', 'answer_action',
   'outcome', 'persona', 'relation', 'pair_source',
   'resolution_mode', 'fallback_reason', 'final_persona',
+  'mode', 'viewer_grade', 'content_stage', 'content_grade', 'term',
+  'subject', 'book_id', 'target', 'reason', 'action_result',
 ])
 
 function normalizeWechatValue(value: string | number | boolean | undefined): WechatAnalyticsValue | undefined {

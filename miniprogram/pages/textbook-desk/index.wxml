@@ -1,0 +1,4 @@
+<view class="foundation-shell" wx:if="{{ready}}">
+  <text class="foundation-title">{{productTitle}}</text>
+  <text class="foundation-status">教材产品基础架构已就绪，页面视觉与交互待实现。</text>
+</view>

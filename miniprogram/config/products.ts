@@ -1,4 +1,4 @@
-export type ProductId = 'love_accident' | 'performance'
+export type ProductId = 'love_accident' | 'performance' | 'textbook_desk'
 
 export interface ProductRoutes {
   home: string
@@ -20,6 +20,7 @@ export interface ProductDefinition {
 
 export const LOVE_ACCIDENT_PRODUCT_ID: ProductId = 'love_accident'
 export const PERFORMANCE_PRODUCT_ID: ProductId = 'performance'
+export const TEXTBOOK_DESK_PRODUCT_ID: ProductId = 'textbook_desk'
 
 export const productRegistry: ProductDefinition[] = [
   {
@@ -50,6 +51,20 @@ export const productRegistry: ProductDefinition[] = [
       shareEntry: '/pages/product-entry/index',
     },
     testId: 'performance-simulator',
+    adsEnabled: false,
+  },
+  {
+    product_id: TEXTBOOK_DESK_PRODUCT_ID,
+    title: '课本应急箱',
+    enabled: false,
+    isDefault: false,
+    featured: false,
+    routes: {
+      home: '/pages/textbook-desk/index',
+      test: null,
+      result: null,
+      shareEntry: '/pages/textbook-desk/index',
+    },
     adsEnabled: false,
   },
 ]

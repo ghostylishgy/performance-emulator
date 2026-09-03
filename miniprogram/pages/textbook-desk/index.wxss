@@ -1,0 +1,5 @@
+page { min-height: 100%; background: #f6f1ea; color: #2b2628; }
+.foundation-shell { box-sizing: border-box; min-height: 100vh; padding: 48rpx 40rpx; }
+.foundation-title, .foundation-status { display: block; }
+.foundation-title { font-size: 42rpx; font-weight: 800; }
+.foundation-status { margin-top: 24rpx; font-size: 28rpx; line-height: 1.6; }

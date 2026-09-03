@@ -5,6 +5,7 @@ import {
   getProduct,
   LOVE_ACCIDENT_PRODUCT_ID,
   PERFORMANCE_PRODUCT_ID,
+  TEXTBOOK_DESK_PRODUCT_ID,
   productRegistry,
   validateProductRegistry,
 } from '../../miniprogram/config/products'
@@ -25,6 +26,12 @@ describe('multi-product routing infrastructure', () => {
     expect(getDefaultProduct().product_id).toBe(LOVE_ACCIDENT_PRODUCT_ID)
     expect(getProduct(LOVE_ACCIDENT_PRODUCT_ID)).toMatchObject({ enabled: true, isDefault: true, featured: true })
     expect(getProduct(PERFORMANCE_PRODUCT_ID)).toMatchObject({ enabled: false, isDefault: false, featured: false })
+    expect(getProduct(TEXTBOOK_DESK_PRODUCT_ID)).toMatchObject({
+      enabled: false,
+      isDefault: false,
+      featured: false,
+      routes: { home: '/pages/textbook-desk/index', test: null, result: null, shareEntry: '/pages/textbook-desk/index' },
+    })
   })
 
   it('falls back safely for disabled, unknown, and missing product ids', () => {
@@ -38,6 +45,8 @@ describe('multi-product routing infrastructure', () => {
     expect(buildProductSharePath(LOVE_ACCIDENT_PRODUCT_ID)).toBe('/pages/product-entry/index?product_id=love_accident&source=share')
     expect(buildProductSharePath(LOVE_ACCIDENT_PRODUCT_ID, { persona: 'AUDIT' })).toBe('/pages/product-entry/index?product_id=love_accident&source=share&persona=AUDIT')
     expect(buildProductShareQuery(LOVE_ACCIDENT_PRODUCT_ID, { persona: 'AUDIT' })).toBe('product_id=love_accident&source=share&persona=AUDIT')
+    expect(buildProductSharePath(TEXTBOOK_DESK_PRODUCT_ID, { mode: 'preview', target: 'junior_7_upper' }))
+      .toBe('/pages/textbook-desk/index?product_id=textbook_desk&source=share&mode=preview&target=junior_7_upper')
     expect(normalizeProductSource('share')).toBe('share')
     expect(normalizeProductSource('unexpected')).toBe('normal')
   })

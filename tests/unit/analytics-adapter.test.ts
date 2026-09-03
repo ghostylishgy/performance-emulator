@@ -94,6 +94,38 @@ describe('WeChat analytics adapter', () => {
     })
   })
 
+  it('allows only the anonymous textbook analytics contract', () => {
+    expect(createWechatAnalyticsPayload('official_link_copy', {
+      product_id: 'textbook_desk',
+      source: 'share',
+      mode: 'preview',
+      viewer_grade: 'primary_6',
+      content_stage: 'junior',
+      content_grade: 'junior_7',
+      term: 'upper',
+      subject: 'english',
+      book_id: '1312001101241',
+      target: 'junior_7_upper',
+      action_result: 'success',
+      school: 'must-not-leave-device',
+      child_name: 'must-not-leave-device',
+      clipboard: 'must-not-leave-device',
+    })).toEqual({
+      event: 'official_link_copy',
+      product_id: 'textbook_desk',
+      source: 'share',
+      mode: 'preview',
+      viewer_grade: 'primary_6',
+      content_stage: 'junior',
+      content_grade: 'junior_7',
+      term: 'upper',
+      subject: 'english',
+      book_id: '1312001101241',
+      target: 'junior_7_upper',
+      action_result: 'success',
+    })
+  })
+
   it('adds timestamp before dispatch and still enforces product_id', () => {
     const adapter = { track: vi.fn() }
     const client = new AnalyticsClient(adapter)
