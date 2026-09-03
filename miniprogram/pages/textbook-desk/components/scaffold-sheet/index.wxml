@@ -1,0 +1,9 @@
+<view wx:if="{{open}}" class="sheet-backdrop" bindtap="onClose">
+  <view class="sheet" catchtap="stopPropagation">
+    <view class="sheet__header">
+      <text class="sheet__title">{{title}}</text>
+      <button class="sheet__close" bindtap="onClose">关闭</button>
+    </view>
+    <slot />
+  </view>
+</view>

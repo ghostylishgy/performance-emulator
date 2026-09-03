@@ -1,0 +1,23 @@
+/* Provisional integration tokens. Final values belong to the approved UI pass. */
+.textbook-desk,
+:host {
+  --td-page: #f5f2ec;
+  --td-surface: #ffffff;
+  --td-text: #282527;
+  --td-text-muted: #686369;
+  --td-border: #ded8d0;
+  --td-brand: #3f6170;
+  --td-preview: #735d85;
+  --td-warning: #8a6520;
+  --td-success: #347052;
+  --td-space-1: 8rpx;
+  --td-space-2: 16rpx;
+  --td-space-3: 24rpx;
+  --td-space-4: 32rpx;
+  --td-space-5: 48rpx;
+  --td-radius-1: 12rpx;
+  --td-radius-2: 20rpx;
+  --td-text-small: 24rpx;
+  --td-text-body: 28rpx;
+  --td-text-title: 40rpx;
+}

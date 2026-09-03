@@ -1,75 +1,104 @@
-import { getProduct, TEXTBOOK_DESK_PRODUCT_ID } from '../../config/products'
-import { buildProductSharePath, buildProductShareQuery, guardProductAccess, type ProductRouteOptions } from '../../platform/product-routing'
-import { getBooksForTarget } from './catalog'
+import { TEXTBOOK_DESK_PRODUCT_ID } from '../../config/products'
+import { guardProductAccess, type ProductRouteOptions } from '../../platform/product-routing'
 import { loadTextbookPreference } from './storage'
-import { buildTextbookSharePayload } from './share'
-import { getTextbookTarget } from './targets'
-import { trackBookSetOpen, trackTextbookShare, type TextbookAnalyticsContext } from './analytics'
-import { resolveTextbookEntryState } from './view-state'
-import type { TextbookTargetId, TextbookViewMode } from './types'
+import type { TextbookPreference, TextbookTargetId } from './types'
+import {
+  copyTextbookOfficialUrl,
+  defaultTextbookSharePayload,
+  openTextbookBookSet,
+  resolveTextbookPageState,
+  setTextbookHomeGrade,
+  shareTextbookBookSet,
+} from './ui/actions'
+import type { TextbookBookSetViewModel, TextbookDeskViewModel } from './ui/state-adapter'
 
-const product = getProduct(TEXTBOOK_DESK_PRODUCT_ID)!
-let activeContext: TextbookAnalyticsContext | null = null
+let activeRoute: ProductRouteOptions = {}
+let activePreference: TextbookPreference | null = null
+let activeViewModel: TextbookDeskViewModel | null = null
+let activeShareSet: TextbookBookSetViewModel | null = null
+
+function allBookSets(viewModel: TextbookDeskViewModel): readonly TextbookBookSetViewModel[] {
+  const sets = [viewModel.layout.hero, ...viewModel.layout.secondary, ...viewModel.layout.history]
+  return sets.filter((set): set is TextbookBookSetViewModel => Boolean(set))
+}
+
+function findBookSet(viewModel: TextbookDeskViewModel, target: unknown): TextbookBookSetViewModel | null {
+  if (typeof target !== 'string') return null
+  return allBookSets(viewModel).find((set) => set.target.id === target) ?? null
+}
 
 Page({
   data: {
     ready: false,
-    productTitle: product.title,
-    screen: 'first_setup',
-    mode: 'current' as TextbookViewMode,
-    target: '' as TextbookTargetId | '',
-    bookCount: 0,
+    viewModel: null as TextbookDeskViewModel | null,
   },
   onLoad(options: ProductRouteOptions) {
-    activeContext = null
-    if (!guardProductAccess(product.product_id, options)) return
+    activeRoute = options
+    activePreference = null
+    activeViewModel = null
+    activeShareSet = null
+    if (!guardProductAccess(TEXTBOOK_DESK_PRODUCT_ID, options)) return
 
-    // A validated share is resolved before storage is read, so a receiver's
-    // saved grade cannot affect or be changed by the transient shared view.
-    const sharedState = resolveTextbookEntryState(options, null, new Date())
-    let state = sharedState
-    if (sharedState.screen !== 'semester_desk' || !sharedState.transientShareView) {
+    // A valid share is derived before any local preference read, keeping the
+    // receiver's saved grade isolated from the transient shared desk.
+    let viewModel = resolveTextbookPageState(options, null, new Date())
+    if (viewModel.share.kind === 'normal') {
       const stored = loadTextbookPreference()
-      state = resolveTextbookEntryState(options, stored.status === 'current' ? stored.preference : null, new Date())
+      activePreference = stored.status === 'current' ? stored.preference : null
+      viewModel = resolveTextbookPageState(options, activePreference, new Date())
     }
 
-    if (state.screen === 'first_setup') {
-      this.setData({ ready: true, screen: state.screen })
-      return
-    }
-
-    const target = getTextbookTarget(state.target)
-    activeContext = {
-      mode: state.mode,
-      viewerGrade: state.homeGrade,
-      contentStage: target.stage,
-      contentGrade: target.grade,
-      term: target.term,
-      source: state.source,
-      target: state.target,
-    }
-    this.setData({
-      ready: true,
-      screen: state.screen,
-      mode: state.mode,
-      target: state.target,
-      bookCount: getBooksForTarget(state.target).length,
-    })
-    trackBookSetOpen(activeContext)
+    activeViewModel = viewModel
+    activeShareSet = viewModel.layout.hero
+    this.setData({ ready: true, viewModel })
+    if (viewModel.layout.hero) openTextbookBookSet(viewModel.layout.hero, viewModel)
   },
   onUnload() {
-    activeContext = null
+    activeRoute = {}
+    activePreference = null
+    activeViewModel = null
+    activeShareSet = null
+  },
+  onGradeSelect(event: { detail: { gradeId?: unknown } }) {
+    const nextPreference = setTextbookHomeGrade(event.detail.gradeId, activePreference)
+    if (!nextPreference) {
+      wx.showToast({ title: '年级保存失败', icon: 'none' })
+      return
+    }
+    activePreference = nextPreference
+    activeRoute = { source: 'normal' }
+    const viewModel = resolveTextbookPageState(activeRoute, activePreference, new Date())
+    activeViewModel = viewModel
+    activeShareSet = viewModel.layout.hero
+    this.setData({ viewModel })
+    if (viewModel.layout.hero) openTextbookBookSet(viewModel.layout.hero, viewModel)
+  },
+  onCopyBook(event: { detail: { bookId?: unknown; target?: unknown } }) {
+    if (!activeViewModel || typeof event.detail.bookId !== 'string') return
+    const set = findBookSet(activeViewModel, event.detail.target)
+    if (!set) return
+    void copyTextbookOfficialUrl(event.detail.bookId, set, activeViewModel).then((copied) => {
+      wx.showToast({ title: copied ? '已复制官方入口' : '暂时无法复制', icon: 'none' })
+    })
+  },
+  onSelectShare(event: { detail: { target?: TextbookTargetId } }) {
+    if (!activeViewModel) return
+    activeShareSet = findBookSet(activeViewModel, event.detail.target) ?? activeViewModel.layout.hero
   },
   onShareAppMessage() {
-    if (!activeContext) return { title: product.title, path: buildProductSharePath(product.product_id) }
-    trackTextbookShare(activeContext)
-    const share = buildTextbookSharePayload(activeContext.mode, activeContext.target)
+    if (!activeViewModel || !activeShareSet) {
+      const share = defaultTextbookSharePayload()
+      return { title: share.title, path: share.path }
+    }
+    const share = shareTextbookBookSet(activeShareSet, activeViewModel)
     return { title: share.title, path: share.path }
   },
   onShareTimeline() {
-    if (!activeContext) return { title: product.title, query: buildProductShareQuery(product.product_id) }
-    trackTextbookShare(activeContext)
-    const share = buildTextbookSharePayload(activeContext.mode, activeContext.target)
+    if (!activeViewModel || !activeShareSet) {
+      const share = defaultTextbookSharePayload()
+      return { title: share.title, query: share.query }
+    }
+    const share = shareTextbookBookSet(activeShareSet, activeViewModel)
     return { title: share.title, query: share.query }
   },
 })

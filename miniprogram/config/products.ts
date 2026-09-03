@@ -55,7 +55,7 @@ export const productRegistry: ProductDefinition[] = [
   },
   {
     product_id: TEXTBOOK_DESK_PRODUCT_ID,
-    title: '课本应急箱',
+    title: '第二书包',
     enabled: false,
     isDefault: false,
     featured: false,

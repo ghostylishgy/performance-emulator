@@ -1,3 +1,10 @@
 {
-  "navigationStyle": "custom"
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "semester-header": "./components/semester-header/index",
+    "grade-picker": "./components/grade-picker/index",
+    "book-set-summary": "./components/book-set-summary/index",
+    "share-landing-hint": "./components/share-landing-hint/index",
+    "scaffold-sheet": "./components/scaffold-sheet/index"
+  }
 }

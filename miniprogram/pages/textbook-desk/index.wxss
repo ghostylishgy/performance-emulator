@@ -1,5 +1,6 @@
-page { min-height: 100%; background: #f6f1ea; color: #2b2628; }
-.foundation-shell { box-sizing: border-box; min-height: 100vh; padding: 48rpx 40rpx; }
-.foundation-title, .foundation-status { display: block; }
-.foundation-title { font-size: 42rpx; font-weight: 800; }
-.foundation-status { margin-top: 24rpx; font-size: 28rpx; line-height: 1.6; }
+@import "./styles/tokens.wxss";
+
+page { min-height: 100%; background: #f5f2ec; color: #282527; }
+.textbook-desk { box-sizing: border-box; min-height: 100vh; padding: 40rpx 32rpx calc(40rpx + env(safe-area-inset-bottom)); background: var(--td-page); color: var(--td-text); }
+.textbook-desk__setup, .textbook-desk__content, .textbook-desk__section { display: flex; flex-direction: column; gap: var(--td-space-3); margin-top: var(--td-space-4); }
+.textbook-desk__section-title { color: var(--td-text); font-size: var(--td-text-body); font-weight: 650; }

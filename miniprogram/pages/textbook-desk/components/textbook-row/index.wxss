@@ -1,0 +1,10 @@
+@import "../../styles/tokens.wxss";
+
+.textbook-row { display: flex; align-items: center; gap: var(--td-space-2); padding: var(--td-space-2) 0; border-top: 1px solid var(--td-border); }
+.textbook-row__monogram { display: flex; flex: 0 0 52rpx; width: 52rpx; height: 52rpx; align-items: center; justify-content: center; border-radius: 50%; background: var(--td-page); color: var(--td-brand); font-size: var(--td-text-small); }
+.textbook-row__content { min-width: 0; flex: 1; }
+.textbook-row__title, .textbook-row__variant { display: block; }
+.textbook-row__title { color: var(--td-text); font-size: var(--td-text-body); line-height: 1.45; }
+.textbook-row__variant { margin-top: var(--td-space-1); color: var(--td-text-muted); font-size: var(--td-text-small); }
+.textbook-row__copy { display: flex; flex: 0 0 auto; min-height: 40px; margin: 0; padding: 0 var(--td-space-2); align-items: center; justify-content: center; border: 1px solid var(--td-border); border-radius: var(--td-radius-1); background: var(--td-surface); color: var(--td-brand); font-size: var(--td-text-small); line-height: 1.2; }
+.textbook-row__copy::after { border: 0; }

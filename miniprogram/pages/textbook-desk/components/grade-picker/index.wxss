@@ -1,0 +1,6 @@
+@import "../../styles/tokens.wxss";
+
+.grade-picker { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--td-space-2); }
+.grade-picker__option { box-sizing: border-box; width: 100%; min-height: 44px; margin: 0; padding: var(--td-space-2); border: 1px solid var(--td-border); border-radius: var(--td-radius-1); background: var(--td-surface); color: var(--td-text); font-size: var(--td-text-body); line-height: 1.35; }
+.grade-picker__option::after { border: 0; }
+.grade-picker__option.is-selected { border-color: var(--td-brand); color: var(--td-brand); }

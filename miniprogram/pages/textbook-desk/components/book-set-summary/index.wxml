@@ -1,0 +1,14 @@
+<view class="book-set book-set--{{emphasis}}">
+  <view class="book-set__heading">
+    <view>
+      <text class="book-set__relation">{{bookSet.relationLabel}}</text>
+      <text class="book-set__title">{{bookSet.title}}</text>
+    </view>
+    <text class="book-set__count">{{bookSet.bookCount}}本</text>
+  </view>
+  <view wx:if="{{bookSet.available}}">
+    <textbook-row wx:for="{{bookSet.books}}" wx:key="id" book="{{item}}" bind:copy="onCopy" />
+  </view>
+  <text wx:else class="book-set__empty">当前目录暂无可用教材记录。</text>
+  <button class="book-set__share" open-type="share" bindtap="onShare">分享这组教材</button>
+</view>

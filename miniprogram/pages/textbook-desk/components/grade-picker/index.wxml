@@ -1,0 +1,9 @@
+<view class="grade-picker" aria-label="选择年级">
+  <button
+    wx:for="{{options}}"
+    wx:key="id"
+    class="grade-picker__option {{selected === item.id ? 'is-selected' : ''}}"
+    data-grade-id="{{item.id}}"
+    bindtap="onSelect"
+  >{{item.label}}</button>
+</view>

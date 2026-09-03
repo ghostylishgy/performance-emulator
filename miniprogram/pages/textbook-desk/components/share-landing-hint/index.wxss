@@ -1,0 +1,3 @@
+@import "../../styles/tokens.wxss";
+
+.share-hint { padding: var(--td-space-2) var(--td-space-3); border: 1px solid var(--td-border); border-radius: var(--td-radius-1); color: var(--td-preview); font-size: var(--td-text-small); line-height: 1.5; }

@@ -1,4 +1,46 @@
-<view class="foundation-shell" wx:if="{{ready}}">
-  <text class="foundation-title">{{productTitle}}</text>
-  <text class="foundation-status">教材产品基础架构已就绪，页面视觉与交互待实现。</text>
+<view class="textbook-desk" wx:if="{{ready && viewModel}}">
+  <semester-header title="{{viewModel.productName}}" seasonal-label="{{viewModel.seasonalLabel}}" />
+
+  <view wx:if="{{viewModel.screen === 'first_setup'}}" class="textbook-desk__setup">
+    <text class="textbook-desk__section-title">选择你家现在的年级</text>
+    <grade-picker options="{{viewModel.gradeOptions}}" bind:select="onGradeSelect" />
+  </view>
+
+  <view wx:else class="textbook-desk__content">
+    <share-landing-hint visible="{{viewModel.share.showPreviewSocialHint}}" />
+
+    <book-set-summary
+      wx:if="{{viewModel.layout.hero}}"
+      book-set="{{viewModel.layout.hero}}"
+      emphasis="hero"
+      bind:copy="onCopyBook"
+      bind:selectshare="onSelectShare"
+    />
+
+    <view wx:if="{{viewModel.layout.secondary.length}}" class="textbook-desk__section">
+      <text class="textbook-desk__section-title">接下来可以看</text>
+      <book-set-summary
+        wx:for="{{viewModel.layout.secondary}}"
+        wx:key="key"
+        book-set="{{item}}"
+        emphasis="secondary"
+        bind:copy="onCopyBook"
+        bind:selectshare="onSelectShare"
+      />
+    </view>
+
+    <view wx:if="{{viewModel.layout.history.length}}" class="textbook-desk__section">
+      <text class="textbook-desk__section-title">本学年其他课本</text>
+      <book-set-summary
+        wx:for="{{viewModel.layout.history}}"
+        wx:key="key"
+        book-set="{{item}}"
+        emphasis="history"
+        bind:copy="onCopyBook"
+        bind:selectshare="onSelectShare"
+      />
+    </view>
+  </view>
+
+  <scaffold-sheet open="{{false}}" title="" />
 </view>

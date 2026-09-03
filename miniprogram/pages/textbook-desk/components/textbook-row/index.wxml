@@ -1,0 +1,8 @@
+<view class="textbook-row">
+  <view class="textbook-row__monogram" aria-hidden="true">{{monogram}}</view>
+  <view class="textbook-row__content">
+    <text class="textbook-row__title">{{book.title}}</text>
+    <text wx:if="{{book.variant}}" class="textbook-row__variant">{{book.variant.label}}</text>
+  </view>
+  <button class="textbook-row__copy" bindtap="onCopy">复制官方入口</button>
+</view>

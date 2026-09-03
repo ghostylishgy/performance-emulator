@@ -1,0 +1,8 @@
+@import "../../styles/tokens.wxss";
+
+.sheet-backdrop { position: fixed; z-index: 20; inset: 0; display: flex; align-items: flex-end; background: rgba(0, 0, 0, .28); }
+.sheet { box-sizing: border-box; width: 100%; padding: var(--td-space-4); padding-bottom: calc(var(--td-space-4) + env(safe-area-inset-bottom)); border-radius: var(--td-radius-2) var(--td-radius-2) 0 0; background: var(--td-surface); }
+.sheet__header { display: flex; align-items: center; justify-content: space-between; gap: var(--td-space-2); }
+.sheet__title { color: var(--td-text); font-size: 32rpx; font-weight: 650; }
+.sheet__close { display: flex; min-height: 40px; margin: 0; padding: 0 var(--td-space-2); align-items: center; justify-content: center; background: transparent; color: var(--td-text-muted); font-size: var(--td-text-small); line-height: 1.2; }
+.sheet__close::after { border: 0; }

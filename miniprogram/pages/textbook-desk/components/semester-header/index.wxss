@@ -1,0 +1,5 @@
+@import "../../styles/tokens.wxss";
+
+.semester-header { display: flex; align-items: center; justify-content: space-between; gap: var(--td-space-2); }
+.semester-header__title { color: var(--td-text); font-size: var(--td-text-title); font-weight: 700; }
+.semester-header__season { color: var(--td-text-muted); font-size: var(--td-text-small); }

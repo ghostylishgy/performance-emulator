@@ -1,0 +1,10 @@
+@import "../../styles/tokens.wxss";
+
+.book-set { box-sizing: border-box; padding: var(--td-space-3); border: 1px solid var(--td-border); border-radius: var(--td-radius-2); background: var(--td-surface); }
+.book-set__heading { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--td-space-2); }
+.book-set__relation, .book-set__title { display: block; }
+.book-set__relation, .book-set__count, .book-set__empty { color: var(--td-text-muted); font-size: var(--td-text-small); }
+.book-set__title { margin-top: var(--td-space-1); color: var(--td-text); font-size: 32rpx; font-weight: 650; }
+.book-set__share { display: flex; width: 100%; min-height: 44px; margin: var(--td-space-3) 0 0; padding: 0 var(--td-space-3); align-items: center; justify-content: center; border: 1px solid var(--td-border); border-radius: var(--td-radius-1); background: var(--td-surface); color: var(--td-brand); font-size: var(--td-text-body); line-height: 1.2; }
+.book-set__share::after { border: 0; }
+.book-set__empty { display: block; margin-top: var(--td-space-3); line-height: 1.5; }

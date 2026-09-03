@@ -1,0 +1,4 @@
+<view class="semester-header">
+  <text class="semester-header__title">{{title}}</text>
+  <text class="semester-header__season">{{seasonalLabel}}</text>
+</view>
